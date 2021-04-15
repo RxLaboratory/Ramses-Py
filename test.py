@@ -4,4 +4,4 @@ from ramses import *
 
 di = Ramses.instance.daemonInterface()
 
-print( di.getCurrentProject() )
+print( di.getProjects() )
