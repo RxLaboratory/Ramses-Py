@@ -1,3 +1,7 @@
-from ramses import Ramses
+from ramses import *
 
-print(Ramses.version)
+# TEST Daemon Interface
+
+di = Ramses.instance.daemonInterface()
+
+print( di.getAssets() )

@@ -141,13 +141,23 @@ class RamDaemonInterface():
         """
         self.__post('raise')
 
+    def getAssets(self):
+        """Gets the list of the assets for the current project
+
+        Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
+        
+        Returns: dict.
+        """
+
+        if not self.__checkUser(): return self.__noUserReply('getAssets')
+        return self.__post( "getAssets", 1048576 )
+
     def setCurrentProject(self, projectShortName):
         """Sets the current project.
 
         Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
         
         Returns: dict.
-            Read http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
         """
 
         if not self.__checkUser(): return self.__noUserReply('setCurrentProject')
