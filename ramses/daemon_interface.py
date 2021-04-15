@@ -80,6 +80,8 @@ class RamDaemonInterface():
 
         obj = json.loads(data)
 
+        if not obj['accepted']: print("Unknown query: " + obj['query'])
+        if not obj['success']: print("Warning: the Ramses Daemon could not reply to the query: " + obj['query'])       
         if obj['message']: print(obj['message'])
 
         return obj
@@ -151,6 +153,17 @@ class RamDaemonInterface():
 
         if not self.__checkUser(): return self.__noUserReply('getAssets')
         return self.__post( "getAssets", 1048576 )
+
+    def getProjects(self):
+        """Gets the list of the projects
+
+        Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
+        
+        Returns: dict.
+        """
+
+        if not self.__checkUser(): return self.__noUserReply('getProjects')
+        return self.__post( "getProjects", 32768 )
 
     def setCurrentProject(self, projectShortName):
         """Sets the current project.
