@@ -165,6 +165,18 @@ class RamDaemonInterface():
         if not self.__checkUser(): return self.__noUserReply('getProjects')
         return self.__post( "getProjects", 32768 )
 
+    def getShots(self):
+        """Gets the list of the shots for the current project
+
+        Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
+        
+        Returns: dict.
+        """
+
+        if not self.__checkUser(): return self.__noUserReply('getShots')
+        return self.__post( "getShots", 1048576 )
+
+
     def setCurrentProject(self, projectShortName):
         """Sets the current project.
 
