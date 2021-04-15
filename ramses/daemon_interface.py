@@ -19,7 +19,6 @@ class RamDaemonInterface():
         self.port = port
         self.address = 'localhost'
 
-    @property
     def online(self):
         return self.__testConnection()
 
