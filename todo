@@ -1,0 +1,11 @@
+# Python implementation
+
+## File structure
+
+- ramses
+    - __init__.py: imports all classes and instantiates a Ramses object
+    - daemon_interface.py: the RamDaemonInterface class
+    - ramses.py: the Ramses class
+    - ramobject.py: the RamObject class
+    - ramsettings.py: the RamSettings class
+    - etc.

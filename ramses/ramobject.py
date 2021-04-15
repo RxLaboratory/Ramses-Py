@@ -1,0 +1,2 @@
+class RamObject():
+    pass
