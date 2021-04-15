@@ -187,6 +187,17 @@ class RamDaemonInterface():
         if not self.__checkUser(): return self.__noUserReply('getStates')
         return self.__post( "getStates", 2048 )
 
+    def getSteps(self):
+        """Gets the list of the steps
+
+        Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
+        
+        Returns: dict.
+        """
+
+        if not self.__checkUser(): return self.__noUserReply('getSteps')
+        return self.__post( "getSteps", 1048576 )
+
     def setCurrentProject(self, projectShortName):
         """Sets the current project.
 
