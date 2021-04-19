@@ -1,6 +1,10 @@
 class RamObject():
 
     def __init__(self, name, shortName):
+        """
+        @param: {name} str : objectName
+        @param: {shortName} str : objectShortName
+        """
         self.__name = name
         self.__shortName = shortName
     
