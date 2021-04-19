@@ -11,3 +11,4 @@ class RamItem(RamObject):
         @param: 
 
         """
+        pass
