@@ -71,11 +71,11 @@ class RamDaemonInterface():
 
         try: s.connect((self.address, self.port))
         except ConnectionRefusedError:
-            print("Daemon can't be reached")
+            log("Daemon can't be reached")
             return
         except Exception as e:
-            print("Daemon can't be reached")
-            print("Error: " + e)
+            log("Daemon can't be reached")
+            log("Error: " + e)
             return
 
         s.sendall(query.encode('utf-8'))
@@ -84,9 +84,9 @@ class RamDaemonInterface():
 
         obj = json.loads(data)
 
-        if not obj['accepted']: print("Unknown query: " + obj['query'])
-        if not obj['success']: print("Warning: the Ramses Daemon could not reply to the query: " + obj['query'])       
-        if obj['message']: print(obj['message'])
+        if not obj['accepted']: log("Unknown query: " + obj['query'])
+        if not obj['success']: log("Warning: the Ramses Daemon could not reply to the query: " + obj['query'])       
+        if obj['message']: log(obj['message'])
 
         return obj
 
@@ -96,16 +96,16 @@ class RamDaemonInterface():
         data = self.__post("ping")
 
         if data is None:
-            print("Daemon unavailable")
+            log("Daemon unavailable")
             return False
   
         content = data['content']
         if content is None:
-            print("Daemon did not reply correctly")
+            log("Daemon did not reply correctly")
             return False
         if content['ramses'] == "Ramses": return True
 
-        print("Invalid content in the Daemon reply")
+        log("Invalid content in the Daemon reply")
         return False
 
     def __checkUser(self):
@@ -121,7 +121,7 @@ class RamDaemonInterface():
 
     def __noUserReply(self, query):
         message = "There's no current user. You may need to log in first."
-        print(message)
+        log(message)
         return {
             'accepted': False,
             'success': False,
