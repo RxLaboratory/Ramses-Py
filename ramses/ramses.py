@@ -12,13 +12,13 @@ class Ramses():
 
     def __init__(self, port = 1818, connect = True):
         if Ramses.instance:
-            raise Exception("There cannot be more than one instance of Ramses")
+            raise Exception("There cannot be more than one instance of Ramses. Ramses is a Singleton!")
 
-        self.daemon = RamDaemonInterface()
+        self.__daemon = RamDaemonInterface()
 
         Ramses.instance = self
 
     # PUBLIC
 
     def daemonInterface(self):
-        return self.daemon
+        return self.__daemon

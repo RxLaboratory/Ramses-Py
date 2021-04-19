@@ -1,5 +1,6 @@
 import socket
 import json
+from .logger import log
 
 class RamDaemonInterface():
     """The Class used to communicate with the Ramses Daemon
@@ -10,6 +11,10 @@ class RamDaemonInterface():
         online: bool (read-only).
             True if the Daemon is available
     """
+
+    @staticmethod
+    def checkReply( obj ):
+        return obj['accepted'] and obj['success'] and obj['content'] is not None
 
     def __init__(self, port = 18185):
         """
@@ -62,7 +67,7 @@ class RamDaemonInterface():
 
         query = self.__buildQuery( query )
 
-        print("Ramses Daemon: Query: " + query)
+        log("Ramses Daemon: Query: " + query)
 
         try: s.connect((self.address, self.port))
         except ConnectionRefusedError:
@@ -221,5 +226,3 @@ class RamDaemonInterface():
             "setCurrentProject",
             ('shortName', projectShortName)
             ) )
-
-
