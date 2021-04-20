@@ -1,17 +1,26 @@
-class RamObject():
+class RamObject:
+    """The base class for most of Ramses objects."""
 
-    def __init__(self, name, shortName):
+    def __init__(self, objectName, objectShortName):
         """
-        @param: {name} str : objectName
-        @param: {shortName} str : objectShortName
+        Args:
+            objectName (str): May contain spaces, [a-z] ,[A-Z], [0-9], [+-].
+            objectShortName (str):  Used for compact display and folder names, limited to 10 characters,
+                must not contain spaces, may contain [a-z] ,[A-Z], [0-9], [+-].
         """
-        self.__name = name
-        self.__shortName = shortName
+        self.name = objectName
+        self.shortName = objectShortName
     
-    def name(self):
-        """return string"""
-        return self.__name
+    def name( self ):
+        """
+        Returns:
+            str
+        """
+        return self.name
 
-    def shortName(self):
-        """return string"""
-        return self.__shortName
+    def shortName( self ):
+        """
+        Returns:
+            str
+        """
+        return self.shortName
