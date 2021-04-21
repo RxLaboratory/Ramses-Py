@@ -8,30 +8,53 @@ from .ramses import Ramses
 class RamAsset( RamItem ):
     """A class representing an asset."""
 
-    def __init__(self, assetName, assetShortName):
-        """[summary]
-
+    def __init__( self, assetName, assetShortName ):
+        """
         Args:
-            assetName ([type]): [description]
-            assetShortName ([type]): [description]
+            assetName (str)
+            assetShortName (str)
         """
-        self._assetName = assetName
-        self._assetShortName = assetShortName
+        self.name = assetName
+        self.shortName = assetShortName
 
-    def tags( self ):
+    def tags( self ): #TODO
         """Some tags describing the asset.
-        return list of string
-        """
-        return self.tags
 
-    def group( self ):
-        """The group containing this asset.
-        return string
+        Returns:
+            list of str
         """
-        return self.group
+        pass
+
+    def group( self ): #TODO if online
+        """The group containing this asset.
+
+        Returns:
+            str
+        """
+         if not Ramses.instance:
+            raise Exception( "Ramses has to be instantiated first." )
+        # If we're online, ask the client
+        if Ramses.instance.online:
+            #TODO
+            return None
+
+         if self.folderPath == '':
+            print( "The given item has no folderPath." )
+            return None
+        if not os.path.isdir( self.folderPath ):
+            print( "The given item's folder was not found.\nThis is the path that was checked:\n" + self.folderPath )
+            return None
+
+        parentFolder = os.path.dirname( self.folderPath )
+        parentFolderName = os.path.basename( parentFolder )
+
+        if parentFolderName != '04-ASSETS':
+            return parentFolderName
+            
+        return None
 
     @staticmethod
-    def getFromPath( folderPath ):
+    def getFromPath( self, folderPath ):
         """Returns a RamAsset instance built using the given path.
         The path can be any file or folder path from the asset 
         (a version file, a preview file, etc)
@@ -47,7 +70,7 @@ class RamAsset( RamItem ):
         if not os.path.isdir( folderPath ):
             folderPath = Ramses.instance.currentProject.getAbsolutePath( folderPath )
             if not os.path.isdir( folderPath ):
-                log("The given folder could not be found")
+                log( "The given folder could not be found" )
                 return None
 
         folderName = os.path.baseName( folderPath )
@@ -63,8 +86,8 @@ class RamAsset( RamItem ):
             return None
 
         shortName = folderBlocks[ 2 ]
-        assetFolderPath = os.path.relpath(folderPath, Ramses.instance.currentProject.folderPath )
+        assetFolderPath = os.path.relpath( folderPath, Ramses.instance.currentProject.folderPath )
 
-        asset = RamAsset(assetName = shortName, assetShortName = shortName, folderPath = assetFolderPath)
+        asset = RamAsset( assetName = shortName, assetShortName = shortName, folderPath = assetFolderPath )
         return asset
 

@@ -1,6 +1,6 @@
 from .daemon_interface import RamDaemonInterface
-from .ramState import RamState
 from .ramSettings import RamSettings
+from .ramState import RamState
 
 
 class Ramses:
@@ -23,7 +23,7 @@ class Ramses:
             Exception
         """
         if Ramses.instance:
-            raise Exception("There cannot be more than one instance of Ramses. Ramses is a Singleton!")
+            raise Exception( "There cannot be more than one instance of Ramses. Ramses is a Singleton!" )
 
         self.__daemon = RamDaemonInterface()
         self.port = port
@@ -31,6 +31,7 @@ class Ramses:
         self._currentStep = None
         self._currentUser = None
         self._online = False
+        self.version = None
 
         Ramses.instance = self
 
@@ -74,6 +75,15 @@ class Ramses:
             bool
         """
         return self._online
+
+    @property
+    def version( self ): #TODO
+        """The current version of this API
+
+        Returns:
+            str
+        """
+        return self.version
 
     # PUBLIC
 
@@ -185,13 +195,5 @@ class Ramses:
 
         Args:
             RamSettings (RamSettings): settings
-        """
-        pass
-
-    def version( self ): #TODO
-        """The current version of this API
-
-        Returns:
-            str
         """
         pass

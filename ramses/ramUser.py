@@ -7,9 +7,9 @@ class RamUser( RamObject ):
     def __init__( self, userName, userShortName, userFolderPath="", role='STANDARD' ):
         """
         Args:
-            userName (str): [description]
-            userShortName (str): [description]
-            userFolderPath (str, optional): [description]. Defaults to "".
+            userName (str)
+            userShortName (str)
+            userFolderPath (str, optional): Defaults to "".
             role (str, optional): (Read-only) enumerated value. Defaults to 'STANDARD'.
                 'ADMIN', 'PROJECT_ADMIN', 'LEAD', or 'STANDARD'
         """
@@ -19,7 +19,7 @@ class RamUser( RamObject ):
         self._role = 'STANDARD'
 
     @property
-    def role( self ):
+    def role( self ):       # A verifier...
         """
         Returns:
             (Read-only) enumerated value: 'ADMIN', 'PROJECT_ADMIN', 'LEAD', or 'STANDARD'

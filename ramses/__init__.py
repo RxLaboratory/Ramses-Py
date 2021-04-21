@@ -22,8 +22,8 @@ def escapeRegEx( string ):
             result = result + char
     return result
 
-def log( message ):  
-    return print( message )
 
-    
+# Initialization
+Ramses.instance = None
+
 Ramses()

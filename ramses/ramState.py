@@ -21,7 +21,7 @@ class RamState( RamObject ):
         Returns:
             int
         """
-        return self.completionRatio
+        pass
 
     def color( self ): #TODO
         """The color for this state, [R, G, B] in the range [0, 255].
