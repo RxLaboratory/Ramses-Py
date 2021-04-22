@@ -31,14 +31,14 @@ class RamAsset( RamItem ):
         Returns:
             str
         """
-         if not Ramses.instance:
+        if not Ramses.instance:
             raise Exception( "Ramses has to be instantiated first." )
         # If we're online, ask the client
         if Ramses.instance.online:
             #TODO
             return None
 
-         if self.folderPath == '':
+        if self.folderPath == '':
             print( "The given item has no folderPath." )
             return None
         if not os.path.isdir( self.folderPath ):

@@ -1,6 +1,6 @@
 import socket
 import json
-from .logger import log
+from logger import log
 
 class RamDaemonInterface():
     """The Class used to communicate with the Ramses Daemon
@@ -82,9 +82,17 @@ class RamDaemonInterface():
         data = s.recv(bufsize)
         s.close()
 
-        obj = json.loads(data)
+        try:
+            obj = json.loads(data)
+        except:
+            log("Invalid reply data from the Ramses Daemon.")
+            obj = {
+                'accepted': False,
+                'success': False
+            }
+            return obj
 
-        if not obj['accepted']: log("Unknown query: " + obj['query'])
+        if not obj['accepted']: log("Unknown Ramses Daemon query: " + obj['query'])
         if not obj['success']: log("Warning: the Ramses Daemon could not reply to the query: " + obj['query'])       
         if obj['message']: log(obj['message'])
 
@@ -169,6 +177,17 @@ class RamDaemonInterface():
         if not self.__checkUser(): return self.__noUserReply('getCurrentProject')
         return self.__post( "getCurrentProject", 1024 )
 
+    def getPipes(self):
+        """Gets the list of the pipes for the current project
+
+        Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
+        
+        Returns: dict.
+        """
+
+        if not self.__checkUser(): return self.__noUserReply('getPipes')
+        return self.__post( "getPipes", 1048576 )
+
     def getProjects(self):
         """Gets the list of the projects
 
@@ -226,3 +245,8 @@ class RamDaemonInterface():
             "setCurrentProject",
             ('shortName', projectShortName)
             ) )
+
+
+di = RamDaemonInterface()
+print( di.getCurrentProject() )
+print( di.getPipes() )
