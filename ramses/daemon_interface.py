@@ -1,6 +1,6 @@
 import socket
 import json
-from logger import log
+from .logger import log
 
 class RamDaemonInterface():
     """The Class used to communicate with the Ramses Daemon

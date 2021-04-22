@@ -1,6 +1,6 @@
 import os
 
-from . import log
+from .logger import log
 from .ramItem import RamItem
 from .ramses import Ramses
 
@@ -73,7 +73,7 @@ class RamAsset( RamItem ):
                 log( "The given folder could not be found" )
                 return None
 
-        folderName = os.path.baseName( folderPath )
+        folderName = os.path.basename( folderPath )
 
         if not Ramses.instance._isRamsesItemFoldername( folderName ):
             log( "The given folder does not respect Ramses' naming convention" )
