@@ -5,3 +5,4 @@ ramses = Ramses.instance
 di = ramses.daemonInterface()
 print( di.getCurrentProject() )
 print( di.getPipes() )
+print( di.getSteps() )

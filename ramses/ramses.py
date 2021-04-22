@@ -1,5 +1,4 @@
 from .daemon_interface import RamDaemonInterface
-from .ramSettings import RamSettings
 from .ramState import RamState
 
 
@@ -31,12 +30,11 @@ class Ramses:
         self._currentStep = None
         self._currentUser = None
         self._online = False
-        self.version = None
 
         Ramses.instance = self
 
-        if connect:
-            self.launchClient( True )
+        # if connect:
+        #     self.launchClient( True )
 
     # PROPERTIES
 
@@ -75,15 +73,6 @@ class Ramses:
             bool
         """
         return self._online
-
-    @property
-    def version( self ): #TODO
-        """The current version of this API
-
-        Returns:
-            str
-        """
-        return self.version
 
     # PUBLIC
 
@@ -194,6 +183,14 @@ class Ramses:
         """
 
         Args:
-            RamSettings (RamSettings): settings
+            (RamSettings): settings
+        """
+        pass
+
+    def version( self ): #TODO
+        """The current version of this API
+
+        Returns:
+            str
         """
         pass

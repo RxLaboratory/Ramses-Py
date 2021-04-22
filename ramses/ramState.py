@@ -11,8 +11,7 @@ class RamState( RamObject ):
             stateShortName (str)
             completionRatio (float, optional): The ratio of completion of this status
         """
-        self.name = stateName
-        self.shortName = stateShortName
+        super().__init__( stateName, stateShortName )
         self.completionRatio = completionRatio
 
     def completionRatio( self ): #TODO

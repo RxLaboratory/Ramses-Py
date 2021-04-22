@@ -14,8 +14,8 @@ class RamAsset( RamItem ):
             assetName (str)
             assetShortName (str)
         """
-        self.name = assetName
-        self.shortName = assetShortName
+        super().__init__( assetName, assetShortName )
+
 
     def tags( self ): #TODO
         """Some tags describing the asset.
@@ -41,11 +41,11 @@ class RamAsset( RamItem ):
         if self.folderPath == '':
             print( "The given item has no folderPath." )
             return None
-        if not os.path.isdir( self.folderPath ):
-            print( "The given item's folder was not found.\nThis is the path that was checked:\n" + self.folderPath )
+        if not os.path.isdir( self._folderPath ):
+            print( "The given item's folder was not found.\nThis is the path that was checked:\n" + self._folderPath )
             return None
 
-        parentFolder = os.path.dirname( self.folderPath )
+        parentFolder = os.path.dirname( self._folderPath )
         parentFolderName = os.path.basename( parentFolder )
 
         if parentFolderName != '04-ASSETS':

@@ -1,3 +1,11 @@
+import os
+from datetime import datetime
+
+from .ramAsset import RamAsset
+from .ramses import Ramses
+from .ramShot import RamShot
+
+
 class RamStatus:
     """A state associated to a comment, the user who changed the state, etc."""
 
@@ -25,7 +33,7 @@ class RamStatus:
         self.user = user
 
         if not stateDate:
-            stateDate = datetime.datetime(year = 2020, month = 1, day = 1)
+            stateDate = datetime(year = 2020, month = 1, day = 1)
         self.date = stateDate
 
     @staticmethod

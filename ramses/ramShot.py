@@ -1,4 +1,7 @@
-from ramses.ramItem import RamItem
+import os
+
+from .ramses import Ramses
+from .ramItem import RamItem
 
 
 class RamShot( RamItem ):
@@ -10,8 +13,7 @@ class RamShot( RamItem ):
             shotName (str)
             shotShortName (str)
         """
-        self.name = shotName
-        self.shortName = shotShortName
+        super().__init__( shotName, shotShortName )
 
     def duration( self ): #TODO
         """The shot duration, in seconds

@@ -18,8 +18,7 @@ class RamProject( RamObject ):
             projectShortName (str)
             projectPath (str)
         """
-        self.name = projectName
-        self.shortName = projectShortName
+        super().__init__( projectName, projectShortName )
         self.folderPath = projectPath
 
     def absolutePath( self, relativePath ):
@@ -108,7 +107,7 @@ class RamProject( RamObject ):
         # Else check in the folders
         assetsFolderPath = self.folderPath + '/04-ASSETS'
         if not os.path.isdir( assetsFolderPath ):
-            raise Exception( "The asset folder for " + self.name + " (" + self.shortName + ") " + "could not be found." )
+            raise Exception( "The asset folder for " + self._name + " (" + self._shortName + ") " + "could not be found." )
 
         foundFiles = os.listdir( assetsFolderPath )
         assetGroups = []
@@ -137,10 +136,10 @@ class RamProject( RamObject ):
         # Else check in the folders
         shotsFolderPath = self.folderPath + '/05-SHOTS'
         if not os.path.isdir( shotsFolderPath ):
-            raise Exception( "The asset folder for " + self.name + " (" + self.shortName + ") " + "could not be found." )
+            raise Exception( "The asset folder for " + self._name + " (" + self._shortName + ") " + "could not be found." )
 
         if filter != "" and not "*" in filter: #User is looking for a specific shot: no need to parse through everything
-            foundShotPath = shotsFolderPath + '/' + self.shortName + '_S_' + filter
+            foundShotPath = shotsFolderPath + '/' + self._shortName + '_S_' + filter
             if not os.path.isdir( foundShotPath ):
                 print( "Shot " + filter + " was not found." )
                 return []

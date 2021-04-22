@@ -11,8 +11,8 @@ class RamStep( RamObject ):
             stepName (str)
             stepShortName (str)
         """
-        self.name = stepName
-        self.shortName = stepShortName
+        super().__init__( stepName, stepShortName )
+        self.fileType = None
 
     def commonFolderPath( self ): #TODO
         """The absolute path to the folder containing the common files for this step

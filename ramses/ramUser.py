@@ -13,10 +13,9 @@ class RamUser( RamObject ):
             role (str, optional): (Read-only) enumerated value. Defaults to 'STANDARD'.
                 'ADMIN', 'PROJECT_ADMIN', 'LEAD', or 'STANDARD'
         """
-        self.name = userName
-        self.shortName = userShortName
+        super().__init__( userName, userShortName )
         self.folderPath = userFolderPath
-        self._role = 'STANDARD'
+        self._role = role
 
     @property
     def role( self ):       # A verifier...
@@ -24,7 +23,7 @@ class RamUser( RamObject ):
         Returns:
             (Read-only) enumerated value: 'ADMIN', 'PROJECT_ADMIN', 'LEAD', or 'STANDARD'
         """
-        return self._role
+        return self.role
 
     def configPath( self ): #TODO
         """The path to the Config folder relative to the user folder
