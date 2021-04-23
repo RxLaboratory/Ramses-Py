@@ -39,7 +39,7 @@ class RamShot( RamItem ):
         if not Ramses.instance:
             raise Exception( "Ramses has to be instantiated first." )
         if not os.path.isdir( folderPath ):
-            folderPath = Ramses.instance.currentProject().getAbsolutePath( folderPath )  # A vérifier...
+            folderPath = Ramses.instance.currentProject().getAbsolutePath( folderPath )  # A vérifier... currentProject()
             if not os.path.isdir( folderPath ):
                 log( "The given folder could not be found" )
                 return None

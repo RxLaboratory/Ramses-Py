@@ -200,7 +200,10 @@ class Ramses:
         Returns:
             RamProject
         """
-        pass
+        for project in self.projects():
+            if project.shortName == projectShortName:
+                return project
+        return self.project()
 
     def projects( self ): #TODO
         """The list of available projects.
@@ -224,12 +227,29 @@ class Ramses:
                 return state
         return self.state() 
 
-    def states( self ): #TODO get the list from the client
+    def states( self ): #TODO get the list from the client  => A vérifier
         """The list of available states.
 
         Returns:
-            list of RamSate
+            list of RamState
         """
+        listFoundStates = []
+        # If online, ask the daemon
+        if not self._offline and self._daemon.online():
+            # Ask (the daemon returns a dict)
+            statesDict = self._daemon.getStates()
+
+            # Check if successful
+            if RamDaemonInterface.checkReply( statesDict ):
+                content = statesDict['content']
+                states = content['states']
+
+                for state in states:
+                    foundState = RamState( states['name'], states['shortname'], states['completionRatio'], states['color'] )
+                    listFoundStates.append(foundState)
+
+                return listFoundStates
+
         states = [
             RamState("No", "NO", 1.0),
             RamState("To Do", "TODO", 0.0),

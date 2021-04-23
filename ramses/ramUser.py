@@ -30,7 +30,7 @@ class RamUser( RamObject ):
         """
         return self._role
 
-    def configPath( self, absolute=False ): #TODO
+    def configPath( self, absolute=False ): 
         """The path to the Config folder
 
         Arguments:

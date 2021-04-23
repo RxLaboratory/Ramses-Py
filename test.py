@@ -2,6 +2,7 @@ from ramses import RamUser
 from ramses import RamItem
 from ramses import RamProject
 from ramses import RamShot
+from ramses import RamAsset
 from ramses import RamState
 from ramses import RamFileType
 from ramses import Ramses
@@ -50,12 +51,20 @@ def testProjectClass():
     print( proj.steps() )
 
 def testShotClass():
-    shot = RamShot( "ShotName", "ShotShortName" )
+    shot = RamShot( "ShotName", "ShotShortName" )  # Duration ? Status ?
 
     print( shot.name() )
     print( shot.shortName() )
     # print( shot.duration() )
     print( shot.getFromPath( "/home/user/duduf/Ramses/Users/Duduf" ) )
+
+def testAssetClass():
+    asset = RamAsset( "AssetName", "AssetShortName")  # Tags ? Group ? Status ?
+
+    print( asset.name() )
+    print( asset.shortName() )
+    print( asset.tags() )
+    print( asset.group() )
 
 def testStateClass():
     state = RamState( "Work in progress", "WIP", 50, [255, 0, 0])
@@ -75,7 +84,7 @@ def testFileType():
 def testRamsesMethods():
     ramses = Ramses.instance
     # print( ramses.currentUser() )
-    # print( ramses.currentStep() )
+    # print( ramses.currentStep() ) # => modification en cours
     # print( ramses.currentProject() )
 
 
@@ -83,6 +92,7 @@ def testRamsesMethods():
 # testItemClass()
 # testProjectClass()
 # testShotClass()
+testAssetClass()
 # testStateClass()
 # testFileType()
-testRamsesMethods()
+# testRamsesMethods()
