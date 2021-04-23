@@ -1,11 +1,22 @@
 # Python implementation
 
-## File structure
+## Classes
 
-- ramses
-    - __init__.py: imports all classes and instantiates a Ramses object
-    - daemon_interface.py: the RamDaemonInterface class
-    - ramses.py: the Ramses class
-    - ramobject.py: the RamObject class
-    - ramsettings.py: the RamSettings class
-    - etc.
+- [x] RamObject
+- [x] RamUser
+- [ ] RamState
+- [ ] RamFileType
+- [ ] RamItem
+- [ ] RamShot
+- [ ] RamAsset
+- [ ] RamStep
+- [ ] RamPipe
+- [ ] RamProject
+- [ ] Ramses
+
+## Doc 
+
+- [ ] Ajouter argument "role" au constructeur de RamUser && changer pour static constant
+- [ ] Ajouter le dossier config utilisateur dans le tree
+- [ ] Ajouter l'attribut static instance dans Ramses
+- [ ] changer RamStep.type pour RamStep.stepType
