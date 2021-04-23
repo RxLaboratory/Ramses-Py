@@ -14,9 +14,3 @@
 - [ ] RamProject
 - [ ] Ramses
 
-## Doc 
-
-- [ ] Ajouter argument "role" au constructeur de RamUser && changer pour static constant
-- [ ] Ajouter le dossier config utilisateur dans le tree
-- [ ] Ajouter l'attribut static instance dans Ramses
-- [ ] changer RamStep.type pour RamStep.stepType
