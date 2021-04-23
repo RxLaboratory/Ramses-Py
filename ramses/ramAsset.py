@@ -1,9 +1,8 @@
 import os
 
 from .logger import log
-from .ramItem import RamItem
 from .ramses import Ramses
-
+from .ramItem import RamItem
 
 class RamAsset( RamItem ):
     """A class representing an asset."""

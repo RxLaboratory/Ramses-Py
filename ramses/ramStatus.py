@@ -1,10 +1,7 @@
 import os
 from datetime import datetime
 
-from .ramAsset import RamAsset
 from .ramses import Ramses
-from .ramShot import RamShot
-
 
 class RamStatus:
     """A state associated to a comment, the user who changed the state, etc."""
@@ -37,7 +34,10 @@ class RamStatus:
         self.date = stateDate
 
     @staticmethod
-    def getFromPath( self, filePath ): 
+    def getFromPath( self, filePath ):
+        from .ramAsset import RamAsset
+        from .ramShot import RamShot
+
         """Returns a RamStatus instance built using the given file path.
 
         Args:

@@ -1,11 +1,13 @@
 import os
 import re
 
-from . import RamAsset, RamShot, escapeRegEx
 from .logger import log
 from .ramObject import RamObject
 from .ramses import Ramses
-from .ramStep import RamStep
+from .ramStep import RamStep, StepType
+from .ramAsset import RamAsset
+from .utils import escapeRegEx
+from .daemon_interface import RamDaemonInterface
 
 
 class RamProject( RamObject ):
@@ -19,7 +21,7 @@ class RamProject( RamObject ):
             projectPath (str)
         """
         super().__init__( projectName, projectShortName )
-        self.folderPath = projectPath
+        self._folderPath = projectPath
 
     def absolutePath( self, relativePath ):
         """Builds an absolute path from a path relative to the project path
@@ -47,10 +49,15 @@ class RamProject( RamObject ):
         if not isinstance( groupName, str ):
             raise TypeError( "Group name must be a str" )
 
-        # If we're online, ask the client
+        # If we're online, ask the client (return a dict)
         if Ramses.instance.online:
-            #TODO
-            return None
+            assetsDict = self._daemon.getAssets()
+            # check if successful
+            if RamDaemonInterface.checkReply( assetsDict ):
+                content = assetsDict['content']
+                assets = content['assets']
+                # attention : { } et non liste d'assets
+            return assets
         
         # Else check in the folders
         assetsFolderPath = self.folderPath + '/04-ASSETS'
@@ -143,7 +150,7 @@ class RamProject( RamObject ):
             if not os.path.isdir( foundShotPath ):
                 print( "Shot " + filter + " was not found." )
                 return []
-            return [RamShot(shotName = filter, folderPath = foundShotPath)]
+            return [RamShot( shotName = filter, folderPath = foundShotPath )]
 
         if "*" in filter and filter != "*": #Preparing regex for wildcards
             filter = escapeRegEx( filter )
@@ -170,7 +177,7 @@ class RamProject( RamObject ):
 
         return foundShots
 
-    def steps( self, typeStep=RamStep.ALL ): #TODO
+    def steps( self, stepType=StepType.ALL ): #TODO
         """Available steps in this project. Use type to filter the results.
             One of: RamStep.ALL, RamStep.ASSET_PODUCTION, RamStep.SHOT_PRODUCTION, RamStep.PRE_PRODUCTION, RamStep.PRODUCTION, RamStep.POST_PRODUCTION.
             RamStep.PRODUCTION represents a combination of SHOT and ASSET

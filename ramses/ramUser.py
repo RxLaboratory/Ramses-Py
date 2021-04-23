@@ -1,10 +1,16 @@
 from .ramObject import RamObject
+from .ramses import Ramses
 
+class UserRole():
+    STANDARD = 0
+    LEAD = 1
+    PROJECT_ADMIN = 2
+    ADMIN = 3
 
 class RamUser( RamObject ):
     """The class representing users."""
 
-    def __init__( self, userName, userShortName, userFolderPath="", role='STANDARD' ):
+    def __init__( self, userName, userShortName, userFolderPath="", role=UserRole.STANDARD ):
         """
         Args:
             userName (str)
@@ -14,29 +20,34 @@ class RamUser( RamObject ):
                 'ADMIN', 'PROJECT_ADMIN', 'LEAD', or 'STANDARD'
         """
         super().__init__( userName, userShortName )
-        self.folderPath = userFolderPath
+        self._folderPath = userFolderPath
         self._role = role
 
-    @property
-    def role( self ):       # A verifier...
+    def role( self ):
         """
         Returns:
             (Read-only) enumerated value: 'ADMIN', 'PROJECT_ADMIN', 'LEAD', or 'STANDARD'
         """
-        return self.role
+        return self._role
 
-    def configPath( self ): #TODO
-        """The path to the Config folder relative to the user folder
+    def configPath( self, absolute=False ): #TODO
+        """The path to the Config folder
+
+        Arguments:
+            absolute: bool
 
         Returns:
             str
         """
-        pass
+        path = Ramses.instance.settings().folderNames.userConfig
+        if absolute: path = self._folderPath + "/" + path
+        return path
 
-    def folderPath( self ): #TODO
+    def folderPath( self ):
         """The absolute path to the user folder
 
         Returns:
             str
         """
-        pass
+        return self._folderPath
+

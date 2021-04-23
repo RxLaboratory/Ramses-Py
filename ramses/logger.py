@@ -1,2 +1,2 @@
 def log( message ): #TODO
-    return print(message)
+    return print("Ramses says: " + message)

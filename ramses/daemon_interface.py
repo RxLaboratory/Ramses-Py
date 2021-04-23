@@ -245,8 +245,3 @@ class RamDaemonInterface():
             "setCurrentProject",
             ('shortName', projectShortName)
             ) )
-
-
-di = RamDaemonInterface()
-print( di.getCurrentProject() )
-print( di.getPipes() )

@@ -61,7 +61,7 @@ class RamItem( RamObject ):
         Returns:
             str
         """
-        pass
+        return self._folderPath + "/" + step
 
     def latestVersion( self, step, resource="", stateId="wip"): #TODO if online
         """Returns the highest version number for the given state (wip, pub…).
@@ -364,7 +364,6 @@ class RamItem( RamObject ):
 
         return filePath
 
-        
     def isPublished( self, step, resource="" ):
         """Convenience function to check if there are published files in the publish folder.
             Equivalent to len(self.publishedFilePaths(step, resource)) > 0

@@ -1,5 +1,7 @@
+from .logger import log
 from .daemon_interface import RamDaemonInterface
 from .ramState import RamState
+from .ramSettings import RamSettings
 
 
 class Ramses:
@@ -24,13 +26,14 @@ class Ramses:
         if Ramses.instance:
             raise Exception( "There cannot be more than one instance of Ramses. Ramses is a Singleton!" )
 
-        self.__daemon = RamDaemonInterface()
-        self.port = port
-        self._currentProject = None
-        self._currentStep = None
-        self._currentUser = None
-        self._online = False
+        self._daemon = RamDaemonInterface()
+        self._settings = RamSettings()
+        self._offline = False # If True, never try to connect again
 
+        # autoConnect
+        if self._settings.autoConnect:
+            self.connect()
+        
         Ramses.instance = self
 
         # if connect:
@@ -38,34 +41,80 @@ class Ramses:
 
     # PROPERTIES
 
-    @property
     def currentProject( self ):
         """The current project.
 
         Returns:
             RamProject or None
         """
-        return self._currentProject
 
-    @property
-    def currentStep( self ):
-        """The current project.
+        # If online, ask the daemon
+        if not self._offline and self._daemon.online():
+            # Ask (the daemon returns a dict)
+            projDict = self._daemon.getCurrentProject()
+            # Check if successful
+            if RamDaemonInterface.checkReply( projDict ):
+                content = projDict['content']
 
-        Returns:
-            RamStep or None
-        """
-        return self._currentStep
+                proj = RamProject( content['name'], content['shortname'], content['width'],content['height'], content['framerate'], content['folder'])
+                return proj
 
-    @property
+        return None
+
+        #TODO if offline
+
+   # def currentStep( self ):  # A revoir
+    #    """The current project.
+#
+ #       Returns:
+  #          RamStep or None
+   #     """
+#
+ #       # If online, ask the daemon
+  #      if not self._offline and self._daemon.online():
+   #         # Ask (the daemon returns a dict)
+    #        stepDict = self._daemon.getSteps()
+     #       # Check if successful
+      #      if RamDaemonInterface.checkReply( stepDict ):
+       #         content = stepDict['content']
+        #        steps = content['steps']
+#
+ #               step = RamStep( steps['name'], steps['shortname'], steps['folder'], steps['type'] )
+  #              return step
+
+   #     return None
+
+    #    #TODO if offline
+
     def currentUser( self ):
         """The current user.
 
         Returns:
             RamUser or None
         """
-        return self._currentUser
+     
+        # If online, ask the daemon
+        if not self._offline and self._daemon.online():
+            # Ask (the daemon returns a dict)
+            userDict = self._daemon.getCurrentUser()
+        
+            # Check if successful
+            if RamDaemonInterface.checkReply( userDict ):
+                content = userDict['content']
 
-    @property
+                # check role
+                role = RamUser.STANDARD
+                if content['role'] == 'LEAD': role = RamUser.LEAD
+                elif content['role'] == 'PROJECT_ADMIN': role = RamUser.PROJECT_ADMIN
+                elif content['role'] == 'ADMIN': role = RamUser.ADMIN
+
+                user = RamUser( content['name'], content['shortName'], content['folderPath'], role )
+                return user
+        
+        return None
+
+        #TODO if offline
+
     def online( self ):
         """True if connected to the Daemon and the Daemon is responding.
 
@@ -103,13 +152,28 @@ class Ramses:
         """
         pass
 
-    def connect( self ): #TODO
+    def connect( self ):
         """Checks Daemon availability and initiates the connection. Returns success.
 
         Returns:
             bool 
         """
-        pass
+
+        log("Checking if the Daemon is available")
+        # Check if already online
+        daemon = self._daemon
+        if daemon.online():
+            if daemon.getCurrentUser():
+                return True
+            else:
+                dameon.raiseWindow()
+                log("Please, login!")
+                return False
+        else:
+            # TODO launch client
+            # wait a few secs
+            # if not self.connect()
+            self._offline = True
 
     def disconnect( self ): #TODO
         """Gets back to offline mode.
@@ -179,13 +243,13 @@ class Ramses:
         """
         pass
 
-    def settings( self, autoConnect=True, ramsesClientPath="", ramsesClientPort=18185, folderPath="",  filePath="" ): #TODO
+    def settings( self ): #TODO
         """
 
         Args:
             (RamSettings): settings
         """
-        pass
+        return self._settings
 
     def version( self ): #TODO
         """The current version of this API
@@ -194,3 +258,5 @@ class Ramses:
             str
         """
         pass
+
+
