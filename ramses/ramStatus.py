@@ -34,7 +34,7 @@ class RamStatus:
         self.date = stateDate
 
     @staticmethod
-    def getFromPath( self, filePath ):
+    def getFromPath( filePath ):
         from .ramAsset import RamAsset
         from .ramShot import RamShot
 

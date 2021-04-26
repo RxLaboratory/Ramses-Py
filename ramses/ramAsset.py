@@ -7,13 +7,15 @@ from .ramItem import RamItem
 class RamAsset( RamItem ):
     """A class representing an asset."""
 
-    def __init__( self, assetName, assetShortName ):
+    def __init__( self, assetName, assetShortName, assetFolder="" ):
         """
         Args:
             assetName (str)
             assetShortName (str)
+            assetFolder (str)
         """
         super().__init__( assetName, assetShortName )
+        self._assetFolder = assetFolder
 
 
     def tags( self ): #TODO
@@ -53,7 +55,7 @@ class RamAsset( RamItem ):
         return None
 
     @staticmethod
-    def getFromPath( self, folderPath ):
+    def getFromPath( folderPath ):
         """Returns a RamAsset instance built using the given path.
         The path can be any file or folder path from the asset 
         (a version file, a preview file, etc)

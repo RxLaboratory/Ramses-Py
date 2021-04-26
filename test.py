@@ -1,11 +1,5 @@
-from ramses import RamUser
-from ramses import RamItem
-from ramses import RamProject
-from ramses import RamShot
-from ramses import RamAsset
-from ramses import RamState
-from ramses import RamFileType
-from ramses import Ramses
+from ramses import (RamAsset, RamFileType, RamItem, RamProject, Ramses,
+                    RamShot, RamState, RamUser)
 
 
 def testUserClass():
@@ -43,9 +37,9 @@ def testProjectClass():
 
     print( proj.name() )
     print( proj.shortName() )
-    print( proj.folderPath ) 
+    print( proj._folderPath )
     # print( proj.absolutePath( relativePath ) )
-    print( proj.assets() )
+    print( proj.assets("Sets") )
     print( proj.assetGroups() )
     print( proj.shots() )
     print( proj.steps() )
@@ -90,9 +84,9 @@ def testRamsesMethods():
 
 # testUserClass()
 # testItemClass()
-# testProjectClass()
+testProjectClass()
 # testShotClass()
-testAssetClass()
+# testAssetClass()
 # testStateClass()
 # testFileType()
 # testRamsesMethods()

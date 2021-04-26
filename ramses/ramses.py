@@ -14,7 +14,7 @@ class Ramses:
 
     instance = None
 
-    def __init__( self, port = 18185, connect = True ):
+    def __init__(self, port=18185, connect=True):
         """
         Args:
             port (int, optional): Defaults to 18185.
@@ -24,16 +24,16 @@ class Ramses:
             Exception
         """
         if Ramses.instance:
-            raise Exception( "There cannot be more than one instance of Ramses. Ramses is a Singleton!" )
+            raise Exception("There cannot be more than one instance of Ramses. Ramses is a Singleton!")
 
         self._daemon = RamDaemonInterface()
         self._settings = RamSettings()
-        self._offline = False # If True, never try to connect again
+        self._offline = False  # If True, never try to connect again
 
         # autoConnect
         if self._settings.autoConnect:
             self.connect()
-        
+
         Ramses.instance = self
 
         # if connect:
@@ -41,7 +41,7 @@ class Ramses:
 
     # PROPERTIES
 
-    def currentProject( self ):
+    def currentProject(self):
         """The current project.
 
         Returns:
@@ -53,69 +53,74 @@ class Ramses:
             # Ask (the daemon returns a dict)
             projDict = self._daemon.getCurrentProject()
             # Check if successful
-            if RamDaemonInterface.checkReply( projDict ):
+            if RamDaemonInterface.checkReply(projDict):
                 content = projDict['content']
 
-                proj = RamProject( content['name'], content['shortname'], content['width'],content['height'], content['framerate'], content['folder'])
+                proj = RamProject(content['name'], content['shortname'], content['width'], content['height'],
+                                  content['framerate'], content['folder'])
                 return proj
 
         return None
 
-        #TODO if offline
+        # TODO if offline
 
-   # def currentStep( self ):  # A revoir
-    #    """The current project.
-#
- #       Returns:
-  #          RamStep or None
-   #     """
-#
- #       # If online, ask the daemon
-  #      if not self._offline and self._daemon.online():
-   #         # Ask (the daemon returns a dict)
-    #        stepDict = self._daemon.getSteps()
-     #       # Check if successful
-      #      if RamDaemonInterface.checkReply( stepDict ):
-       #         content = stepDict['content']
-        #        steps = content['steps']
-#
- #               step = RamStep( steps['name'], steps['shortname'], steps['folder'], steps['type'] )
-  #              return step
 
-   #     return None
+    def currentStep(self):  # A revoir
+        """The current project.
 
-    #    #TODO if offline
+       Returns:
+          RamStep or None
+        """
 
-    def currentUser( self ):
+        # If online, ask the daemon
+        if not self._offline and self._daemon.online():
+            # Ask (the daemon returns a dict)
+            stepDict = self._daemon.getSteps()
+            # Check if successful
+            if RamDaemonInterface.checkReply(stepDict):
+                content = stepDict['content']
+                steps = content['steps']
+
+                step = RamStep(steps['name'], steps['shortname'], steps['folder'], steps['type'])
+                return step
+
+        return None
+
+        # TODO if offline
+
+    def currentUser(self):
         """The current user.
 
         Returns:
             RamUser or None
         """
-     
+
         # If online, ask the daemon
         if not self._offline and self._daemon.online():
             # Ask (the daemon returns a dict)
             userDict = self._daemon.getCurrentUser()
-        
+
             # Check if successful
-            if RamDaemonInterface.checkReply( userDict ):
+            if RamDaemonInterface.checkReply(userDict):
                 content = userDict['content']
 
                 # check role
                 role = RamUser.STANDARD
-                if content['role'] == 'LEAD': role = RamUser.LEAD
-                elif content['role'] == 'PROJECT_ADMIN': role = RamUser.PROJECT_ADMIN
-                elif content['role'] == 'ADMIN': role = RamUser.ADMIN
+                if content['role'] == 'LEAD':
+                    role = RamUser.LEAD
+                elif content['role'] == 'PROJECT_ADMIN':
+                    role = RamUser.PROJECT_ADMIN
+                elif content['role'] == 'ADMIN':
+                    role = RamUser.ADMIN
 
-                user = RamUser( content['name'], content['shortName'], content['folderPath'], role )
+                user = RamUser(content['name'], content['shortName'], content['folderPath'], role)
                 return user
-        
+
         return None
 
-        #TODO if offline
+        # TODO if offline
 
-    def online( self ):
+    def online(self):
         """True if connected to the Daemon and the Daemon is responding.
 
         Returns:
@@ -123,9 +128,8 @@ class Ramses:
         """
         return self._online
 
-    # PUBLIC
-
-    def alternativeFolderPaths( self ): #TODO
+        # PUBLIC
+    def alternativeFolderPaths(self):  # TODO
         """A list of alternative absolute paths to the main Ramses folder.
         Missing files will be looked for in these paths (and copied to the main path if available),
         and they will be used if the main path is not available.
@@ -134,16 +138,16 @@ class Ramses:
             str list
         """
         pass
-        
-    def backupFolderPath( self ): #TODO
+
+    def backupFolderPath(self):  # TODO
         """A copy of the main folder where all files are stored.
 
         Returns:
             str
         """
-        pass 
+        pass
 
-    def folderPath( self ): #TODO
+    def folderPath(self):  # TODO
         """The absolute path to main Ramses folder, containing projects by default,
         config files, user folders, admin files…
 
@@ -152,11 +156,11 @@ class Ramses:
         """
         pass
 
-    def connect( self ):
+    def connect(self):
         """Checks Daemon availability and initiates the connection. Returns success.
 
         Returns:
-            bool 
+            bool
         """
 
         log("Checking if the Daemon is available")
@@ -166,7 +170,7 @@ class Ramses:
             if daemon.getCurrentUser():
                 return True
             else:
-                dameon.raiseWindow()
+                daemon.raiseWindow()
                 log("Please, login!")
                 return False
         else:
@@ -175,7 +179,7 @@ class Ramses:
             # if not self.connect()
             self._offline = True
 
-    def disconnect( self ): #TODO
+    def disconnect(self):  # TODO
         """Gets back to offline mode.
 
         Returns:
@@ -183,7 +187,7 @@ class Ramses:
         """
         pass
 
-    def daemonInterface ( self ):
+    def daemonInterface(self):
         """The Daemon interface.
 
         Returns:
@@ -191,11 +195,11 @@ class Ramses:
         """
         return self.__daemon
 
-    def project( self, projectShortName ): #TODO
+    def project(self, projectShortName):  # TODO
         """Gets a specific project.
 
         Args:
-            projectShortName (str): projectShortName        
+            projectShortName (str): projectShortName
 
         Returns:
             RamProject
@@ -205,7 +209,7 @@ class Ramses:
                 return project
         return self.project()
 
-    def projects( self ): #TODO
+    def projects(self):  # TODO
         """The list of available projects.
 
         Returns:
@@ -213,7 +217,7 @@ class Ramses:
         """
         pass
 
-    def state( self, stateShortName="WIP" ):
+    def state(self, stateShortName="WIP"):
         """Gets a specific state.
 
         Args:
@@ -225,9 +229,9 @@ class Ramses:
         for state in self.states():
             if state.shortName == stateShortName:
                 return state
-        return self.state() 
+        return self.state()
 
-    def states( self ): #TODO get the list from the client  => A vérifier
+    def states(self):  # TODO get the list from the client  => A vérifier
         """The list of available states.
 
         Returns:
@@ -240,12 +244,12 @@ class Ramses:
             statesDict = self._daemon.getStates()
 
             # Check if successful
-            if RamDaemonInterface.checkReply( statesDict ):
+            if RamDaemonInterface.checkReply(statesDict):
                 content = statesDict['content']
                 states = content['states']
 
                 for state in states:
-                    foundState = RamState( states['name'], states['shortname'], states['completionRatio'], states['color'] )
+                    foundState = RamState(states['name'], states['shortname'], states['completionRatio'], states['color'])
                     listFoundStates.append(foundState)
 
                 return listFoundStates
@@ -258,12 +262,12 @@ class Ramses:
         ]
         return states
 
-    def showClient( self ): #TODO
+    def showClient(self):  # TODO
         """Raises the Ramses Client window, launches the client if it is not already running.
         """
         pass
 
-    def settings( self ): #TODO
+    def settings(self):  # TODO
         """
 
         Args:
@@ -271,12 +275,10 @@ class Ramses:
         """
         return self._settings
 
-    def version( self ): #TODO
+    def version(self):  # TODO
         """The current version of this API
 
         Returns:
             str
         """
         pass
-
-

@@ -6,6 +6,7 @@ from .ramObject import RamObject
 from .ramses import Ramses
 from .ramStep import RamStep, StepType
 from .ramAsset import RamAsset
+from .ramShot import RamShot
 from .utils import escapeRegEx
 from .daemon_interface import RamDaemonInterface
 
@@ -22,6 +23,7 @@ class RamProject( RamObject ):
         """
         super().__init__( projectName, projectShortName )
         self._folderPath = projectPath
+        self._daemon = RamDaemonInterface()
 
     def absolutePath( self, relativePath ):
         """Builds an absolute path from a path relative to the project path
@@ -32,9 +34,9 @@ class RamProject( RamObject ):
         Returns:
             str
         """
-        return self.folderPath + '/' + relativePath
+        return self._folderPath + '/' + relativePath
 
-    def assets( self, groupName="" ):  #TODO if online
+    def assets( self, groupName="" ):  #TODO if online à vérifier
         """Available assets in this project and group.
         If groupName is an empty string, returns all assets.
 
@@ -49,21 +51,29 @@ class RamProject( RamObject ):
         if not isinstance( groupName, str ):
             raise TypeError( "Group name must be a str" )
 
+        groupsToCheck = []
+        foundAssets = []
+        foundFiles = []
+
         # If we're online, ask the client (return a dict)
         if Ramses.instance.online:
             assetsDict = self._daemon.getAssets()
             # check if successful
             if RamDaemonInterface.checkReply( assetsDict ):
                 content = assetsDict['content']
-                assets = content['assets']
-                # attention : { } et non liste d'assets
-            return assets
-        
+                foundFiles = content['assets']
+                if groupName == "":
+                    return foundFiles
+                else:
+                    for files in foundFiles:
+                        log( "Checking this group: " + str(files) )
+                        if files.get("group") == groupName:
+                            foundAssets.append(files)
+                    return foundAssets
+
         # Else check in the folders
-        assetsFolderPath = self.folderPath + '/04-ASSETS'
-        groupsToCheck = []
-        foundAssets = []
-        foundFiles = []
+        assetsFolderPath = self._folderPath + '/04-ASSETS'
+
 
         if groupName == "": #List all assets and groups found at the root
             foundFiles = os.listdir( assetsFolderPath )
@@ -73,7 +83,7 @@ class RamProject( RamObject ):
                     if not foundFile.split( '_' )[1] == 'A': continue
                     foundAssetName = foundFile.split( '_' )[2]
                     foundAssetPath = "04-ASSETS/" + foundFile
-                    foundAsset = RamAsset(assetName = foundAssetName, assetShortName = foundAssetName, folderPath = foundAssetPath )
+                    foundAsset = RamAsset(assetName = foundAssetName, assetShortName = foundAssetName, assetFolder = foundAssetPath )
                     foundAssets.append( foundAsset )
                 else:
                     groupsToCheck.append( foundFile )
@@ -92,7 +102,7 @@ class RamProject( RamObject ):
                 if not foundFile.split( '_' )[1] == 'A': continue
                 foundAssetName = foundFile.split( '_' )[2]
                 foundAssetPath = "04-ASSETS/" + group + "/" + foundFile
-                foundAsset = RamAsset( assetName = foundAssetName, assetShortName = foundAssetName, folderPath = foundAssetPath )
+                foundAsset = RamAsset( assetName = foundAssetName, assetShortName = foundAssetName, assetFolder = foundAssetPath )
                 foundAssets.append( foundAsset )
         
         return foundAssets
@@ -112,7 +122,7 @@ class RamProject( RamObject ):
             return None
 
         # Else check in the folders
-        assetsFolderPath = self.folderPath + '/04-ASSETS'
+        assetsFolderPath = self._folderPath + '/04-ASSETS'
         if not os.path.isdir( assetsFolderPath ):
             raise Exception( "The asset folder for " + self._name + " (" + self._shortName + ") " + "could not be found." )
 
@@ -141,7 +151,7 @@ class RamProject( RamObject ):
             return None
 
         # Else check in the folders
-        shotsFolderPath = self.folderPath + '/05-SHOTS'
+        shotsFolderPath = self._folderPath + '/05-SHOTS'
         if not os.path.isdir( shotsFolderPath ):
             raise Exception( "The asset folder for " + self._name + " (" + self._shortName + ") " + "could not be found." )
 

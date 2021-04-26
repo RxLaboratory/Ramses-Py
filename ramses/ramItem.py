@@ -48,7 +48,7 @@ class RamItem( RamObject ):
         currentVersionPath = self._folderPath + '/' + currentVersionPath
         currentVersionPath = Ramses.instance.currentProject.getAbsolutePath( currentVersionPath )
 
-        currentStatus = RamStatus.getFromPath( self, currentVersionPath )
+        currentStatus = RamStatus.getFromPath( currentVersionPath )
 
         return currentStatus
 
