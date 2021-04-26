@@ -245,3 +245,14 @@ class RamDaemonInterface():
             "setCurrentProject",
             ('shortName', projectShortName)
             ) )
+
+    def getCurrentUser(self):
+        """Gets the current user
+
+        Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
+        
+        Returns: dict.
+        """
+
+        if not self.__checkUser(): return self.__noUserReply('getCurrentUser')
+        return self.__post( "getCurrentUser", 1024 )
