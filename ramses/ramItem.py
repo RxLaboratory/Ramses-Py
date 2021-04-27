@@ -52,7 +52,9 @@ class RamItem( RamObject ):
 
         return currentStatus
 
-    def folderPath( self, step="" ): #TODO
+    # Do not document "type" and "assetGroup" arguments, they should stay hidden
+    # (not needed in derived classes RamShot.folderPath() and RamAsset.folderPath())
+    def folderPath( self, itemType, step="", assetGroup="" ): #TODO
         """The absolute path to the folder containing the asset, or to the step subfolder if provided
 
         Args:
@@ -61,7 +63,14 @@ class RamItem( RamObject ):
         Returns:
             str
         """
-        return self._folderPath + "/" + step
+
+        # NOTE :
+        # if online: demander au démon
+        # sinon:
+            # if itemType == 'SHOT' -> construire chemin d'un shot
+            # if itemType == 'ASSET -> construire le chemin en prenant en compte assetgroup
+
+        pass
 
     def latestVersion( self, step, resource="", stateId="wip"): #TODO if online
         """Returns the highest version number for the given state (wip, pub…).

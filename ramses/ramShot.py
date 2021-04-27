@@ -62,3 +62,8 @@ class RamShot( RamItem ):
 
         shot = RamShot( shotName = shortName, folderPath = shotFolderPath )
         return shot
+
+    # Hidden and not documented: documented in RamItem.folderPath()
+    def folderPath( self, step="" ):
+        """Re-implemented from RamItem to pass it the type"""
+        return super().folderPath('SHOT', step)
