@@ -14,16 +14,51 @@ from .daemon_interface import RamDaemonInterface
 class RamProject( RamObject ):
     """A project handled by Ramses. Projects contains general items, assets and shots."""
 
-    def __init__( self, projectName, projectShortName, projectPath ):
+    def __init__( self, projectName, projectShortName, projectPath, width, height, framerate ):
         """
         Args:
             projectName (str)
             projectShortName (str)
             projectPath (str)
+            width (int)
+            height (int)
+            framerate (float)
         """
         super().__init__( projectName, projectShortName )
         self._folderPath = projectPath
         self._daemon = RamDaemonInterface()
+        self._width = width
+        self._height = height
+        self._framerate = framerate
+
+    def width( self ): #TODO
+        """
+        Returns:
+            int
+        """
+        # if not Ramses.instance:
+        #     raise Exception( "Ramses has to be instantiated first." )
+        # # If we're online, ask the client
+        # if Ramses.instance.online:
+        #     # TODO ask the client
+        #     return None
+
+        return self._width
+
+    def height( self ): #TODO
+        """
+        Returns:
+            int
+        """
+        return self._height
+
+    def framerate( self ): #TODO
+        """
+        Returns:
+            float
+        """
+        return self._framerate
+
 
     def absolutePath( self, relativePath ):
         """Builds an absolute path from a path relative to the project path
@@ -53,7 +88,6 @@ class RamProject( RamObject ):
 
         groupsToCheck = []
         foundAssets = []
-        foundFiles = []
 
         # If we're online, ask the client (return a dict)
         if Ramses.instance.online:

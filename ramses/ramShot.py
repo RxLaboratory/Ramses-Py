@@ -1,20 +1,21 @@
 import os
 
 from .logger import log
-from .ramses import Ramses
 from .ramItem import RamItem
+from .ramses import Ramses
 
 
 class RamShot( RamItem ):
     """A shot"""
 
-    def __init__( self, shotName, shotShortName ):
+    def __init__( self, shotName, shotShortName, duration=0.0 ):
         """
         Args:
             shotName (str)
             shotShortName (str)
         """
         super().__init__( shotName, shotShortName )
+        self._duration = duration
 
     def duration( self ):
         """The shot duration, in seconds
@@ -39,7 +40,7 @@ class RamShot( RamItem ):
         if not Ramses.instance:
             raise Exception( "Ramses has to be instantiated first." )
         if not os.path.isdir( folderPath ):
-            folderPath = Ramses.instance.currentProject().getAbsolutePath( folderPath )  # A vérifier... currentProject()
+            folderPath = Ramses.instance.currentProject().absolutePath( folderPath )
             if not os.path.isdir( folderPath ):
                 log( "The given folder could not be found" )
                 return None
@@ -59,10 +60,11 @@ class RamShot( RamItem ):
         shortName = folderBlocks[ 2 ]
         shotFolderPath = os.path.relpath( folderPath, Ramses.instance.currentProject.folderPath )
 
-        shot = RamShot( shotName = shortName, folderPath = shotFolderPath )
+        shot = RamShot( shotName = shortName, folder = shotFolderPath )
+        print("**********************")
         return shot
 
     # Hidden and not documented: documented in RamItem.folderPath()
-    def folderPath( self, step="" ):
+    def folderPath( self, step="" ):   # def folderPath( self, itemType='SHOT', step="", assetGroup=None ):
         """Re-implemented from RamItem to pass it the type"""
         return super().folderPath('SHOT', step)

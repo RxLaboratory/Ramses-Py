@@ -93,6 +93,6 @@ class RamAsset( RamItem ):
         return asset
 
     # Hidden and not documented: documented in RamItem.folderPath()
-    def folderPath( self, step="" ):
+    def folderPath( self, step="" ):    # def folderPath( self, itemType='ASSET', step="", assetGroup=None  ):
         """Re-implemented from RamItem to pass it the type and group name"""
         return super().folderPath('ASSET', step, self.group())

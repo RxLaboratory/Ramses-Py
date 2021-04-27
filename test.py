@@ -1,5 +1,5 @@
 from ramses import (RamAsset, RamFileType, RamItem, RamProject, Ramses,
-                    RamShot, RamState, RamUser)
+                    RamShot, RamState, RamUser, RamStep)
 
 
 def testUserClass():
@@ -33,7 +33,7 @@ def testItemClass():
     # print( item.status( step ) )
 
 def testProjectClass():
-    proj = RamProject( "ProjectName", "ProjectShortName", "/home/user/duduf/Ramses/Users/Duduf" )
+    proj = RamProject( "ProjectName", "ProjectShortName", "/home/user/duduf/Ramses/Users/Duduf", 1920, 1080, 5.8 )
 
     print( proj.name() )
     print( proj.shortName() )
@@ -45,12 +45,13 @@ def testProjectClass():
     print( proj.steps() )
 
 def testShotClass():
-    shot = RamShot( "ShotName", "ShotShortName" )  # Duration ? Status ?
+    shot = RamShot( "ShotName", "ShotShortName", "5.38" )  # Duration ? Status ? Folder ?
 
     print( shot.name() )
     print( shot.shortName() )
-    # print( shot.duration() )
-    print( shot.getFromPath( "/home/user/duduf/Ramses/Users/Duduf" ) )
+    print( shot.duration() )
+    print( shot.getFromPath( "/home/user/duduf/Ramses/Users/Duduf/" ) )
+    print( shot.folderPath())
 
 def testAssetClass():
     asset = RamAsset( "AssetName", "AssetShortName")  # Tags ? Group ? Status ?
@@ -80,13 +81,29 @@ def testRamsesMethods():
     # print( ramses.currentUser() )
     # print( ramses.currentStep() ) # => modification en cours
     # print( ramses.currentProject() )
+    print( ramses.states() )
+
+def testStepClass():
+    step = RamStep( "NameStep", "ShortNameStep" )
+
+    print( step.name() )
+    print( step.shortName() )
+    print( step.commonFolderPath() )
+    print( step.templatesFolderPath() )
+    print( step.stepType() )
+    print( step.getFromPath( "folder") )
+
 
 
 # testUserClass()
-testItemClass()
-# testProjectClass()
+# testItemClass()
+testProjectClass()
 # testShotClass()
 # testAssetClass()
 # testStateClass()
 # testFileType()
 # testRamsesMethods()
+# testStepClass()
+
+
+

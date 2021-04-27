@@ -57,8 +57,8 @@ class Ramses:
             if RamDaemonInterface.checkReply(projDict):
                 content = projDict['content']
 
-                proj = RamProject(content['name'], content['shortname'], content['width'], content['height'],
-                                  content['framerate'], content['folder'])
+                proj = RamProject(content['name'], content['shortName'], content['folder'], content['width'],
+                                  content['height'], content['framerate'])
                 return proj
 
         return None
@@ -69,7 +69,7 @@ class Ramses:
         from .ramStep import RamStep
         """The current project.
 
-       Returns:
+        Returns:
           RamStep or None
         """
 
@@ -82,7 +82,7 @@ class Ramses:
                 content = stepDict['content']
                 steps = content['steps']
 
-                step = RamStep(steps['name'], steps['shortname'], steps['folder'], steps['type'])
+                step = RamStep(steps['name'], steps['shortName'], steps['folder'], steps['type'])
                 return step
 
         return None
