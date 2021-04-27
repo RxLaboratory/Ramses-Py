@@ -2,6 +2,7 @@ from .logger import log
 from .daemon_interface import RamDaemonInterface
 from .ramState import RamState
 from .ramSettings import RamSettings
+from .ramProject import RamProject
 
 
 class Ramses:
@@ -64,7 +65,6 @@ class Ramses:
 
         # TODO if offline
 
-
     def currentStep(self):  # A revoir
         """The current project.
 
@@ -96,7 +96,7 @@ class Ramses:
         """
 
         # If online, ask the daemon
-        if not self._offline and self._daemon.online():
+        if not self._offline and self.connect():
             # Ask (the daemon returns a dict)
             userDict = self._daemon.getCurrentUser()
 
@@ -126,9 +126,10 @@ class Ramses:
         Returns:
             bool
         """
-        return self._online
+        return not self._offline
 
         # PUBLIC
+    
     def alternativeFolderPaths(self):  # TODO
         """A list of alternative absolute paths to the main Ramses folder.
         Missing files will be looked for in these paths (and copied to the main path if available),
@@ -227,38 +228,39 @@ class Ramses:
             RamState
         """
         for state in self.states():
-            if state.shortName == stateShortName:
+            if state.shortName() == stateShortName():
                 return state
-        return self.state()
+        return None
 
-    def states(self):  # TODO get the list from the client  => A vérifier
+    def states(self):
         """The list of available states.
 
         Returns:
             list of RamState
         """
-        listFoundStates = []
+        newStateList = []
+
         # If online, ask the daemon
-        if not self._offline and self._daemon.online():
+        if not self._offline and self.connect():
             # Ask (the daemon returns a dict)
-            statesDict = self._daemon.getStates()
+            replyDict = self._daemon.getStates()
 
             # Check if successful
-            if RamDaemonInterface.checkReply(statesDict):
-                content = statesDict['content']
-                states = content['states']
+            if RamDaemonInterface.checkReply(replyDict):
+                contentDict = statesDict['content']
+                statesDict = contentDict['states']
 
-                for state in states:
-                    foundState = RamState(states['name'], states['shortname'], states['completionRatio'], states['color'])
-                    listFoundStates.append(foundState)
+                for state in statesDict:
+                    newState = RamState(state['name'], state['shortname'], state['completionRatio'], state['color'])
+                    newStateList.append(newState)
 
-                return listFoundStates
+                return newStateList
 
         states = [
-            RamState("No", "NO", 1.0),
-            RamState("To Do", "TODO", 0.0),
-            RamState("Work in progress", "WIP", 0.2),
-            RamState("OK", "OK", 1.0),
+            RamState("No", "NO", 1.0, [25,25,25]), # Very dark gray
+            RamState("To Do", "TODO", 0.0, [85, 170, 255]), # Blue
+            RamState("Work in progress", "WIP", 0.5,  [255,255,127]), # Light Yellow
+            RamState("OK", "OK", 1.0, [0, 170, 0]), # Green
         ]
         return states
 

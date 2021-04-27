@@ -14,6 +14,9 @@
 - [ ] RamProject (assets : ok)
 - [ ] Ramses
 
+## Refactor
 
+- [ ] Voir si on peut remplace [R,G,B] pour les couleurs par une classe couleur de python (commune à python 2 et 3) (ou en créer une sinon ?)
+- [ ] Remplacer `if not self._offline and self._daemon.online():` par `if not self._offline and self.connect():`
 
 ## Attention : currentStep (dans ramses.py) et getcurrentStep (dans ramStep.py) à revoir
