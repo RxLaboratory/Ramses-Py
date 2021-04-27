@@ -69,7 +69,7 @@ def testStateClass():
     print( state.color() )
 
 def testFileType():
-    fileType = RamFileType( "NameFichier", "ShortNameFichier", ".txt")
+    fileType = RamFileType( "NameFichier", "ShortNameFichier", [".txt", ".py"] )
 
     print( fileType.name() )
     print( fileType.shortName() )
@@ -83,8 +83,8 @@ def testRamsesMethods():
 
 
 # testUserClass()
-# testItemClass()
-testProjectClass()
+testItemClass()
+# testProjectClass()
 # testShotClass()
 # testAssetClass()
 # testStateClass()

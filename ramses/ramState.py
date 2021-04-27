@@ -4,7 +4,7 @@ from .ramObject import RamObject
 class RamState( RamObject ):
     """Represents a state used in a status, like “CHK” (To be checked), “OK” (ok), “TO_DO”, etc."""
 
-    def __init__( self, stateName, stateShortName, completionRatio=0.0, color=[0, 0, 0] ):
+    def __init__(self, stateName, stateShortName, completionRatio=0.0, color=None):
         """
         Args:
             stateName (str)
@@ -12,10 +12,12 @@ class RamState( RamObject ):
             completionRatio (float, optional): The ratio of completion of this status
         """
         super().__init__( stateName, stateShortName )
+        if color is None:
+            color = [0, 0, 0]
         self._completionRatio = completionRatio
         self._color = color
 
-    def completionRatio( self ): #TODO
+    def completionRatio( self ):
         """The ratio of completion of this state in the range [0, 100].
 
         Returns:
@@ -23,7 +25,7 @@ class RamState( RamObject ):
         """
         return self._completionRatio
 
-    def color( self ): #TODO
+    def color( self ):
         """The color for this state, [R, G, B] in the range [0, 255].
 
         Returns:

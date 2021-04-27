@@ -4,8 +4,8 @@
 
 - [x] RamObject
 - [x] RamUser
-- [ ] RamState
-- [ ] RamFileType
+- [ ] RamState      (à vérifier)
+- [ ] RamFileType   (à vérifier)
 - [ ] RamItem
 - [ ] RamShot
 - [ ] RamAsset
