@@ -1,4 +1,7 @@
+import os
+
 from .ramObject import RamObject
+from .logger import log
 
 class StepType():
     PRE_PRODUCTION = 'PRE_PRODUCTION'
@@ -47,6 +50,7 @@ class RamStep( RamObject ):
 
     @staticmethod
     def getFromPath( folderPath ):
+        from .ramses import Ramses
         """Returns a RamStep instance built using the given folder path.
             The path can be any file or folder path from the asset
             (a version file, a preview file, etc)

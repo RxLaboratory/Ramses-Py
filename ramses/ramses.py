@@ -2,7 +2,6 @@ from .logger import log
 from .daemon_interface import RamDaemonInterface
 from .ramState import RamState
 from .ramSettings import RamSettings
-from .ramProject import RamProject
 
 
 class Ramses:
@@ -43,6 +42,7 @@ class Ramses:
     # PROPERTIES
 
     def currentProject(self):
+        from .ramProject import RamProject
         """The current project.
 
         Returns:
@@ -50,7 +50,7 @@ class Ramses:
         """
 
         # If online, ask the daemon
-        if not self._offline and self._daemon.online():
+        if not self._offline and self.connect():
             # Ask (the daemon returns a dict)
             projDict = self._daemon.getCurrentProject()
             # Check if successful
@@ -66,6 +66,7 @@ class Ramses:
         # TODO if offline
 
     def currentStep(self):  # A revoir
+        from .ramStep import RamStep
         """The current project.
 
        Returns:
@@ -73,7 +74,7 @@ class Ramses:
         """
 
         # If online, ask the daemon
-        if not self._offline and self._daemon.online():
+        if not self._offline and self.connect():
             # Ask (the daemon returns a dict)
             stepDict = self._daemon.getSteps()
             # Check if successful
@@ -89,6 +90,7 @@ class Ramses:
         # TODO if offline
 
     def currentUser(self):
+        from .ramUser import RamUser
         """The current user.
 
         Returns:
@@ -247,11 +249,11 @@ class Ramses:
 
             # Check if successful
             if RamDaemonInterface.checkReply(replyDict):
-                contentDict = statesDict['content']
+                contentDict = replyDict['content']
                 statesDict = contentDict['states']
 
                 for state in statesDict:
-                    newState = RamState(state['name'], state['shortname'], state['completionRatio'], state['color'])
+                    newState = RamState(state['name'], state['shortName'], state['completionRatio'], state['color'])
                     newStateList.append(newState)
 
                 return newStateList
