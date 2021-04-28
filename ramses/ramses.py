@@ -1,7 +1,10 @@
+import re
+
 from .logger import log
 from .daemon_interface import RamDaemonInterface
 from .ramState import RamState
 from .ramSettings import RamSettings
+from .ramUser import RamUser, UserRole
 
 
 class Ramses:
@@ -11,6 +14,8 @@ class Ramses:
         instance: Ramses
             The unique Ramses instance
     """
+    # The prefixes used in version files which are not states
+    _versionPrefixes = ['v','pub']
 
     instance = None
 
@@ -107,13 +112,13 @@ class Ramses:
                 content = userDict['content']
 
                 # check role
-                role = RamUser.STANDARD
+                role = UserRole.STANDARD
                 if content['role'] == 'LEAD':
-                    role = RamUser.LEAD
+                    role = UserRole.LEAD
                 elif content['role'] == 'PROJECT_ADMIN':
-                    role = RamUser.PROJECT_ADMIN
+                    role = UserRole.PROJECT_ADMIN
                 elif content['role'] == 'ADMIN':
-                    role = RamUser.ADMIN
+                    role = UserRole.ADMIN
 
                 user = RamUser(content['name'], content['shortName'], content['folderPath'], role)
                 return user
@@ -196,7 +201,7 @@ class Ramses:
         Returns:
             RamDaemonInterface
         """
-        return self.__daemon
+        return self._daemon
 
     def project(self, projectShortName):  # TODO
         """Gets a specific project.
@@ -210,7 +215,7 @@ class Ramses:
         for project in self.projects():
             if project.shortName == projectShortName:
                 return project
-        return self.project()
+        return None
 
     def projects(self):  # TODO
         """The list of available projects.
@@ -258,13 +263,7 @@ class Ramses:
 
                 return newStateList
 
-        states = [
-            RamState("No", "NO", 1.0, [25,25,25]), # Very dark gray
-            RamState("To Do", "TODO", 0.0, [85, 170, 255]), # Blue
-            RamState("Work in progress", "WIP", 0.5,  [255,255,127]), # Light Yellow
-            RamState("OK", "OK", 1.0, [0, 170, 0]), # Green
-        ]
-        return states
+        return self._settings.defaultStates
 
     def showClient(self):  # TODO
         """Raises the Ramses Client window, launches the client if it is not already running.
@@ -342,7 +341,7 @@ class Ramses:
 
         return blocks
 
-     def _isRamsesItemFoldername(self, n):
+    def _isRamsesItemFoldername(self, n):
         """Low-level, undocumented. Used to check if a given folder respects Ramses' naming convention for items' root folders.
         
         The root folder should look like this:
@@ -352,3 +351,32 @@ class Ramses:
         """
         if re.match('^([a-z0-9+-]{1,10})_[ASG]_([a-z0-9+-]{1,10})$' , n , re.IGNORECASE): return True
         return False
+
+    def _getRamsesNameRegEx(self):
+        """Low-level, undocumented. Used to get a Regex to check if a file matches Ramses' naming convention.
+        """
+        regexStr = self._getVersionRegExStr()
+
+        regexStr = '^([a-z0-9+-]{1,10})_(?:([AS])_([a-z0-9+-]{1,10})|(G))_([a-z0-9+-]{1,10})(?:_((?!(?:' + regexStr + ')?[0-9]+)[a-z0-9+\\s-]+))?(?:_(' + regexStr + ')?([0-9]+))?\\.([a-z0-9.]+)$'
+
+        regex = re.compile(regexStr, re.IGNORECASE)
+        return regex
+
+    def _getVersionRegExStr(self):
+        """Low-level, undocumented. Used to get a Regex str that can be used to identify version blocks.
+
+        A version block is composed of an optional version prefix and a version number.
+        'wip002', 'v10', '1002' are version blocks; '002wip', '10v', 'v-10' are not.\n
+        Version prefixes consist of all the available states' shortnames ( see Ramses.getStates() ) and some additional prefixes ( see Ramses._versionPrefixes ).
+        """
+        
+        prefixes = self._versionPrefixes
+
+        for state in self.states():
+            prefixes.append( state.shortName )
+
+        regexStr = ''
+        for prefix in prefixes[0:-1]:
+            regexStr = regexStr + prefix + '|'
+        regexStr = regexStr + prefixes[-1]
+        return regexStr
