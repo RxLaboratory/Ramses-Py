@@ -2,19 +2,20 @@ import os
 
 from .logger import log
 from .ramItem import RamItem
-from .ramses import Ramses
+from . import Ramses
 
 
 class RamShot( RamItem ):
     """A shot"""
 
-    def __init__( self, shotName, shotShortName, duration=0.0 ):
+    def __init__( self, shotName, shotShortName, shotFolderPath, duration=0.0 ):
         """
         Args:
             shotName (str)
             shotShortName (str)
         """
         super().__init__( shotName, shotShortName )
+        self._folderPath = shotFolderPath
         self._duration = duration
 
     def duration( self ):
@@ -58,9 +59,9 @@ class RamShot( RamItem ):
             return None
 
         shortName = folderBlocks[ 2 ]
-        shotFolderPath = os.path.relpath( folderPath, Ramses.instance.currentProject.folderPath )
+        shotFolderPath = os.path.relpath( folderPath, Ramses.instance.currentProject().folderPath )
 
-        shot = RamShot( shotName = shortName, folder = shotFolderPath )
+        shot = RamShot( shotName = shortName, shotShortName = shortName, shotFolderPath = shotFolderPath )
         print("**********************")
         return shot
 
