@@ -169,7 +169,7 @@ class RamProject( RamObject ):
 
         return assetGroups
 
-    def shots( self ):  #TODO if online
+    def shots( self, filter = "*" ):  #TODO if online
         """Available shots in this project
 
         Returns:
@@ -193,7 +193,7 @@ class RamProject( RamObject ):
             if not os.path.isdir( foundShotPath ):
                 print( "Shot " + filter + " was not found." )
                 return []
-            return [RamShot( shotName = filter, folderPath = foundShotPath )]
+            return [RamShot( shotName = "", shotShortName = filter, shotFolderPath = foundShotPath )]
 
         if "*" in filter and filter != "*": #Preparing regex for wildcards
             filter = escapeRegEx( filter )
@@ -215,7 +215,7 @@ class RamProject( RamObject ):
                     continue
 
             foundShotPath = shotsFolderPath + '/' + foundFile
-            foundShot = RamShot( shotName = foundShotName , folderPath = foundShotPath )
+            foundShot = RamShot( shotName = "", shotShortName = foundShotName , shotFolderPath = foundShotPath )
             foundShots.append( foundShot )
 
         return foundShots

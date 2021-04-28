@@ -704,13 +704,21 @@ class RamProject( RamObject ):
 
         # If we're online, ask the client
         if Ramses.instance.online:
-            # TODO
+            # daemon.getShots(filter)
             return None
 
         # Else check in the folders
         shotsFolderPath = self.folderPath + '/05-SHOTS'
         if not os.path.isdir(shotsFolderPath):
             raise Exception("The asset folder for " + self.name + " (" + self.shortName + ") " + "could not be found.")
+
+        # si contient "*" -> préparer la regex
+        # lister tous les dossiers
+        # pour chaque dossier
+            # si filter n'est pas "" -> utiliser la regex pour checker le dossier et voir si on garde
+            # sinon on garde
+            # si on garde -> construire le ramshot, ajouter à la liste
+        # retourner la liste
 
         if filter != "" and not "*" in filter: #User is looking for a specific shot: no need to parse through everything
             foundShotPath = shotsFolderPath + '/' + self.shortName + '_S_' + filter

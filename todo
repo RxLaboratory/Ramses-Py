@@ -27,3 +27,5 @@ Est-ce que ça peut aller ?
 
 - RamStep: constructeur avec type et path
 - RamShot: constructeur avec path
+- RamDaemon: update doc getShots -> filter
+- implémenter le filtre des shots dans le démon
