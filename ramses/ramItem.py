@@ -46,7 +46,7 @@ class RamItem( RamObject ):
             return None
 
         currentVersionPath = self._folderPath + '/' + currentVersionPath
-        currentVersionPath = Ramses.instance.currentProject.getAbsolutePath( currentVersionPath )
+        currentVersionPath = Ramses.instance.currentProject().absolutePath( currentVersionPath )
 
         currentStatus = RamStatus.getFromPath( currentVersionPath )
 
@@ -96,7 +96,7 @@ class RamItem( RamObject ):
             print( "The given item has no folderPath." )
             return None
 
-        folderPath = Ramses.instance.currentProject.folderPath + '/' + self.folderPath #Makes it absolute
+        folderPath = Ramses.instance.currentProject().folderPath + '/' + self.folderPath #Makes it absolute
 
         if not os.path.isdir( folderPath ):
             print( "The given item's folder was not found.\nThis is the path that was checked:\n" + folderPath )
@@ -211,7 +211,7 @@ class RamItem( RamObject ):
             return None
 
         baseName = os.path.basename( self._folderPath )
-        folderPath = Ramses.instance.currentProject.folderPath + '/' + self.folderPath
+        folderPath = Ramses.instance.currentProject().folderPath + '/' + self.folderPath
 
         if not os.path.isdir( folderPath ):
             print( "The given item's folder was not found.\nThis is the path that was checked:\n" + folderPath )
@@ -281,7 +281,7 @@ class RamItem( RamObject ):
             print( "The given item has no folderPath." )
             return None
 
-        folderPath = Ramses.instance.currentProject.getAbsolutePath( self.folderPath )
+        folderPath = Ramses.instance.currentProject().absolutePath( self.folderPath )
 
         if not os.path.isdir( folderPath ):
             print( "The given item's folder was not found.\nThis is the path that was checked:\n" + folderPath )

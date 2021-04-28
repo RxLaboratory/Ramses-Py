@@ -59,8 +59,7 @@ class RamProject( RamObject ):
         """
         return self._framerate
 
-
-    def absolutePath( self, relativePath ):
+    def absolutePath( self, relativePath="" ):
         """Builds an absolute path from a path relative to the project path
 
         Args:
@@ -233,3 +232,6 @@ class RamProject( RamObject ):
             list of RamStep
         """
         pass
+
+    def folderPath( self ):
+        return self.absolutePath( )
