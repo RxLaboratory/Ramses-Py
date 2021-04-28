@@ -15,7 +15,7 @@ class RamStep( RamObject ):
     """A step in the production of the shots or assets of the project.
     """
 
-    def __init__( self, stepName, stepShortName ):
+    def __init__( self, stepName, stepShortName, stepFolderPath, stepType ):
         """     
         Args:
             stepName (str)
@@ -23,6 +23,8 @@ class RamStep( RamObject ):
         """
         super().__init__( stepName, stepShortName )
         self.fileType = None
+        self._folderPath = stepFolderPath
+        self._type = stepType
 
     def commonFolderPath( self ): #TODO
         """The absolute path to the folder containing the common files for this step

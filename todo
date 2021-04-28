@@ -24,3 +24,6 @@ Est-ce que ça peut aller ?
 - [x] Remplacer `if not self._offline and self._daemon.online():` par `if not self._offline and self.connect():`
 
 ## Attention : currentStep (dans ramses.py) et getcurrentStep (dans ramStep.py) à revoir
+
+- RamStep: constructeur avec type et path
+- RamShot: constructeur avec path
