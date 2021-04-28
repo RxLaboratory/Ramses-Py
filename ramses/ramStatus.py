@@ -26,7 +26,8 @@ class RamStatus:
 
         # Get J. Doe
         if not user:
-            user = Ramses.instance.getUser()
+            # user = Ramses.instance.getUser()
+            user = Ramses.instance.currentUser()
         self.user = user
 
         if not stateDate:
