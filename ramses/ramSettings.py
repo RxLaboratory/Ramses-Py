@@ -1,3 +1,5 @@
+from .ramState import RamState
+
 class FolderNames():
     preview = "_preview"
     versions = "_versions"
@@ -19,6 +21,13 @@ class RamSettings:
 
     There is only one instance of RamSettings, available with the Ramses.instance.settings() method
     """
+
+    defaultStates = [
+            RamState("No", "NO", 1.0, [25,25,25]), # Very dark gray
+            RamState("To Do", "TODO", 0.0, [85, 170, 255]), # Blue
+            RamState("Work in progress", "WIP", 0.5,  [255,255,127]), # Light Yellow
+            RamState("OK", "OK", 1.0, [0, 170, 0]), # Green
+        ]
     
     def __init__( self ):
         # TODO Load from the settings file saved previously with save()
