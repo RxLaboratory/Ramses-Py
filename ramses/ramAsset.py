@@ -7,7 +7,7 @@ from .ramItem import RamItem
 class RamAsset( RamItem ):
     """A class representing an asset."""
 
-    def __init__( self, assetName, assetShortName, assetFolder="" ):
+    def __init__( self, assetName, assetShortName, assetFolder, assetGroup, assetTags ):
         """
         Args:
             assetName (str)
@@ -16,6 +16,8 @@ class RamAsset( RamItem ):
         """
         super().__init__( assetName, assetShortName )
         self._assetFolder = assetFolder
+        self._assetGroup = assetGroup
+        self._assetTags = assetTags
 
 
     def tags( self ): #TODO
@@ -89,7 +91,7 @@ class RamAsset( RamItem ):
         shortName = folderBlocks[ 2 ]
         assetFolderPath = os.path.relpath( folderPath, Ramses.instance.currentProject().folderPath )
 
-        asset = RamAsset( assetName = shortName, assetShortName = shortName, assetFolder = assetFolderPath )
+        asset = RamAsset( assetName = "", assetShortName = shortName, assetFolder = assetFolderPath, assetGroup = "", assetTags = "" )
         return asset
 
     # Hidden and not documented: documented in RamItem.folderPath()

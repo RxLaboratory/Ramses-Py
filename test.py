@@ -42,7 +42,7 @@ def testProjectClass():
     print( proj.assets("Sets") )
     print( proj.assetGroups() )
     print( proj.shots() )
-    print( proj.steps() )
+    print( proj.steps("SHOT_PRODUCTION") )
 
 def testShotClass():
     shot = RamShot( "ShotName", "ShotShortName", "5.38" )  # Duration ? Status ? Folder ?
@@ -54,7 +54,7 @@ def testShotClass():
     print( shot.folderPath())
 
 def testAssetClass():
-    asset = RamAsset( "AssetName", "AssetShortName")  # Tags ? Group ? Status ?
+    asset = RamAsset( "AssetName", "AssetShortName", "/home/user/duduf/Ramses/Users/Duduf", "Props", "" )
 
     print( asset.name() )
     print( asset.shortName() )

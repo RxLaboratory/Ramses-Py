@@ -86,6 +86,7 @@ class RamProject( RamObject ):
             raise TypeError( "Group name must be a str" )
 
         groupsToCheck = []
+        assetsList = []
         newAssetsList = []
 
         # If we're online, ask the client (return a dict)
@@ -94,15 +95,17 @@ class RamProject( RamObject ):
             # check if successful
             if RamDaemonInterface.checkReply( assetsDict ):
                 content = assetsDict['content']
-                assetsList = content['assets']
+                foundAssets = content['assets']
                 if groupName == "":
+                    for assetDict in foundAssets:
+                        assetsList.append( RamAsset( assetDict['name'], assetDict['shortName'], assetDict['folder'], assetDict['group'], assetDict['tags'] ) )
                     return assetsList
                 else:
-                    for files in assetsList:
-                        log( "Checking this group: " + str( files ) )
-                        if files.get( 'group' ) == groupName:
-                            newAssetsList.append( files )
-                    return newAssetsList
+                    for assetDict in foundAssets:
+                        log( "Checking this group: " + str( assetDict ) )
+                        if assetDict.get( 'group' ) == groupName:
+                             assetsList.append( RamAsset( assetDict['name'], assetDict['shortName'], assetDict['folder'], assetDict['group'], assetDict['tags'] ) )
+                    return assetsList
 
         # Else, check in the folders
         assetsFolderPath = self._folderPath + '/04-ASSETS'
@@ -115,7 +118,7 @@ class RamProject( RamObject ):
                     if not foundFile.split( '_' )[1] == 'A': continue
                     foundAssetName = foundFile.split( '_' )[2]
                     foundAssetPath = "04-ASSETS/" + foundFile
-                    foundAsset = RamAsset(assetName = foundAssetName, assetShortName = foundAssetName, assetFolder = foundAssetPath )
+                    foundAsset = RamAsset(assetName = "", assetShortName = foundAssetName, assetFolder = foundAssetPath, assetGroup = "", assetTags = "" )
                     newAssetsList.append( foundAsset )
                 else:
                     groupsToCheck.append( foundFile )
@@ -134,7 +137,7 @@ class RamProject( RamObject ):
                 if not foundFile.split( '_' )[1] == 'A': continue
                 foundAssetName = foundFile.split( '_' )[2]
                 foundAssetPath = "04-ASSETS/" + group + "/" + foundFile
-                foundAsset = RamAsset( assetName = foundAssetName, assetShortName = foundAssetName, assetFolder = foundAssetPath )
+                foundAsset = RamAsset( assetName = "", assetShortName = foundAssetName, assetFolder = foundAssetPath, assetGroup = "", assetTags = "" )
                 newAssetsList.append( foundAsset )
         
         return newAssetsList
@@ -181,12 +184,16 @@ class RamProject( RamObject ):
             raise Exception( "Ramses has to be instantiated first." )
 
         # If we're online, ask the client (return a dict)
+        shotsList = []
         if Ramses.instance.online:
             shotsDict = self._daemon.getShots()
             # check if successful
             if RamDaemonInterface.checkReply( shotsDict ):
                 content = shotsDict['content']
-                shotsList = content['shot']
+                foundShots = content['shots']
+                for shotDict in foundShots:
+                    shotsList.append( RamShot( shotDict['name'], shotDict['shortName'], shotDict['folder'], shotDict['duration'] ))
+
                 return shotsList
 
         # Else check in the folders
@@ -234,7 +241,7 @@ class RamProject( RamObject ):
         if not Ramses.instance:
             raise Exception( "Ramses has to be instantiated first." )
 
-        newStepssList = []
+        stepsList = []
 
         # If we're online, ask the client (return a dict)
         if Ramses.instance.online:
@@ -242,15 +249,17 @@ class RamProject( RamObject ):
             # check if successful
             if RamDaemonInterface.checkReply( stepsDict ):
                 content = stepsDict['content']
-                stepsList = content['steps']
+                foundSteps = content['steps']
                 if stepType == StepType.ALL:
+                    for stepDict in foundSteps :
+                        stepsList.append( RamStep( stepDict['name'], stepDict['shortName'], stepDict['folder'], stepDict['type'] ) )
                     return stepsList
                 else:
-                    for files in stepsList:
-                        log( "Checking this type : " + str( files ) )
-                        if files.get( 'type' ) == stepType:
-                            newStepssList.append( files )
-                    return newStepssList
+                    for stepDict in foundSteps:
+                        log( "Checking this type : " + str( stepDict ) )
+                        if stepDict.get( 'type' ) == stepType:
+                            stepsList.append( RamStep( stepDict['name'], stepDict['shortName'], stepDict['folder'], stepDict['type'] ) )
+                    return stepsList
 
         # Else, check in the folders
         stepsFolderPath = self._folderPath # problème S ou A ??
