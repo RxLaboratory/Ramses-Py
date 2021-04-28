@@ -51,7 +51,7 @@ class RamStatus:
         if not isinstance( filePath, str ):
             raise TypeError( "File path needs to be a str" )
         if not os.path.isfile( filePath ):
-            filePath = Ramses.instance.currentProject.getAbsolutePath( filePath )
+            filePath = Ramses.instance.currentProject().absolutePath( filePath )
             if not os.path.isfile( filePath ):
                 print( "The given file could not be found" )
                 return None
@@ -78,7 +78,7 @@ class RamStatus:
             else:
                 item = RamShot.getFromPath( filePath )
 
-            latestVersionFilePath = item.getVersionFilePath( step = blocks[ "ramStep" ], resource = blocks[ "resourceStr" ] )
+            latestVersionFilePath = item.versionFilePath( step = blocks[ "ramStep" ], resource = blocks[ "resourceStr" ] )
 
             if not latestVersionFilePath in (None, 0): # If it has at least one version
                 latestVersionFileName = os.path.basename( latestVersionFilePath )
@@ -89,7 +89,7 @@ class RamStatus:
                     stateId = latestVersionBlocks[ "state" ]
                     stateId = stateId.upper()
 
-        state = Ramses.instance.getState( stateId )
+        state = Ramses.instance.state( stateId )
 
         dateTimeStamp = os.path.getmtime( filePath )
         dateTime = datetime.fromtimestamp( dateTimeStamp )
