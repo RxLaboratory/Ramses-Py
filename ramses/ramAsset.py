@@ -1,7 +1,7 @@
 import os
 
 from .logger import log
-from .ramses import Ramses
+from . import Ramses
 from .ramItem import RamItem
 
 class RamAsset( RamItem ):
@@ -69,7 +69,7 @@ class RamAsset( RamItem ):
         if not Ramses.instance:
             raise Exception( "Ramses has to be instantiated first." )
         if not os.path.isdir( folderPath ):
-            folderPath = Ramses.instance.currentProject.getAbsolutePath( folderPath )
+            folderPath = Ramses.instance.currentProject().absolutePath( folderPath )
             if not os.path.isdir( folderPath ):
                 log( "The given folder could not be found" )
                 return None
@@ -87,9 +87,9 @@ class RamAsset( RamItem ):
             return None
 
         shortName = folderBlocks[ 2 ]
-        assetFolderPath = os.path.relpath( folderPath, Ramses.instance.currentProject.folderPath )
+        assetFolderPath = os.path.relpath( folderPath, Ramses.instance.currentProject().folderPath )
 
-        asset = RamAsset( assetName = shortName, assetShortName = shortName, folderPath = assetFolderPath )
+        asset = RamAsset( assetName = shortName, assetShortName = shortName, assetFolder = assetFolderPath )
         return asset
 
     # Hidden and not documented: documented in RamItem.folderPath()

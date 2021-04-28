@@ -286,3 +286,69 @@ class Ramses:
             str
         """
         pass
+
+    def _decomposeRamsesFileName( self, ramsesFileName ):
+        """Low-level, undocumented. Used on files that respect Ramses' naming convention: it separates the name into blocks (one block for the project's shortname, one for the step, one for the extension...)
+
+        A Ramses filename can have all of these blocks:
+            projectID_ramType_objectShortName_ramStep_resourceStr_versionBlock.extension
+        - ramType can be one of the following letters: A (asset), S (shot), G (general).
+        - there is an objectShortName only for assets and shots.
+        - resourceStr is optional. It only serves to differentiate the main working file and its resources, that serve as secondary working files.
+        - versionBlock is optional. It's made of two blocks: an optional version prefix, also named state, followed by a version number.
+            Version prefixes consist of all the available states' shortnames ( see Ramses.getStates() ) and some additional prefixes ( see Ramses._versionPrefixes ). Eg. 'wip', 'v', ...
+        For more information on Ramses' naming conventions (such as length limitation, forbidden characters...), refer to the documentation.
+
+        Arg:
+            ramsesFileName: str
+        
+        Returns: dict or None
+            If the file does not match Ramses' naming convention, returns None.
+            Else, returns a dictionary made of all the blocks: {"projectId", "ramType", "objectShortName", "ramStep", "resourceStr", "state", "version", "extension"}
+        """
+        if type(ramsesFileName) != str:
+            print("The given filename is not a str.")
+            return None
+
+        splitRamsesName = re.match(self._getRamsesNameRegEx(), ramsesFileName)
+
+        if splitRamsesName == None:
+            return None
+
+        ramType = ''
+        objectShortName = ''
+
+        if splitRamsesName.group(2) in ('A', 'S'):
+            ramType = splitRamsesName.group(2)
+            objectShortName = splitRamsesName.group(3)
+        else:
+            ramType = splitRamsesName.group(4)
+
+        optionalBlocks = ['', '', '', '']
+        for i in range(0, 4):
+            if splitRamsesName.group(i + 6) != None:
+                optionalBlocks[i] = splitRamsesName.group( i + 6)
+
+        blocks = {
+            "projectID": splitRamsesName.group(1),
+            "ramType": ramType,
+            "objectShortName": objectShortName,
+            "ramStep": splitRamsesName.group(5),
+            "resourceStr": optionalBlocks[0],
+            "state": optionalBlocks[1],
+            "version": optionalBlocks[2],
+            "extension": optionalBlocks[3],
+        }
+
+        return blocks
+
+     def _isRamsesItemFoldername(self, n):
+        """Low-level, undocumented. Used to check if a given folder respects Ramses' naming convention for items' root folders.
+        
+        The root folder should look like this:
+            projectID_ramType_objectShortName
+
+        Returns: bool
+        """
+        if re.match('^([a-z0-9+-]{1,10})_[ASG]_([a-z0-9+-]{1,10})$' , n , re.IGNORECASE): return True
+        return False
