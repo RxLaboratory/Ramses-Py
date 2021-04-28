@@ -50,7 +50,7 @@ class RamStep( RamObject ):
 
     @staticmethod
     def getFromPath( folderPath ):
-        from .ramses import Ramses
+        from . import Ramses
         """Returns a RamStep instance built using the given folder path.
             The path can be any file or folder path from the asset
             (a version file, a preview file, etc)
@@ -64,7 +64,7 @@ class RamStep( RamObject ):
         if not Ramses.instance:
             raise Exception( "Ramses has to be instantiated first." )
         if not os.path.isdir( folderPath ):
-            folderPath = Ramses.instance.currentProject().getAbsolutePath( folderPath )  # A vérifier...
+            folderPath = Ramses.instance.currentProject().absolutePath( folderPath )  # A vérifier...
             if not os.path.isdir( folderPath ):
                 log( "The given folder could not be found" )
                 return None
