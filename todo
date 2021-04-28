@@ -11,7 +11,7 @@
 - [ ] RamAsset
 - [ ] RamStep
 - [ ] RamPipe
-- [ ] RamProject    (assets : ok)
+- [ ] RamProject    (assets, shots, steps : à tester)
 - [ ] Ramses        (getStates : ok)
 
 ## Refactor
@@ -29,3 +29,5 @@ Est-ce que ça peut aller ?
 - RamShot: constructeur avec path
 - RamDaemon: update doc getShots -> filter
 - implémenter le filtre des shots dans le démon
+- petit bug dans la doc RamStep dans la description de la methode stepType / RamStep
+- prévoir les bugs des queries qui font planter l'appli ;-)

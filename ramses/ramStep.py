@@ -48,34 +48,34 @@ class RamStep( RamObject ):
         Returns:
             enumerated value
         """
-        pass
+        return self._type
 
-    @staticmethod
-    def getFromPath( folderPath ):
-        from . import Ramses
-        """Returns a RamStep instance built using the given folder path.
-            The path can be any file or folder path from the asset
-            (a version file, a preview file, etc)
+    # @staticmethod
+    # def getFromPath( folderPath ):
+    #     from . import Ramses
+    #     """Returns a RamStep instance built using the given folder path.
+    #         The path can be any file or folder path from the asset
+    #         (a version file, a preview file, etc)
 
-        Args:
-            folderPath (str)
+    #     Args:
+    #         folderPath (str)
 
-        Returns:
-            RamStep
-        """
-        if not Ramses.instance:
-            raise Exception( "Ramses has to be instantiated first." )
-        if not os.path.isdir( folderPath ):
-            folderPath = Ramses.instance.currentProject().absolutePath( folderPath )  # A vérifier...
-            if not os.path.isdir( folderPath ):
-                log( "The given folder could not be found" )
-                return None
+    #     Returns:
+    #         RamStep
+    #     """
+    #     if not Ramses.instance:
+    #         raise Exception( "Ramses has to be instantiated first." )
+    #     if not os.path.isdir( folderPath ):
+    #         folderPath = Ramses.instance.currentProject().absolutePath( folderPath ) 
+    #         if not os.path.isdir( folderPath ):
+    #             log( "The given folder could not be found" )
+    #             return None
 
-        folderName = os.path.basename( folderPath )
+    #     folderName = os.path.basename( folderPath )
 
-        if not Ramses.instance._isRamsesItemFoldername( folderName ):
-            log( "The given folder does not respect Ramses' naming convention" )
-            return None
+    #     if not Ramses.instance._isRamsesItemFoldername( folderName ):
+    #         log( "The given folder does not respect Ramses' naming convention" )
+    #         return None
 
-            #TODO : pas fini !!
+    #         #TODO : pas fini !!
 

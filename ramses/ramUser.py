@@ -1,5 +1,4 @@
 from .ramObject import RamObject
-from .ramses import Ramses
 
 class UserRole():
     STANDARD = 0
@@ -39,6 +38,7 @@ class RamUser( RamObject ):
         Returns:
             str
         """
+        from . import Ramses
         path = Ramses.instance.settings().folderNames.userConfig
         if absolute: path = self._folderPath + "/" + path
         return path

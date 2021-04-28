@@ -44,8 +44,13 @@ class RamDaemonInterface():
         queryList = []
 
         for arg in query:
-            if type(arg) is str: queryList.append(arg)
-            else: queryList.append( "=".join(arg) )
+            if type(arg) is str:
+                if arg:
+                    queryList.append(arg)
+            else:
+                queryList.append( "=".join(arg) )
+
+        print(queryList)
 
         return "&".join(queryList)
 

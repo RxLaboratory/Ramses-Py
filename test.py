@@ -17,7 +17,7 @@ def testItemClass():
 
     print( item.name() )
     print( item.shortName() )
-    print( item.folderPath() )
+    print( item._folderPath() )
     # print( item.currentStatus( step ) )
     # print( item.latestVersion( step ) )
     # print( item.previewFolderPath( step ) )
@@ -84,14 +84,13 @@ def testRamsesMethods():
     print( ramses.states() )
 
 def testStepClass():
-    step = RamStep( "NameStep", "ShortNameStep" )
+    step = RamStep( "NameStep", "ShortNameStep", "/home/user/duduf/Ramses/Users/Duduf", "ALL" )
 
     print( step.name() )
     print( step.shortName() )
     print( step.commonFolderPath() )
     print( step.templatesFolderPath() )
     print( step.stepType() )
-    print( step.getFromPath( "folder") )
 
 
 

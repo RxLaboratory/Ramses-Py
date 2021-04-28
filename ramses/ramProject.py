@@ -86,7 +86,7 @@ class RamProject( RamObject ):
             raise TypeError( "Group name must be a str" )
 
         groupsToCheck = []
-        foundAssets = []
+        newAssetsList = []
 
         # If we're online, ask the client (return a dict)
         if Ramses.instance.online:
@@ -94,19 +94,18 @@ class RamProject( RamObject ):
             # check if successful
             if RamDaemonInterface.checkReply( assetsDict ):
                 content = assetsDict['content']
-                foundFiles = content['assets']
+                assetsList = content['assets']
                 if groupName == "":
-                    return foundFiles
+                    return assetsList
                 else:
-                    for files in foundFiles:
-                        log( "Checking this group: " + str(files) )
-                        if files.get("group") == groupName:
-                            foundAssets.append(files)
-                    return foundAssets
+                    for files in assetsList:
+                        log( "Checking this group: " + str( files ) )
+                        if files.get( 'group' ) == groupName:
+                            newAssetsList.append( files )
+                    return newAssetsList
 
-        # Else check in the folders
+        # Else, check in the folders
         assetsFolderPath = self._folderPath + '/04-ASSETS'
-
 
         if groupName == "": #List all assets and groups found at the root
             foundFiles = os.listdir( assetsFolderPath )
@@ -117,7 +116,7 @@ class RamProject( RamObject ):
                     foundAssetName = foundFile.split( '_' )[2]
                     foundAssetPath = "04-ASSETS/" + foundFile
                     foundAsset = RamAsset(assetName = foundAssetName, assetShortName = foundAssetName, assetFolder = foundAssetPath )
-                    foundAssets.append( foundAsset )
+                    newAssetsList.append( foundAsset )
                 else:
                     groupsToCheck.append( foundFile )
         else:
@@ -136,9 +135,9 @@ class RamProject( RamObject ):
                 foundAssetName = foundFile.split( '_' )[2]
                 foundAssetPath = "04-ASSETS/" + group + "/" + foundFile
                 foundAsset = RamAsset( assetName = foundAssetName, assetShortName = foundAssetName, assetFolder = foundAssetPath )
-                foundAssets.append( foundAsset )
+                newAssetsList.append( foundAsset )
         
-        return foundAssets
+        return newAssetsList
 
     def assetGroups( self ): #TODO if online
         """Available asset groups in this project
@@ -172,28 +171,29 @@ class RamProject( RamObject ):
     def shots( self, filter = "*" ):  #TODO if online
         """Available shots in this project
 
+        Args:
+            filter
+
         Returns:
             list of RamShot
         """
         if not Ramses.instance:
             raise Exception( "Ramses has to be instantiated first." )
 
-        # If we're online, ask the client
+        # If we're online, ask the client (return a dict)
         if Ramses.instance.online:
-            # TODO
-            return None
+            shotsDict = self._daemon.getShots()
+            # check if successful
+            if RamDaemonInterface.checkReply( shotsDict ):
+                content = shotsDict['content']
+                shotsList = content['shot']
+                return shotsList
 
         # Else check in the folders
         shotsFolderPath = self._folderPath + '/05-SHOTS'
-        if not os.path.isdir( shotsFolderPath ):
-            raise Exception( "The asset folder for " + self._name + " (" + self._shortName + ") " + "could not be found." )
 
-        if filter != "" and not "*" in filter: #User is looking for a specific shot: no need to parse through everything
-            foundShotPath = shotsFolderPath + '/' + self._shortName + '_S_' + filter
-            if not os.path.isdir( foundShotPath ):
-                print( "Shot " + filter + " was not found." )
-                return []
-            return [RamShot( shotName = "", shotShortName = filter, shotFolderPath = foundShotPath )]
+        if not os.path.isdir( shotsFolderPath ):
+            return []
 
         if "*" in filter and filter != "*": #Preparing regex for wildcards
             filter = escapeRegEx( filter )
@@ -231,7 +231,34 @@ class RamProject( RamObject ):
         Returns:
             list of RamStep
         """
-        pass
+        if not Ramses.instance:
+            raise Exception( "Ramses has to be instantiated first." )
+
+        newStepssList = []
+
+        # If we're online, ask the client (return a dict)
+        if Ramses.instance.online:
+            stepsDict = self._daemon.getSteps()
+            # check if successful
+            if RamDaemonInterface.checkReply( stepsDict ):
+                content = stepsDict['content']
+                stepsList = content['steps']
+                if stepType == StepType.ALL:
+                    return stepsList
+                else:
+                    for files in stepsList:
+                        log( "Checking this type : " + str( files ) )
+                        if files.get( 'type' ) == stepType:
+                            newStepssList.append( files )
+                    return newStepssList
+
+        # Else, check in the folders
+        stepsFolderPath = self._folderPath # problème S ou A ??
+
+
+
+            
+
 
     def folderPath( self ):
         return self.absolutePath( )
