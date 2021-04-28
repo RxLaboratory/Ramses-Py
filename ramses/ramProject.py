@@ -70,7 +70,7 @@ class RamProject( RamObject ):
         """
         return self._folderPath + '/' + relativePath
 
-    def assets( self, groupName="" ):  #TODO if online à vérifier
+    def assets( self, groupName="" ): 
         """Available assets in this project and group.
         If groupName is an empty string, returns all assets.
 
@@ -148,13 +148,21 @@ class RamProject( RamObject ):
         Returns:
             list of str
         """
+        assetGroups = []
+
         if not Ramses.instance:
             raise Exception( "Ramses has to be instantiated first." )
 
         # If we're online, ask the client
         if Ramses.instance.online:
-            # TODO
-            return None
+            assetsDict = self._daemon.getAssetGroups()
+            # check if successful
+            # if RamDaemonInterface.checkReply( assetsDict ):  ATTENTION : à décommenter quand daemon OK
+
+            for foundFile in assetsDict:
+                groupName = foundFile['name']
+                assetGroups.append(groupName)
+            return assetGroups
 
         # Else check in the folders
         assetsFolderPath = self._folderPath + '/04-ASSETS'
@@ -162,7 +170,6 @@ class RamProject( RamObject ):
             raise Exception( "The asset folder for " + self._name + " (" + self._shortName + ") " + "could not be found." )
 
         foundFiles = os.listdir( assetsFolderPath )
-        assetGroups = []
 
         for foundFile in foundFiles:
             if not os.path.isdir( assetsFolderPath + '/' + foundFile ): continue
@@ -227,7 +234,7 @@ class RamProject( RamObject ):
 
         return foundShots
 
-    def steps( self, stepType=StepType.ALL ): #TODO
+    def steps( self, stepType=StepType.ALL ): #TODO finir le offline
         """Available steps in this project. Use type to filter the results.
             One of: RamStep.ALL, RamStep.ASSET_PODUCTION, RamStep.SHOT_PRODUCTION, RamStep.PRE_PRODUCTION, RamStep.PRODUCTION, RamStep.POST_PRODUCTION.
             RamStep.PRODUCTION represents a combination of SHOT and ASSET
@@ -262,7 +269,10 @@ class RamProject( RamObject ):
                     return stepsList
 
         # Else, check in the folders
-        stepsFolderPath = self._folderPath # problème S ou A ??
+        stepsFolderPath = self._folderPath 
+        # faire avec 01-PRE-PROD, 02-PROD, 03-POST-PROD
+        # dans PROJECTID_MOD "mod" c'est le shortname
+        # check https://ramses-docs.rainboxlab.org/files/tree/
 
 
 

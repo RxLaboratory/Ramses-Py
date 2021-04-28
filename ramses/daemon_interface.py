@@ -261,3 +261,19 @@ class RamDaemonInterface():
 
         if not self.__checkUser(): return self.__noUserReply('getCurrentUser')
         return self.__post( "getCurrentUser", 1024 )
+
+    def getAssetGroups(self):
+        """Gets the asset group list
+
+        Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
+        
+        Returns: list
+        """
+
+        if not self.__checkUser(): return self.__noUserReply('getAssetGroups')
+        # return self.__post( "getAssetGroups", 2048 )
+        return [
+            {'folder': '/home/rainbox/Ramses/Projects/FPE/04-ASSETS/Characters', 'name': 'Characters', 'shortName': 'CHAR'},
+            {'folder': '/home/rainbox/Ramses/Projects/FPE/04-ASSETS/Props', 'name': 'Props', 'shortName': 'PROPS'},
+            {'folder': '/home/rainbox/Ramses/Projects/FPE/04-ASSETS/Sets', 'name': 'Sets', 'shortName': 'SETS'}
+        ]

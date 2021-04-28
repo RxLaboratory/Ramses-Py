@@ -62,7 +62,7 @@ class RamShot( RamItem ):
         shotFolderPath = os.path.relpath( folderPath, Ramses.instance.currentProject().folderPath )
 
         shot = RamShot( shotName = shortName, shotShortName = shortName, shotFolderPath = shotFolderPath )
-        print("**********************")
+
         return shot
 
     # Hidden and not documented: documented in RamItem.folderPath()
