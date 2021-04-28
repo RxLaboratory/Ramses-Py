@@ -142,7 +142,7 @@ class RamProject( RamObject ):
         
         return newAssetsList
 
-    def assetGroups( self ): #TODO if online
+    def assetGroups( self ): 
         """Available asset groups in this project
 
         Returns:
@@ -178,7 +178,7 @@ class RamProject( RamObject ):
 
         return assetGroups
 
-    def shots( self, filter = "*" ):  #TODO if online
+    def shots( self, filter = "*" ):  
         """Available shots in this project
 
         Args:
