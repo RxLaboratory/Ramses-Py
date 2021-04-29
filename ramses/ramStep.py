@@ -33,20 +33,22 @@ class RamStep( RamObject ):
         Returns:
             str
         """
-        # NOTE :
-        # if self._folderPath is not "": return self._folderPath
-        # sinon:
-            # construire le chemin grace au shortName et chemin du currentproject (Ramses le donne)
-            # self._folderPath = résultat de ci dessus (pour pas avoir à reconstruire à chaque fois)
-            # return self._folderPath
-        pass
+        if not Ramses.instance:
+            raise Exception( "Ramses has to be instantiated first." )
+
+        if self._folderPath != "":
+            return self._folderPath
+        else:
+            path = Ramses.instance.currentProject().folderPath()
+            self._folderPath = path + "_" + self.shortName()
+            return self._folderPath
+
 
     def templatesFolderPath( self ):
         """The path to the template files of this step, relative to the common folder
         Returns:
             str
         """
-
         if not Ramses.instance:
             raise Exception( "Ramses has to be instantiated first." )
 
@@ -64,39 +66,12 @@ class RamStep( RamObject ):
         Returns:
             enumerated value
         """
+        
+
 
         # if self._type != '': return self._type
         # sinon on cherche grace au dossier : le dossier parent de self.commonFolderPath() contient l'info (preprod, postprod, etc)
         # si jamais self.commonFolderPath() est aussi une empty string, on peut rien faire, et on self._type = StepType.ALL puis on return self._type
 
         return self._type
-
-    # @staticmethod
-    # def getFromPath( folderPath ):
-    #     from . import Ramses
-    #     """Returns a RamStep instance built using the given folder path.
-    #         The path can be any file or folder path from the asset
-    #         (a version file, a preview file, etc)
-
-    #     Args:
-    #         folderPath (str)
-
-    #     Returns:
-    #         RamStep
-    #     """
-    #     if not Ramses.instance:
-    #         raise Exception( "Ramses has to be instantiated first." )
-    #     if not os.path.isdir( folderPath ):
-    #         folderPath = Ramses.instance.currentProject().absolutePath( folderPath ) 
-    #         if not os.path.isdir( folderPath ):
-    #             log( "The given folder could not be found" )
-    #             return None
-
-    #     folderName = os.path.basename( folderPath )
-
-    #     if not Ramses.instance._isRamsesItemFoldername( folderName ):
-    #         log( "The given folder does not respect Ramses' naming convention" )
-    #         return None
-
-    #         #TODO : pas fini !!
 

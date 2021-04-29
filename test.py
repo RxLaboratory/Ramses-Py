@@ -86,7 +86,7 @@ def testRamsesMethods():
     print( ramses.states() )
 
 def testStepClass():
-    step = RamStep( "NameStep", "ShortNameStep", "/home/user/duduf/Ramses/Users/Duduf", "ALL" )
+    step = RamStep( "NameStep", "MOD", "", "ALL" )
 
     print( step.name() )
     print( step.shortName() )
@@ -104,7 +104,7 @@ def testStepClass():
 # testStateClass()
 # testFileType()
 # testRamsesMethods()
-# testStepClass()
+testStepClass()
 
 # "folder": "C:/Users/Megaport/Ramses/Projects/FPE/02-PROD/FPE_SD",
 

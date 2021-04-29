@@ -280,4 +280,5 @@ class RamProject( RamObject ):
 
 
     def folderPath( self ):
-        return self.absolutePath( )
+        # return self.absolutePath( )
+        return self._folderPath
