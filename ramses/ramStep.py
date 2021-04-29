@@ -22,7 +22,7 @@ class RamStep( RamObject ):
             stepShortName (str)
         """
         super().__init__( stepName, stepShortName )
-        self.fileType = None
+        self._fileType = None
         self._folderPath = stepFolderPath
         self._type = stepType
 
@@ -32,14 +32,28 @@ class RamStep( RamObject ):
         Returns:
             str
         """
+        # NOTE :
+        # if self._folderPath is not "": return self._folderPath
+        # sinon:
+            # construire le chemin grace au shortName et chemin du currentproject (Ramses le donne)
+            # self._folderPath = résultat de ci dessus (pour pas avoir à reconstruire à chaque fois)
+            # return self._folderPath
         pass
 
-    def templatesFolderPath( self ): #TODO
+    def templatesFolderPath( self ):
         """The path to the template files of this step, relative to the common folder
         Returns:
             str
         """
-        pass
+        if not Ramses.instance:
+            raise Exception( "Ramses has to be instantiated first." )
+
+        projectId = Ramses.instance.currentProject().shortName()
+        templatesName = Ramses.instance.settings().folderNames.stepTemplates
+        stepFolder = self.commonFolderPath()
+        
+        if stepFolder == "": return ""
+        return stepFolder + '/' + projectId + "_" + self._shortName + "_" + templatesName
 
     def stepType( self ): #TODO
         """The type of this step, one of RamStep.PRE_PRODUCTION, RamStep.SHOT_PRODUCTION,
