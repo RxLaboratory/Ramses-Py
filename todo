@@ -7,8 +7,8 @@
 - [x] RamState
 - [x] RamFileType
 - [ ] RamItem
-- [ ] RamShot
-- [ ] RamAsset
+- [*] RamShot
+- [*] RamAsset
 - [ ] RamStep
 - [ ] RamPipe
 - [ ] RamProject    (assets, shots, steps : OKr)
@@ -25,3 +25,10 @@ Est-ce que ça peut aller ?
 
 ## Attention : currentStep (dans ramses.py) et getcurrentStep (dans ramStep.py) à revoir
 
+## RESUME :
+
+- Test de RamAsset OK sauf :
+    - foderPath renvoie None car RamItem pas encore fini
+    - getFromPath renvoie Ramses says: The given folder does not respect Ramses' naming convention :-(
+
+- Test de RamShot : idem RamAsset

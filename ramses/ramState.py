@@ -4,7 +4,7 @@ from .ramObject import RamObject
 class RamState( RamObject ):
     """Represents a state used in a status, like “CHK” (To be checked), “OK” (ok), “TO_DO”, etc."""
 
-    def __init__(self, stateName, stateShortName, completionRatio=0.0, color=[67,67,67]):
+    def __init__(self, stateName, stateShortName, completionRatio=0.0, color=[67, 67, 67]):
         """
         Args:
             stateName (str)
