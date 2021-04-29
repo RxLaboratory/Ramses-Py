@@ -103,7 +103,7 @@ def testStepClass():
 
 
 ramses = Ramses.instance
-ramses.settings().ramsesClientPath = "D:/RAINBOX/LAB/DEV/02 - Applications/Ramses/Deploy/Ramses-Win/Ramses.exe"
+ramses.settings().ramsesClientPath = "D:/RAINBOX/LAB/DEV/02 - Applications/Ramses/Deploy/Ramses-Win/ramses.bat"
 
 # testUserClass()
 # testItemClass()

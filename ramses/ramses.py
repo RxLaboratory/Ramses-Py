@@ -266,7 +266,10 @@ class Ramses:
             self._offline = True
             return False
 
-        return # TODO Must be started detached...
+        return # TODO find a way to start detached... Otherwise this method can't be used
+        # -> Build another exe from ramses which starts ramses detached then returns -> use the exit code to tell if ramses has been launched ?
+        # -> Use a bat / sh file ?
+
         # import os
         # import sys
         # import platform
