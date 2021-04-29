@@ -9,7 +9,7 @@
 - [ ] RamItem
 - [*] RamShot
 - [*] RamAsset
-- [ ] RamStep
+- [*] RamStep
 - [ ] RamPipe
 - [ ] RamProject    (assets, shots, steps : OKr)
 - [ ] Ramses        (getStates : ok)
@@ -32,3 +32,6 @@ Est-ce que ça peut aller ?
     - getFromPath renvoie Ramses says: The given folder does not respect Ramses' naming convention :-(
 
 - Test de RamShot : idem RamAsset
+
+- Test de RamStep : normalement, tout est OK
+    mais pour le StepType, le client me renvoie "Projects" pour Free Prod Example (au lieu de PRE-Prod etc)
