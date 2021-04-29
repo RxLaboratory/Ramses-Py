@@ -213,7 +213,11 @@ class RamDaemonInterface():
         """
 
         if not self.__checkUser(): return self.__noUserReply('getShots')
-        return self.__post( ("getShots", filter), 1048576 )
+        if filter == "": return self.__post( ("getShots"), 1048576 )
+        return self._post(
+            "getShots",
+            ('filter', filter)
+        )
 
     def getStates(self):
         """Gets the list of the states
@@ -271,9 +275,18 @@ class RamDaemonInterface():
         """
 
         if not self.__checkUser(): return self.__noUserReply('getAssetGroups')
-        # return self.__post( "getAssetGroups", 2048 )
-        return [
-            {'folder': '/home/rainbox/Ramses/Projects/FPE/04-ASSETS/Characters', 'name': 'Characters', 'shortName': 'CHAR'},
-            {'folder': '/home/rainbox/Ramses/Projects/FPE/04-ASSETS/Props', 'name': 'Props', 'shortName': 'PROPS'},
-            {'folder': '/home/rainbox/Ramses/Projects/FPE/04-ASSETS/Sets', 'name': 'Sets', 'shortName': 'SETS'}
-        ]
+        return self.__post( "getAssetGroups", 2048 )
+
+    def getCurrentStatus(self, itemShortName, itemName, itemType='SHOT'):
+        """Gets the current status (list) of an item
+
+        Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
+        
+        Returns: list
+        """
+        return self.__post( (
+            "getCurrentStatus",
+            ('shortName', itemShortName),
+            ('name', itemName),
+            ('type', itemType)
+            ) )

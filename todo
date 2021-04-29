@@ -25,10 +25,7 @@ Est-ce que ça peut aller ?
 
 ## Attention : currentStep (dans ramses.py) et getcurrentStep (dans ramStep.py) à revoir
 
-- RamAsset: constructeur avec folder + group + tags
-- RamDaemon: update doc getShots -> filter
 - implémenter le filtre des shots dans le démon
-- petit bug dans la doc RamStep dans la description de la methode stepType / RamStep
 - prévoir les bugs des queries qui font planter l'appli ;-)
 - implémenter getAssetGroups dans le démon
 - ajouter currentStatus (RamItem) dans le demon
