@@ -17,16 +17,16 @@ class RamAsset( RamItem ):
         super().__init__( assetName, assetShortName )
         self._assetFolder = assetFolder
         self._assetGroup = assetGroupName
-        self._assetTags = tags
+        self._tags = tags
 
 
-    def tags( self ): #TODO
+    def tags( self ):
         """Some tags describing the asset.
 
         Returns:
             list of str
         """
-        pass
+        return self._tags
 
     def group( self ): #TODO if online
         """The group containing this asset.
