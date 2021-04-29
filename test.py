@@ -51,7 +51,7 @@ def testShotClass():
     print( shot.shortName() )
     print( shot.duration() )
     print( shot.getFromPath( "J:/RAINBOX/TESTRAMSESPATH/05-SHOTS/PROJECTID_S_01-001/" ) )
-    print( shot.folderPath())
+    print( shot.folderPath())   # Attention RamItem pas fini donc return None
 
 def testAssetClass():
     asset = RamAsset( "AssetName", "AssetShortName", "J:/RAINBOX/TESTRAMSESPATH/04-ASSETS/", "Props", ["bla", "bla"] )
@@ -99,7 +99,7 @@ def testStepClass():
 # testUserClass()
 # testItemClass()
 # testProjectClass()
-testShotClass()
+# testShotClass()
 # testAssetClass()
 # testStateClass()
 # testFileType()

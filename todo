@@ -7,8 +7,8 @@
 - [x] RamState
 - [x] RamFileType
 - [ ] RamItem
-- [ ] RamShot
-- [ ] RamAsset
+- [*] RamShot
+- [*] RamAsset
 - [ ] RamStep
 - [ ] RamPipe
 - [ ] RamProject    (assets, shots, steps : OKr)

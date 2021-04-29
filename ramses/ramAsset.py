@@ -24,7 +24,7 @@ class RamAsset( RamItem ):
         self._tags = tags
 
     def tags( self ):
-        """Some tags describing the asset.
+        """Some tags describing the asset. An empty list if the Daemon is not available.
 
         Returns:
             list of str
@@ -32,7 +32,7 @@ class RamAsset( RamItem ):
         return self._tags
 
     def group( self ):
-        """The group containing this asset.
+        """The name of group containing this asset. (e.g. Props)
 
         Returns:
             str
