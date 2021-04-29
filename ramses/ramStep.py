@@ -15,7 +15,7 @@ class RamStep( RamObject ):
     """A step in the production of the shots or assets of the project.
     """
 
-    def __init__( self, stepName, stepShortName, stepFolder, stepType ):
+    def __init__( self, stepName, stepShortName, stepFolder='', stepType='' ):
         """     
         Args:
             stepName (str)
@@ -45,13 +45,14 @@ class RamStep( RamObject ):
         Returns:
             str
         """
+
         if not Ramses.instance:
             raise Exception( "Ramses has to be instantiated first." )
 
         projectId = Ramses.instance.currentProject().shortName()
         templatesName = Ramses.instance.settings().folderNames.stepTemplates
         stepFolder = self.commonFolderPath()
-        
+
         if stepFolder == "": return ""
         return stepFolder + '/' + projectId + "_" + self._shortName + "_" + templatesName
 
@@ -62,6 +63,11 @@ class RamStep( RamObject ):
         Returns:
             enumerated value
         """
+
+        # if self._type != '': return self._type
+        # sinon on cherche grace au dossier : le dossier parent de self.commonFolderPath() contient l'info (preprod, postprod, etc)
+        # si jamais self.commonFolderPath() est aussi une empty string, on peut rien faire, et on self._type = StepType.ALL puis on return self._type
+
         return self._type
 
     # @staticmethod
