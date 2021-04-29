@@ -1,11 +1,13 @@
 import re
+from subprocess import Popen
+from time import sleep
+import os
 
 from .logger import log
 from .daemon_interface import RamDaemonInterface
 from .ramState import RamState
 from .ramSettings import RamSettings
 from .ramUser import RamUser, UserRole
-
 
 class Ramses:
     """The main class. One (and only one) instance globally available, instantiated during init time.
@@ -40,11 +42,6 @@ class Ramses:
             self.connect()
 
         Ramses.instance = self
-
-        # if connect:
-        #     self.launchClient( True )
-
-    # PROPERTIES
 
     def currentProject(self):
         from .ramProject import RamProject
@@ -134,8 +131,6 @@ class Ramses:
             bool
         """
         return not self._offline
-
-        # PUBLIC
     
     def alternativeFolderPaths(self):  # TODO
         """A list of alternative absolute paths to the main Ramses folder.
@@ -182,10 +177,8 @@ class Ramses:
                 log("Please, login!")
                 return False
         else:
-            # TODO launch client
-            # wait a few secs
-            # if not self.connect()
-            self._offline = True
+            # Try to open the client
+            self.showClient()
 
     def disconnect(self):  # TODO
         """Gets back to offline mode.
@@ -268,7 +261,26 @@ class Ramses:
     def showClient(self):  # TODO
         """Raises the Ramses Client window, launches the client if it is not already running.
         """
-        pass
+
+        try:
+            Popen( self._settings.ramsesClientPath )
+        except:
+            return False
+        # Wait for the client to respond
+        numTries = 0
+        self._offline = True
+        while( self._offline and numTries < 5 ):
+            self._offline = not self._daemon.online()
+            sleep(1)
+            numTries = numTries + 1
+        # If the client opened
+        if not self._offline:
+            self._daemon.raiseWindow()
+            return True
+        
+        return False
+            
+
 
     def settings(self):  # TODO
         """

@@ -1,7 +1,6 @@
 from ramses import (RamAsset, RamFileType, RamItem, RamProject, Ramses,
                     RamShot, RamState, RamStep, RamUser)
 
-
 def testUserClass():
     user = RamUser( "Nicolas Dufresne", "Duduf", "/home/user/duduf/Ramses/Users/Duduf", 'ADMIN' )
 
@@ -79,11 +78,11 @@ def testFileType():
     print( fileType.extensions() )
 
 def testRamsesMethods():
-    ramses = Ramses.instance
     # print( ramses.currentUser() )
     # print( ramses.currentStep() ) # => modification en cours
     # print( ramses.currentProject() )
-    print( ramses.states() )
+    # print( ramses.states() )
+    ramses.showClient()
 
 def testStepClass():
     step = RamStep( "NameStep", "ShortNameStep", "/home/user/duduf/Ramses/Users/Duduf", "ALL" )
@@ -94,7 +93,8 @@ def testStepClass():
     print( step.templatesFolderPath() )
     print( step.stepType() )
 
-
+ramses = Ramses.instance
+ramses.settings().ramsesClientPath = "D:/RAINBOX/LAB/DEV/02 - Applications/Ramses/Deploy/Ramses-Win/Ramses.exe"
 
 # testUserClass()
 # testItemClass()

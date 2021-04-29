@@ -156,7 +156,7 @@ class RamDaemonInterface():
         
         Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
         """
-        self.__post('raise')
+        self.__post('raise', 8)
 
     def getAssets(self):
         """Gets the list of the assets for the current project
