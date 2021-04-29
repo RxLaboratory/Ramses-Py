@@ -5,6 +5,7 @@ class FolderNames():
     versions = "_versions"
     publish = "_published"
     userConfig = "Config"
+    stepTemplates = "Templates"
 
 class RamSettings:
     """Gets and saves settings used by Ramses.
@@ -21,13 +22,6 @@ class RamSettings:
 
     There is only one instance of RamSettings, available with the Ramses.instance.settings() method
     """
-
-    defaultStates = [
-            RamState("No", "NO", 1.0, [25,25,25]), # Very dark gray
-            RamState("To Do", "TODO", 0.0, [85, 170, 255]), # Blue
-            RamState("Work in progress", "WIP", 0.5,  [255,255,127]), # Light Yellow
-            RamState("OK", "OK", 1.0, [0, 170, 0]), # Green
-        ]
     
     def __init__( self ):
         # TODO Load from the settings file saved previously with save()
@@ -39,6 +33,12 @@ class RamSettings:
 
         # Not Documented: these are not settings to be customized (yet)
         self.folderNames = FolderNames()
+        self.defaultStates = [
+            RamState("No", "NO", 1.0, [25,25,25]), # Very dark gray
+            RamState("To Do", "TODO", 0.0, [85, 170, 255]), # Blue
+            RamState("Work in progress", "WIP", 0.5,  [255,255,127]), # Light Yellow
+            RamState("OK", "OK", 1.0, [0, 170, 0]), # Green
+        ]
 
     def save( self ): #TODO
         """Saves the current settings to the disk.
