@@ -18,7 +18,6 @@ class RamAsset( RamItem ):
         self._group = assetGroupName
         self._tags = tags
 
-
     def tags( self ):
         """Some tags describing the asset.
 

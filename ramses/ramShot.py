@@ -14,8 +14,7 @@ class RamShot( RamItem ):
             shotName (str)
             shotShortName (str)
         """
-        super().__init__( shotName, shotShortName )
-        self._folderPath = shotFolderPath
+        super().__init__( shotName, shotShortName, shotFolder )
         self._duration = duration
 
     def duration( self ):
