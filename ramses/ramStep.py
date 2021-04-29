@@ -15,7 +15,7 @@ class RamStep( RamObject ):
     """A step in the production of the shots or assets of the project.
     """
 
-    def __init__( self, stepName, stepShortName, stepFolderPath, stepType ):
+    def __init__( self, stepName, stepShortName, stepFolder, stepType ):
         """     
         Args:
             stepName (str)

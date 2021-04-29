@@ -8,7 +8,7 @@ from . import Ramses
 class RamShot( RamItem ):
     """A shot"""
 
-    def __init__( self, shotName, shotShortName, shotFolderPath, duration=0.0 ):
+    def __init__( self, shotName, shotShortName, shotFolder, duration=0.0 ):
         """
         Args:
             shotName (str)

@@ -7,7 +7,7 @@ from .ramItem import RamItem
 class RamAsset( RamItem ):
     """A class representing an asset."""
 
-    def __init__( self, assetName, assetShortName, assetFolder, assetGroup, assetTags ):
+    def __init__( self, assetName, assetShortName, assetFolder, assetGroupName="", tags="" ):
         """
         Args:
             assetName (str)
@@ -16,8 +16,8 @@ class RamAsset( RamItem ):
         """
         super().__init__( assetName, assetShortName )
         self._assetFolder = assetFolder
-        self._assetGroup = assetGroup
-        self._assetTags = assetTags
+        self._assetGroup = assetGroupName
+        self._assetTags = tags
 
 
     def tags( self ): #TODO
