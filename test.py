@@ -3,21 +3,22 @@ from ramses import (RamAsset, RamFileType, RamItem, RamProject, Ramses,
 
 
 def testUserClass():
-    user = RamUser( "Nicolas Dufresne", "Duduf", "/home/user/duduf/Ramses/Users/Duduf", 'ADMIN' )
+    user = RamUser("Nicolas Dufresne", "Duduf", "/home/user/duduf/Ramses/Users/Duduf", 'ADMIN')
 
-    print( user.name() )
-    print( user.shortName() )
-    print( user.role() )
-    print( user.folderPath() )
-    print( user.configPath() )
-    print( user.configPath( True ) )
+    print(user.name())
+    print(user.shortName())
+    print(user.role())
+    print(user.folderPath())
+    print(user.configPath())
+    print(user.configPath(True))
+
 
 def testItemClass():
-    item = RamItem( "NameItem", "ShortNameItem", "Folder" )
+    item = RamItem("NameItem", "ShortNameItem", "Folder")
 
-    print( item.name() )
-    print( item.shortName() )
-    print( item._folderPath() )
+    print(item.name())
+    print(item.shortName())
+    print(item._folderPath())
     # print( item.currentStatus( step ) )
     # print( item.latestVersion( step ) )
     # print( item.previewFolderPath( step ) )
@@ -32,68 +33,74 @@ def testItemClass():
     # print( item.setStatus( status, step ) )
     # print( item.status( step ) )
 
-def testProjectClass():
-    proj = RamProject( "ProjectName", "ProjectShortName", "/home/user/duduf/Ramses/Users/Duduf", 1920, 1080, 5.8 )
 
-    print( proj.name() )
-    print( proj.shortName() )
-    print( proj._folderPath )
+def testProjectClass():
+    proj = RamProject("ProjectName", "ProjectShortName", "/home/user/duduf/Ramses/Users/Duduf", 1920, 1080, 5.8)
+
+    print(proj.name())
+    print(proj.shortName())
+    print(proj._folderPath)
     # print( proj.absolutePath( relativePath ) )
-    print( proj.assets("Sets") )
-    print( proj.assetGroups() )
-    print( proj.shots() )
-    print( proj.steps("SHOT_PRODUCTION") )
+    print(proj.assets("Sets"))
+    print(proj.assetGroups())
+    print(proj.shots())
+    print(proj.steps("SHOT_PRODUCTION"))
+
 
 def testShotClass():
-    shot = RamShot( "ShotName", "ShotShortName", "J:/RAINBOX/TESTRAMSESPATH/05-SHOTS/PROJECTID_S_01-001" )
+    shot = RamShot("ShotName", "ShotShortName", "J:/RAINBOX/TESTRAMSESPATH/05-SHOTS/PROJECTID_S_01-001")
 
-    print( shot.name() )
-    print( shot.shortName() )
-    print( shot.duration() )
-    print( shot.getFromPath( "J:/RAINBOX/TESTRAMSESPATH/05-SHOTS/PROJECTID_S_01-001/" ) )
-    print( shot.folderPath())   # Attention RamItem pas fini donc return None
+    print(shot.name())
+    print(shot.shortName())
+    print(shot.duration())
+    print(shot.getFromPath("J:/RAINBOX/TESTRAMSESPATH/05-SHOTS/PROJECTID_S_01-001/"))
+    print(shot.folderPath())  # Attention RamItem pas fini donc return None
+
 
 def testAssetClass():
-    asset = RamAsset( "AssetName", "AssetShortName", "J:/RAINBOX/TESTRAMSESPATH/04-ASSETS/", "Props", ["bla", "bla"] )
+    asset = RamAsset("AssetName", "AssetShortName", "J:/RAINBOX/TESTRAMSESPATH/04-ASSETS/", "Props", ["bla", "bla"])
 
-    print( asset.name() )
-    print( asset.shortName() )
-    print( asset.folderPath() )  # Attention RamItem pas fini donc return None
-    print( asset.tags() )
-    print( asset.group() )
-    print( asset.getFromPath( "J:/RAINBOX/TESTRAMSESPATH/04-ASSETS/Characters/FPE_A_TRI/" ) )
+    print(asset.name())
+    print(asset.shortName())
+    print(asset.folderPath())  # Attention RamItem pas fini donc return None
+    print(asset.tags())
+    print(asset.group())
+    print(asset.getFromPath("J:/RAINBOX/TESTRAMSESPATH/04-ASSETS/Characters/FPE_A_TRI/"))
+
 
 def testStateClass():
-    state = RamState( "Work in progress", "WIP", 50, [255, 0, 0])
-    
-    print( state.name() )
-    print( state.shortName() )
-    print( state.completionRatio() )
-    print( state.color() )
+    state = RamState("Work in progress", "WIP", 50, [255, 0, 0])
+
+    print(state.name())
+    print(state.shortName())
+    print(state.completionRatio())
+    print(state.color())
+
 
 def testFileType():
-    fileType = RamFileType( "NameFichier", "ShortNameFichier", [".txt", ".py"] )
+    fileType = RamFileType("NameFichier", "ShortNameFichier", [".txt", ".py"])
 
-    print( fileType.name() )
-    print( fileType.shortName() )
-    print( fileType.extensions() )
+    print(fileType.name())
+    print(fileType.shortName())
+    print(fileType.extensions())
+
 
 def testRamsesMethods():
     ramses = Ramses.instance
     # print( ramses.currentUser() )
     # print( ramses.currentStep() ) # => modification en cours
     # print( ramses.currentProject() )
-    print( ramses.states() )
+    print(ramses.states())
+
 
 def testStepClass():
-    step = RamStep( "NameStep", "MOD", "", "ALL" )
+    step = RamStep("NameStep", "MOD", "", "")
 
-    print( step.name() )
-    print( step.shortName() )
-    print( step.commonFolderPath() )
-    print( step.templatesFolderPath() )
-    print( step.stepType() )
-
+    print(step.name())
+    print(step.shortName())
+    print(step.commonFolderPath())
+    print(step.templatesFolderPath())
+    print(step.stepType())
 
 
 # testUserClass()
@@ -107,4 +114,4 @@ def testStepClass():
 testStepClass()
 
 # "folder": "C:/Users/Megaport/Ramses/Projects/FPE/02-PROD/FPE_SD",
-
+# "folder": "C:/Users/Megaport/Ramses/Projects/FPE/04-ASSETS/Characters",

@@ -39,6 +39,9 @@ class RamStep( RamObject ):
         if self._folderPath != "":
             return self._folderPath
         else:
+            print("*************")
+            print(Ramses.instance.currentProject().folderPath())
+            print("*************")
             path = Ramses.instance.currentProject().folderPath()
             self._folderPath = path + "_" + self.shortName()
             return self._folderPath
@@ -66,12 +69,14 @@ class RamStep( RamObject ):
         Returns:
             enumerated value
         """
-        
-
-
-        # if self._type != '': return self._type
-        # sinon on cherche grace au dossier : le dossier parent de self.commonFolderPath() contient l'info (preprod, postprod, etc)
-        # si jamais self.commonFolderPath() est aussi une empty string, on peut rien faire, et on self._type = StepType.ALL puis on return self._type
+        if self._type != "":
+            return self._type
+        elif self.commonFolderPath() == "":
+            self._type = StepType.ALL
+            return self._type
+        else:
+            splitedPath = self.commonFolderPath().split('/')
+            self._type = splitedPath[-2]
 
         return self._type
 
