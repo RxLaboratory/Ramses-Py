@@ -29,3 +29,12 @@ Est-ce que ça peut aller ?
 - prévoir les bugs des queries qui font planter l'appli ;-)
 - implémenter getAssetGroups dans le démon
 - ajouter currentStatus (RamItem) dans le demon
+
+
+## RESUME :
+
+- Test de RamAsset OK sauf :
+    - foderPath renvoie None car RamItem pas encore fini
+    - getFromPath renvoie Ramses says: The given folder does not respect Ramses' naming convention :-(
+
+- Test de RamShot : idem RamAsset

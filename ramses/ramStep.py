@@ -1,6 +1,7 @@
 import os
 
 from .ramObject import RamObject
+from .ramses import Ramses
 from .logger import log
 
 class StepType():
@@ -23,7 +24,7 @@ class RamStep( RamObject ):
         """
         super().__init__( stepName, stepShortName )
         self._fileType = None
-        self._folderPath = stepFolderPath
+        self._folderPath = stepFolder
         self._type = stepType
 
     def commonFolderPath( self ): #TODO

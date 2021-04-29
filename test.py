@@ -1,5 +1,5 @@
 from ramses import (RamAsset, RamFileType, RamItem, RamProject, Ramses,
-                    RamShot, RamState, RamUser, RamStep)
+                    RamShot, RamState, RamStep, RamUser)
 
 
 def testUserClass():
@@ -45,21 +45,23 @@ def testProjectClass():
     print( proj.steps("SHOT_PRODUCTION") )
 
 def testShotClass():
-    shot = RamShot( "ShotName", "ShotShortName", "5.38" )  # Duration ? Status ? Folder ?
+    shot = RamShot( "ShotName", "ShotShortName", "J:/RAINBOX/TESTRAMSESPATH/05-SHOTS/PROJECTID_S_01-001" )
 
     print( shot.name() )
     print( shot.shortName() )
     print( shot.duration() )
-    print( shot.getFromPath( "/home/user/duduf/Ramses/Users/Duduf/" ) )
+    print( shot.getFromPath( "J:/RAINBOX/TESTRAMSESPATH/05-SHOTS/PROJECTID_S_01-001/" ) )
     print( shot.folderPath())
 
 def testAssetClass():
-    asset = RamAsset( "AssetName", "AssetShortName", "/home/user/duduf/Ramses/Users/Duduf", "Props", "" )
+    asset = RamAsset( "AssetName", "AssetShortName", "J:/RAINBOX/TESTRAMSESPATH/04-ASSETS/", "Props", ["bla", "bla"] )
 
     print( asset.name() )
     print( asset.shortName() )
+    print( asset.folderPath() )  # Attention RamItem pas fini donc return None
     print( asset.tags() )
     print( asset.group() )
+    print( asset.getFromPath( "J:/RAINBOX/TESTRAMSESPATH/04-ASSETS/Characters/FPE_A_TRI/" ) )
 
 def testStateClass():
     state = RamState( "Work in progress", "WIP", 50, [255, 0, 0])
@@ -96,13 +98,13 @@ def testStepClass():
 
 # testUserClass()
 # testItemClass()
-testProjectClass()
-# testShotClass()
+# testProjectClass()
+testShotClass()
 # testAssetClass()
 # testStateClass()
 # testFileType()
 # testRamsesMethods()
 # testStepClass()
 
-
+# "folder": "C:/Users/Megaport/Ramses/Projects/FPE/02-PROD/FPE_SD",
 

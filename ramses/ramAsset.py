@@ -1,20 +1,25 @@
 import os
 
-from .logger import log
 from . import Ramses
+from .logger import log
 from .ramItem import RamItem
+
 
 class RamAsset( RamItem ):
     """A class representing an asset."""
 
-    def __init__( self, assetName, assetShortName, assetFolder, assetGroupName="", tags="" ):
+    def __init__(self, assetName, assetShortName, assetFolder, assetGroupName="", tags=None):
         """
         Args:
             assetName (str)
             assetShortName (str)
             assetFolder (str)
+            assetGroupName (str)
+            tags (list of str)
         """
         super().__init__( assetName, assetShortName, assetFolder )
+        if tags is None:
+            tags = []
         self._group = assetGroupName
         self._tags = tags
 
@@ -85,7 +90,7 @@ class RamAsset( RamItem ):
         shortName = folderBlocks[ 2 ]
         assetFolderPath = os.path.relpath( folderPath, Ramses.instance.currentProject().folderPath )
 
-        asset = RamAsset( assetName = "", assetShortName = shortName, assetFolder = assetFolderPath, assetGroup = "", assetTags = "" )
+        asset = RamAsset( assetName = "", assetShortName = shortName, assetFolder = assetFolderPath )
         return asset
 
     # Hidden and not documented: documented in RamItem.folderPath()
