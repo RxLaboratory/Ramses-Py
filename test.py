@@ -112,8 +112,8 @@ ramses.settings().ramsesClientPath = "D:/RAINBOX/LAB/DEV/02 - Applications/Ramse
 # testAssetClass()
 # testStateClass()
 # testFileType()
-# testRamsesMethods()
-testStepClass()
+testRamsesMethods()
+# testStepClass()
 
 # "folder": "C:/Users/Megaport/Ramses/Projects/FPE/02-PROD/FPE_SD",
 # "folder": "C:/Users/Megaport/Ramses/Projects/FPE/04-ASSETS/Characters",

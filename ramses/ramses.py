@@ -1,7 +1,7 @@
 import re
 from subprocess import Popen
 from time import sleep
-import os
+from sys import platform
 
 from .logger import log
 from .daemon_interface import RamDaemonInterface
@@ -262,10 +262,36 @@ class Ramses:
         """Raises the Ramses Client window, launches the client if it is not already running.
         """
 
+        if self._settings.ramsesClientPath == "":
+            self._offline = True
+            return False
+
+        return # TODO Must be started detached...
+        # import os
+        # import sys
+        # import platform
+        # from subprocess import Popen, PIPE
+
+        # # set system/version dependent "start_new_session" analogs
+        # kwargs = {}
+        # if platform.system() == 'Windows':
+        #     # from msdn [1]
+        #     CREATE_NEW_PROCESS_GROUP = 0x00000200  # note: could get it from subprocess
+        #     DETACHED_PROCESS = 0x00000008          # 0x8 | 0x200 == 0x208
+        #     kwargs.update(creationflags=DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP)  
+        # elif sys.version_info < (3, 2):  # assume posix
+        #     kwargs.update(preexec_fn=os.setsid)
+        # else:  # Python 3.2+ and Unix
+        #     kwargs.update(start_new_session=True)
+
+        # p = Popen(["C"], stdin=PIPE, stdout=PIPE, stderr=PIPE, **kwargs)
+        # assert not p.poll()
+
         try:
-            Popen( self._settings.ramsesClientPath )
+            Popen(self._settings.ramsesClientPath)
         except:
             return False
+
         # Wait for the client to respond
         numTries = 0
         self._offline = True
