@@ -65,10 +65,12 @@ class RamItem( RamObject ):
         """
 
         # NOTE :
-        # if online: demander au démon
+        # if self._folderPath is not "": return self._folderPath
         # sinon:
             # if itemType == 'SHOT' -> construire chemin d'un shot
             # if itemType == 'ASSET -> construire le chemin en prenant en compte assetgroup
+            # self._folderPath = résultat de ci dessus (pour pas avoir à reconstruire à chaque fois)
+            # return self._folderPath
 
         pass
 
