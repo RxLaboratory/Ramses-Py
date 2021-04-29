@@ -4,6 +4,7 @@ from .ramses import Ramses
 from .ramObject import RamObject
 from .ramStatus import RamStatus
 from .ramStep import RamStep
+from .daemon_interface import RamDaemonInterface
 
 
 class RamItem( RamObject ):
@@ -21,6 +22,8 @@ class RamItem( RamObject ):
         """
         super().__init__( itemName, itemShortName )
         self._folderPath = itemFolder
+        self._daemon = RamDaemonInterface()
+
 
     def currentStatus( self, step, resource="" ): #TODO if online
         """The current status for the given step
@@ -34,9 +37,16 @@ class RamItem( RamObject ):
         """
         if not Ramses.instance:
             raise Exception( "Ramses has to be instantiated first." )
-        # If we're online, ask the client
+        # If we're online, ask the client (return a dict)
         if Ramses.instance.online:
-            # TODO ask the client
+            statusDict = self._daemon.getCurrentStatus( self._shortName, self._name )
+            # check if successful
+            if RamDaemonInterface.checkReply( statusDict ):
+                content = statusDict['content']
+                foundStatus = content['status']
+                print(foundStatus)
+                # manque le type !! Comment mettre ASSET !?
+
             return None
         
         # If offline
