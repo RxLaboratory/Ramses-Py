@@ -50,8 +50,6 @@ class RamDaemonInterface():
             else:
                 queryList.append( "=".join(arg) )
 
-        print(queryList)
-
         return "&".join(queryList)
 
     def __post(self, query, bufsize = 1024):
@@ -72,7 +70,7 @@ class RamDaemonInterface():
 
         query = self.__buildQuery( query )
 
-        log("Ramses Daemon: Query: " + query)
+        log("Posting query: " + query)
 
         try: s.connect((self.address, self.port))
         except ConnectionRefusedError:
@@ -214,10 +212,11 @@ class RamDaemonInterface():
 
         if not self.__checkUser(): return self.__noUserReply('getShots')
         if filter == "": return self.__post( ("getShots"), 1048576 )
-        return self._post(
+        return self.__post( (
             "getShots",
             ('filter', filter)
-        )
+            ),
+            1048576  )
 
     def getStates(self):
         """Gets the list of the states
@@ -289,4 +288,9 @@ class RamDaemonInterface():
             ('shortName', itemShortName),
             ('name', itemName),
             ('type', itemType)
-            ) )
+            ), 8192 )
+
+# used for testing
+if __name__ == "__main__":
+    daemon = RamDaemonInterface()
+    print ( daemon.getCurrentStatus("SEA", "Sea", "ASSET") )
