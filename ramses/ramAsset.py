@@ -14,9 +14,8 @@ class RamAsset( RamItem ):
             assetShortName (str)
             assetFolder (str)
         """
-        super().__init__( assetName, assetShortName )
-        self._assetFolder = assetFolder
-        self._assetGroup = assetGroupName
+        super().__init__( assetName, assetShortName, assetFolder )
+        self._group = assetGroupName
         self._tags = tags
 
 
@@ -28,7 +27,7 @@ class RamAsset( RamItem ):
         """
         return self._tags
 
-    def group( self ): #TODO if online
+    def group( self ):
         """The group containing this asset.
 
         Returns:
@@ -36,17 +35,13 @@ class RamAsset( RamItem ):
         """
         if not Ramses.instance:
             raise Exception( "Ramses has to be instantiated first." )
-        # If we're online, ask the client
-        if Ramses.instance.online:
-            #TODO
-            return None
 
-        if self.folderPath == '':
-            print( "The given item has no folderPath." )
-            return None
+        if self._folderPath == '':
+            log( "The given item has no folderPath." )
+            return self._group
         if not os.path.isdir( self._folderPath ):
-            print( "The given item's folder was not found.\nThis is the path that was checked:\n" + self._folderPath )
-            return None
+            log( "The given item's folder was not found.\nThis is the path that was checked:\n" + self._folderPath )
+            return self._group
 
         parentFolder = os.path.dirname( self._folderPath )
         parentFolderName = os.path.basename( parentFolder )
@@ -54,7 +49,7 @@ class RamAsset( RamItem ):
         if parentFolderName != '04-ASSETS':
             return parentFolderName
             
-        return None
+        return self._group
 
     @staticmethod
     def getFromPath( folderPath ):
