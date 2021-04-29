@@ -1,5 +1,5 @@
 import re
-from subprocess import Popen
+from subprocess import Popen, PIPE
 from time import sleep
 from sys import platform
 
@@ -266,7 +266,7 @@ class Ramses:
             self._offline = True
             return False
 
-        return # TODO find a way to start detached... Otherwise this method can't be used
+        #return # TODO find a way to start detached... Otherwise this method can't be used
         # -> Build another exe from ramses which starts ramses detached then returns -> use the exit code to tell if ramses has been launched ?
         # -> Use a bat / sh file ?
 
@@ -291,9 +291,12 @@ class Ramses:
         # assert not p.poll()
 
         try:
-            Popen(self._settings.ramsesClientPath)
+            p = Popen(self._settings.ramsesClientPath, stdin=PIPE, stdout=PIPE, stderr=PIPE)
         except:
             return False
+
+        if not p.poll(): del p
+        else: return False
 
         # Wait for the client to respond
         numTries = 0
@@ -309,8 +312,6 @@ class Ramses:
         
         return False
             
-
-
     def settings(self):  # TODO
         """
 

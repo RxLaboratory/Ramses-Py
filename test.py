@@ -1,6 +1,8 @@
 from ramses import (RamAsset, RamFileType, RamItem, RamProject, Ramses,
                     RamShot, RamState, RamStep, RamUser)
 
+import sys
+
 def testUserClass():
     user = RamUser("Nicolas Dufresne", "Duduf", "/home/user/duduf/Ramses/Users/Duduf", 'ADMIN')
 
@@ -103,7 +105,10 @@ def testStepClass():
 
 
 ramses = Ramses.instance
-ramses.settings().ramsesClientPath = "D:/RAINBOX/LAB/DEV/02 - Applications/Ramses/Deploy/Ramses-Win/ramses.bat"
+# ramses.settings().ramsesClientPath = "D:/RAINBOX/LAB/DEV/02 - Applications/Ramses/Deploy/Ramses-Win/ramses.bat"
+ramses.settings().ramsesClientPath = "dume"
+
+
 
 # testUserClass()
 # testItemClass()
@@ -117,3 +122,5 @@ testRamsesMethods()
 
 # "folder": "C:/Users/Megaport/Ramses/Projects/FPE/02-PROD/FPE_SD",
 # "folder": "C:/Users/Megaport/Ramses/Projects/FPE/04-ASSETS/Characters",
+
+# sys.exit()
