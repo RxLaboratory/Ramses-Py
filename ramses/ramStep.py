@@ -1,8 +1,5 @@
-import os
-
 from .ramObject import RamObject
 from .ramses import Ramses
-from .logger import log
 
 class StepType():
     PRE_PRODUCTION = 'PRE_PRODUCTION'
@@ -36,14 +33,23 @@ class RamStep( RamObject ):
         if not Ramses.instance:
             raise Exception( "Ramses has to be instantiated first." )
 
+        dir = ""
+
+        if self._type == "":
+            return ""
+        elif self._type == StepType().PRE_PRODUCTION:
+            dir = "01-PRE-PROD"
+        elif self._type == StepType().PRODUCTION:
+            dir = "02-PROD"
+        elif self._type == StepType().POST_PRODUCTION:
+            dir = "03-POST-PROD"
+
         if self._folderPath != "":
             return self._folderPath
         else:
-            print("*************")
-            print(Ramses.instance.currentProject().folderPath())
-            print("*************")
+            name = Ramses.instance.currentProject().shortName()
             path = Ramses.instance.currentProject().folderPath()
-            self._folderPath = path + "_" + self.shortName()
+            self._folderPath = path + dir + "/" + name + "_" + self.shortName()
             return self._folderPath
 
 

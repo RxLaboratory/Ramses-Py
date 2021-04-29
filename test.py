@@ -14,24 +14,24 @@ def testUserClass():
 
 
 def testItemClass():
-    item = RamItem("NameItem", "ShortNameItem", "Folder")
+    item = RamItem("Tristan", "TRI", "ASSET")
 
     print(item.name())
     print(item.shortName())
-    print(item._folderPath())
-    # print( item.currentStatus( step ) )
-    # print( item.latestVersion( step ) )
-    # print( item.previewFolderPath( step ) )
-    # print( item.previewFilePaths( step ) )
-    # print( item.publishedFolderPath( step ) )
-    # print( item.publishedFilePaths( step ) )
-    # print( item.versionFolderPath( step ) )
-    # print( item.versionFilePath( step ) )
-    # print( item.wipFolderPath( step ) )
-    # print( item.wipFilePath( step ) )
-    # print( item.isPublished( step ) )
-    # print( item.setStatus( status, step ) )
-    # print( item.status( step ) )
+    print(item._folderPath)
+    print( item.currentStatus( 'SHOT_PRODUCTION' ) )
+    # print( item.latestVersion( 'SHOT_PRODUCTION' ) )
+    # print( item.previewFolderPath( 'SHOT_PRODUCTION' ) )
+    # print( item.previewFilePaths( 'SHOT_PRODUCTION' ) )
+    # print( item.publishedFolderPath( 'SHOT_PRODUCTION' ) )
+    # print( item.publishedFilePaths( 'SHOT_PRODUCTION' ) )
+    # print( item.versionFolderPath( 'SHOT_PRODUCTION' ) )
+    # print( item.versionFilePath( 'SHOT_PRODUCTION' ) )
+    # print( item.wipFolderPath( 'SHOT_PRODUCTION' ) )
+    # print( item.wipFilePath( 'SHOT_PRODUCTION' ) )
+    # print( item.isPublished( 'SHOT_PRODUCTION' ) )
+    # print( item.setStatus( status, 'SHOT_PRODUCTION' ) )
+    # print( item.status( 'SHOT_PRODUCTION' ) )
 
 
 def testProjectClass():
@@ -94,13 +94,13 @@ def testRamsesMethods():
 
 
 def testStepClass():
-    step = RamStep("NameStep", "MOD", "", "")
+    step = RamStep("Modeling", "MOD", "", "PRE_PRODUCTION")
 
-    print(step.name())
-    print(step.shortName())
-    print(step.commonFolderPath())
-    print(step.templatesFolderPath())
-    print(step.stepType())
+    print( "=> name of the step = " + step.name() )
+    print( "=> shortName of the step = " + step.shortName() )
+    print( "=> commonFolderPath = " + step.commonFolderPath() )
+    print( "=> templatesFolderPath = " + step.templatesFolderPath() )
+    print( "=> stepType = " + step.stepType() )
 
 
 # testUserClass()
