@@ -78,8 +78,7 @@ class RamStep( RamObject ):
         if self._type != "":
             return self._type
         elif self.commonFolderPath() == "":
-            self._type = StepType.ALL
-            return self._type
+            return ""
         else:
             splitedPath = self.commonFolderPath().split('/')
             self._type = splitedPath[-2]
