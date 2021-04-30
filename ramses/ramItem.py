@@ -48,7 +48,7 @@ class RamItem( RamObject ):
                 # manque le type !! Comment mettre ASSET !?
 
             return None
-        
+
         # If offline
         currentVersionPath = self.versionFilePath( step, resource )
         if currentVersionPath == None:
@@ -73,6 +73,32 @@ class RamItem( RamObject ):
         Returns:
             str
         """
+        if self._folderPath != "":
+            return self._folderPath
+
+        basePath = Ramses.instance.currentProject()._folderPath
+        assetFolder = Ramses.instance.currentProject()._shortName + "_A_" + self._name
+        shotFolder = Ramses.instance.currentProject()._shortName + "_S_" + step
+
+        if itemType == "SHOT":
+            item_type = "05-SHOTS"
+            if step == "":              # if step == "" >>> return all the shots folder
+                self._folderPath = basePath + "/" + item_type
+            else:
+                self._folderPath = basePath + "/" + item_type + "/" + shotFolder
+
+        if itemType == "ASSET":
+            item_type = "04-ASSETS"
+            if assetGroup == "":        # if groupName == "" >>> return all group of assets folder
+                self._folderPath = basePath + "/" + item_type
+            else:
+                if step == "":          # if step == "" >>> return all the assets for the groupName
+                    self._folderPath = basePath + "/" + item_type + "/" + assetGroup + "/" + assetFolder
+                else:
+                    self._folderPath = basePath + "/" + item_type + "/" + assetGroup + "/" + assetFolder +\
+                                       ("/" + assetFolder + "_" + step)
+
+        return self._folderPath
 
         # NOTE :
         # if self._folderPath is not "": return self._folderPath
@@ -82,7 +108,6 @@ class RamItem( RamObject ):
             # self._folderPath = résultat de ci dessus (pour pas avoir à reconstruire à chaque fois)
             # return self._folderPath
 
-        pass
 
     def latestVersion( self, step, resource="", stateId="wip"): #TODO if online
         """Returns the highest version number for the given state (wip, pub…).

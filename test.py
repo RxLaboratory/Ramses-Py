@@ -3,6 +3,7 @@ from ramses import (RamAsset, RamFileType, RamItem, RamProject, Ramses,
 
 import sys
 
+
 def testUserClass():
     user = RamUser("Nicolas Dufresne", "Duduf", "/home/user/duduf/Ramses/Users/Duduf", 'ADMIN')
 
@@ -15,12 +16,13 @@ def testUserClass():
 
 
 def testItemClass():
-    item = RamItem("Tristan", "TRI", "ASSET")
+    item = RamItem("Tristan", "TRI", "")
 
     print(item.name())
     print(item.shortName())
     print(item._folderPath)
-    print( item.currentStatus( 'SHOT_PRODUCTION' ) )
+    print(item.folderPath("ASSET", "MOD", "Characters"))
+    print(item.currentStatus('SHOT_PRODUCTION'))
     # print( item.latestVersion( 'SHOT_PRODUCTION' ) )
     # print( item.previewFolderPath( 'SHOT_PRODUCTION' ) )
     # print( item.previewFilePaths( 'SHOT_PRODUCTION' ) )
@@ -97,27 +99,25 @@ def testRamsesMethods():
 
 def testStepClass():
     step = RamStep("Modeling", "MOD", "", "PRE_PRODUCTION")
-    print( "=> name of the step = " + step.name() )
-    print( "=> shortName of the step = " + step.shortName() )
-    print( "=> commonFolderPath = " + step.commonFolderPath() )
-    print( "=> templatesFolderPath = " + step.templatesFolderPath() )
-    print( "=> stepType = " + step.stepType() )
+    print("=> name of the step = " + step.name())
+    print("=> shortName of the step = " + step.shortName())
+    print("=> commonFolderPath = " + step.commonFolderPath())
+    print("=> templatesFolderPath = " + step.templatesFolderPath())
+    print("=> stepType = " + step.stepType())
 
 
 ramses = Ramses.instance
 # ramses.settings().ramsesClientPath = "D:/RAINBOX/LAB/DEV/02 - Applications/Ramses/Deploy/Ramses-Win/ramses.bat"
 ramses.settings().ramsesClientPath = "dume"
 
-
-
 # testUserClass()
-# testItemClass()
+testItemClass()
 # testProjectClass()
 # testShotClass()
 # testAssetClass()
 # testStateClass()
 # testFileType()
-testRamsesMethods()
+# testRamsesMethods()
 # testStepClass()
 
 # "folder": "C:/Users/Megaport/Ramses/Projects/FPE/02-PROD/FPE_SD",

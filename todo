@@ -6,7 +6,7 @@
 - [x] RamUser
 - [x] RamState
 - [x] RamFileType
-- [ ] RamItem
+- [ ] RamItem       (folderPath fini : à vérifier) Question : N° des Shots ??
 - [*] RamShot
 - [*] RamAsset
 - [*] RamStep
@@ -34,4 +34,3 @@ Est-ce que ça peut aller ?
 - Test de RamShot : idem RamAsset
 
 - Test de RamStep : normalement, tout est OK
-    mais pour le StepType, le client me renvoie "Projects" pour Free Prod Example (au lieu de PRE-Prod etc)
