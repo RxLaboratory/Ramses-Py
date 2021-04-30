@@ -415,7 +415,7 @@ class Ramses:
         prefixes = self._versionPrefixes
 
         for state in self.states():
-            prefixes.append( state.shortName )
+            prefixes.append( state.shortName() )
 
         regexStr = ''
         for prefix in prefixes[0:-1]:
