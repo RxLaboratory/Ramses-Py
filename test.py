@@ -1,5 +1,5 @@
 from ramses import (RamAsset, RamFileType, RamItem, RamProject, Ramses,
-                    RamShot, RamState, RamStep, RamUser)
+                    RamShot, RamState, RamStep, RamUser, daemon_interface)
 
 import sys
 
@@ -16,14 +16,15 @@ def testUserClass():
 
 
 def testItemClass():
-    item = RamItem("Tristan", "TRI", "")
+    item = RamItem("Sea", "SEA", "")
 
     print(item.name())
     print(item.shortName())
     print(item._folderPath)
-    print(item.folderPath("ASSET", "MOD", "Characters"))
-    print(item.currentStatus('SHOT_PRODUCTION'))
-    # print( item.latestVersion( 'SHOT_PRODUCTION' ) )
+    print(item.folderPath("ASSET", "MOD", "Sets"))
+    print(item.currentStatus("MOD"))
+    print("*********")
+    print( item.latestVersion( "MOD" ) )
     # print( item.previewFolderPath( 'SHOT_PRODUCTION' ) )
     # print( item.previewFilePaths( 'SHOT_PRODUCTION' ) )
     # print( item.publishedFolderPath( 'SHOT_PRODUCTION' ) )
@@ -109,6 +110,7 @@ def testStepClass():
 ramses = Ramses.instance
 # ramses.settings().ramsesClientPath = "D:/RAINBOX/LAB/DEV/02 - Applications/Ramses/Deploy/Ramses-Win/ramses.bat"
 ramses.settings().ramsesClientPath = "dume"
+
 
 # testUserClass()
 testItemClass()

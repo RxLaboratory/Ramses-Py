@@ -64,7 +64,7 @@ class RamItem( RamObject ):
 
     # Do not document "type" and "assetGroup" arguments, they should stay hidden
     # (not needed in derived classes RamShot.folderPath() and RamAsset.folderPath())
-    def folderPath( self, itemType, step="", assetGroup="" ): #TODO
+    def folderPath( self, itemType, step="", assetGroup="" ):
         """The absolute path to the folder containing the asset, or to the step subfolder if provided
 
         Args:
@@ -83,7 +83,7 @@ class RamItem( RamObject ):
 
         if itemType == "SHOT":
             # Go to shots
-            folderPath = folderPath + '/05 - SHOTS'
+            folderPath = folderPath + '05-SHOTS'
             # Get the shot folder name
             shotFolderName = project.shortName() + '_S_' + self._shortName
             self._folderPath = folderPath + '/' + shotFolderName
@@ -91,12 +91,12 @@ class RamItem( RamObject ):
             if step == "": # Return the base shot folder
                 return self._folderPath
             
-            return self.folderPath + '/' + shotFolderName + '_' + step # add the step subfolder
+            return self._folderPath + '/' + shotFolderName + '_' + step # add the step subfolder
 
 
         if itemType == "ASSET":
             # Go to assets
-            folderPath = folderPath + '/04 - ASSETS'
+            folderPath = folderPath + '04-ASSETS'
             # The asset folder name
             assetFolderName = project.shortName() + '_A_' + self._shortName
             
@@ -111,11 +111,11 @@ class RamItem( RamObject ):
             if step == "": # Return the base asset folder
                 return self._folderPath
             
-            return self.folderPath + '/' + assetFolderName + '_' + step # add the step subfolder
+            return self._folderPath + '/' + assetFolderName + '_' + step # add the step subfolder
 
         return ""
 
-    def latestVersion( self, step, resource="", stateId="wip"): #TODO if online
+    def latestVersion( self, step, resource="", stateId="wip"):
         """Returns the highest version number for the given state (wip, pub…).
 
         Args:
@@ -128,11 +128,51 @@ class RamItem( RamObject ):
         """
         if not Ramses.instance:
             raise Exception( "Ramses has to be instantiated first." )
+
+        print("123")
+        abc = Ramses.instance.daemonInterface().getCurrentStatus("SEA", "Sea", "ASSET")
+        print(abc)
+        print("123")
+
+        listWithState = []
  
         # If we're online, ask the client
         if Ramses.instance.online:
-            # TODO
-            return 0
+            folderPath = self._folderPath
+            # >>> e.g.  C:/Users/Megaport/Ramses/Projects/FPE/04 - ASSETS/Characters/FPE_A_TRI
+
+            workingFolder = folderPath.split("/")[-1]
+            # >>> e.g.  FPE_A_TRI
+
+            folderPath = folderPath + "/" + workingFolder + "_" + step + "/_versions"
+            # >>> e.g.  C:/Users/Megaport/Ramses/Projects/FPE/04 - ASSETS/Characters/FPE_A_TRI/FPE_A_TRI_MOD/_versions
+
+            filesList = os.listdir( folderPath )
+            # >>> we get all the files in the -versions folder
+
+            for files in filesList:
+                if stateId in files:
+                    # search with stateId
+                    listWithState.append(files)
+
+            highestVersion = 0
+
+            for filesWithState in listWithState:
+                decomposedFoundFile = Ramses.instance._decomposeRamsesFileName( filesWithState )
+
+                if decomposedFoundFile == None:
+                    continue
+                if decomposedFoundFile["resourceStr"] != resource:
+                    continue
+                if decomposedFoundFile["version"] == '':
+                    continue
+
+                versionInt = int( decomposedFoundFile["version"] )
+                if versionInt > highestVersion:
+                    highestVersion = versionInt
+
+            return highestVersion
+                
 
         # Else check in the folders
         if self.folderPath == '':
