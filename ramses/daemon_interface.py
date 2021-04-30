@@ -52,7 +52,7 @@ class RamDaemonInterface():
 
         return "&".join(queryList)
 
-    def __post(self, query, bufsize = 1024):
+    def __post(self, query, bufsize = 0):
         """Posts a query and returns a dict corresponding to the json reply
         
         Args:
@@ -82,6 +82,11 @@ class RamDaemonInterface():
             return
 
         s.sendall(query.encode('utf-8'))
+
+        if bufsize == 0:
+            s.close()
+            return None
+
         data = s.recv(bufsize)
         s.close()
 
@@ -104,7 +109,7 @@ class RamDaemonInterface():
     def __testConnection(self):
         """Checks if the Ramses Daemon is available"""
 
-        data = self.__post("ping")
+        data = self.ping()
 
         if data is None:
             log("Daemon unavailable")
@@ -149,14 +154,14 @@ class RamDaemonInterface():
         Returns: dict.
             Read http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
         """
-        return self.__post('ping')
+        return self.__post('ping', 1024)
 
     def raiseWindow(self):
         """Raises the Ramses Client application main window.
         
         Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
         """
-        self.__post('raise', 8)
+        self.__post('raise')
 
     def getAssets(self):
         """Gets the list of the assets for the current project

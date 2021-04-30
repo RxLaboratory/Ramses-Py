@@ -95,8 +95,8 @@ def testRamsesMethods():
     # print( ramses.currentStep() ) # => modification en cours
     # print( ramses.currentProject() )
     # print( ramses.states() )
+    # print(ramses.states())
     ramses.showClient()
-    print(ramses.states())
 
 
 def testStepClass():
@@ -109,18 +109,19 @@ def testStepClass():
 
 
 ramses = Ramses.instance
-# ramses.settings().ramsesClientPath = "D:/RAINBOX/LAB/DEV/02 - Applications/Ramses/Deploy/Ramses-Win/ramses.bat"
-ramses.settings().ramsesClientPath = "dume"
+ramses.settings().ramsesClientPath = "E:/RAINBOX/LAB/DEV/02 - Applications/Ramses/Deploy/Ramses-Win/ramses.exe"
+# ramses.settings().ramsesClientPath = "E:/RAINBOX/LAB/DEV/02 - Applications/DuME/DEV_DuME_Deploy/DuME-Win/DuME.exe"
+# ramses.settings().ramsesClientPath = "dume"
 
 
 # testUserClass()
-testItemClass()
+# testItemClass()
 # testProjectClass()
 # testShotClass()
 # testAssetClass()
 # testStateClass()
 # testFileType()
-# testRamsesMethods()
+testRamsesMethods()
 # testStepClass()
 
 # "folder": "C:/Users/Megaport/Ramses/Projects/FPE/02-PROD/FPE_SD",

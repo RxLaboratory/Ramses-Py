@@ -266,45 +266,25 @@ class Ramses:
             self._offline = True
             return False
 
-        #return # TODO find a way to start detached... Otherwise this method can't be used
-        # -> Build another exe from ramses which starts ramses detached then returns -> use the exit code to tell if ramses has been launched ?
-        # -> Use a bat / sh file ?
-
-        # import os
-        # import sys
-        # import platform
-        # from subprocess import Popen, PIPE
-
-        # # set system/version dependent "start_new_session" analogs
-        # kwargs = {}
-        # if platform.system() == 'Windows':
-        #     # from msdn [1]
-        #     CREATE_NEW_PROCESS_GROUP = 0x00000200  # note: could get it from subprocess
-        #     DETACHED_PROCESS = 0x00000008          # 0x8 | 0x200 == 0x208
-        #     kwargs.update(creationflags=DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP)  
-        # elif sys.version_info < (3, 2):  # assume posix
-        #     kwargs.update(preexec_fn=os.setsid)
-        # else:  # Python 3.2+ and Unix
-        #     kwargs.update(start_new_session=True)
-
-        # p = Popen(["C"], stdin=PIPE, stdout=PIPE, stderr=PIPE, **kwargs)
-        # assert not p.poll()
-
         try:
             p = Popen(self._settings.ramsesClientPath, stdin=PIPE, stdout=PIPE, stderr=PIPE)
         except:
+            log("The Client is not available at " + self._settings.ramsesClientPath)
             return False
 
         if not p.poll(): del p
-        else: return False
-
+        else:
+            log("The Client can't be launched correctly.")
+            return False
+        
         # Wait for the client to respond
         numTries = 0
         self._offline = True
-        while( self._offline and numTries < 5 ):
+        while( self._offline and numTries < 3 ):
             self._offline = not self._daemon.online()
             sleep(1)
             numTries = numTries + 1
+        
         # If the client opened
         if not self._offline:
             self._daemon.raiseWindow()
