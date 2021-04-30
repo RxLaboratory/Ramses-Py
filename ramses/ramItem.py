@@ -76,38 +76,44 @@ class RamItem( RamObject ):
         if self._folderPath != "":
             return self._folderPath
 
-        basePath = Ramses.instance.currentProject()._folderPath
-        assetFolder = Ramses.instance.currentProject()._shortName + "_A_" + self._name
-        shotFolder = Ramses.instance.currentProject()._shortName + "_S_" + step
+        # Project
+        project = Ramses.instance.currentProject()
+        # Project path
+        folderPath = project.folderPath()
 
         if itemType == "SHOT":
-            item_type = "05-SHOTS"
-            if step == "":              # if step == "" >>> return all the shots folder
-                self._folderPath = basePath + "/" + item_type
-            else:
-                self._folderPath = basePath + "/" + item_type + "/" + shotFolder
+            # Go to shots
+            folderPath = folderPath + '/05 - SHOTS'
+            # Get the shot folder name
+            shotFolderName = project.shortName() + '_S_' + self._shortName
+            self._folderPath = folderPath + '/' + shotFolderName
+            
+            if step == "": # Return the base shot folder
+                return self._folderPath
+            
+            return self.folderPath + '/' + shotFolderName + '_' + step # add the step subfolder
+
 
         if itemType == "ASSET":
-            item_type = "04-ASSETS"
-            if assetGroup == "":        # if groupName == "" >>> return all group of assets folder
-                self._folderPath = basePath + "/" + item_type
-            else:
-                if step == "":          # if step == "" >>> return all the assets for the groupName
-                    self._folderPath = basePath + "/" + item_type + "/" + assetGroup + "/" + assetFolder
-                else:
-                    self._folderPath = basePath + "/" + item_type + "/" + assetGroup + "/" + assetFolder +\
-                                       ("/" + assetFolder + "_" + step)
+            # Go to assets
+            folderPath = folderPath + '/04 - ASSETS'
+            # The asset folder name
+            assetFolderName = project.shortName() + '_A_' + self._shortName
+            
+            if assetGroup == "": # Without groupname (which should never be the case), consider the asset folder is right there
+                self._folderPath = folderPath + '/' + assetFolderName
+                return self._folderPath
+            
+            # add the group
+            folderPath = folderPath + '/' + assetGroup
+            self._folderPath = folderPath + '/' + assetFolderName
 
-        return self._folderPath
+            if step == "": # Return the base asset folder
+                return self._folderPath
+            
+            return self.folderPath + '/' + assetFolderName + '_' + step # add the step subfolder
 
-        # NOTE :
-        # if self._folderPath is not "": return self._folderPath
-        # sinon:
-            # if itemType == 'SHOT' -> construire chemin d'un shot
-            # if itemType == 'ASSET -> construire le chemin en prenant en compte assetgroup
-            # self._folderPath = résultat de ci dessus (pour pas avoir à reconstruire à chaque fois)
-            # return self._folderPath
-
+        return ""
 
     def latestVersion( self, step, resource="", stateId="wip"): #TODO if online
         """Returns the highest version number for the given state (wip, pub…).
