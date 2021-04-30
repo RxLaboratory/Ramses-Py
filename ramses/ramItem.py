@@ -129,10 +129,10 @@ class RamItem( RamObject ):
         if not Ramses.instance:
             raise Exception( "Ramses has to be instantiated first." )
 
-        print("123")
-        abc = Ramses.instance.daemonInterface().getCurrentStatus("SEA", "Sea", "ASSET")
-        print(abc)
-        print("123")
+        # Uniquement pour test
+        # abc = Ramses.instance.daemonInterface().getCurrentStatus("SEA", "Sea", "ASSET")
+        # print(abc)
+
 
         listWithState = []
  
@@ -172,7 +172,7 @@ class RamItem( RamObject ):
                     highestVersion = versionInt
 
             return highestVersion
-                
+
 
         # Else check in the folders
         if self.folderPath == '':
