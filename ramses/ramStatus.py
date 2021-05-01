@@ -58,7 +58,7 @@ class RamStatus:
                 return None
 
         baseName = os.path.basename( filePath )
-        blocks = Ramses.instance._decomposeRamsesFileName( baseName )
+        blocks = RamFileManager.decomposeRamsesFileName( baseName )
     
         if blocks == None:
             print( "The given file does not respect Ramses' naming convention" )
@@ -83,7 +83,7 @@ class RamStatus:
 
             if not latestVersionFilePath in (None, 0): # If it has at least one version
                 latestVersionFileName = os.path.basename( latestVersionFilePath )
-                latestVersionBlocks = Ramses.instance._decomposeRamsesFileName( latestVersionFileName )
+                latestVersionBlocks = RamFileManager.decomposeRamsesFileName( latestVersionFileName )
 
                 version = int( latestVersionBlocks[ "version" ] )
                 if latestVersionBlocks[ "state" ] != '':

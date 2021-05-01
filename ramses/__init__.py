@@ -8,6 +8,7 @@ from .ramAsset import RamAsset
 from .ramState import RamState
 from .ramFileType import RamFileType
 from .ramStep import RamStep
+from .file_manager import RamFileManager
 
 # Initialization
 Ramses.instance = Ramses()

@@ -47,7 +47,7 @@ class RamShot( RamItem ):
         
         folderName = os.path.basename( folderPath )
 
-        if not Ramses.instance._isRamsesItemFoldername( folderName ):
+        if not RamFileManager._isRamsesItemFoldername( folderName ):
             log( "The given folder does not respect Ramses' naming convention" )
             return None
 

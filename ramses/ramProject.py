@@ -114,7 +114,7 @@ class RamProject( RamObject ):
             foundFiles = os.listdir( assetsFolderPath )
             for foundFile in foundFiles:
                 if not os.path.isdir( assetsFolderPath + '/' + foundFile ): continue
-                if Ramses.instance._isRamsesItemFoldername( n = foundFile ):
+                if RamFileManager._isRamsesItemFoldername( n = foundFile ):
                     if not foundFile.split( '_' )[1] == 'A': continue
                     foundAssetName = foundFile.split( '_' )[2]
                     foundAssetPath = "04-ASSETS/" + foundFile
@@ -133,7 +133,7 @@ class RamProject( RamObject ):
             foundFiles = os.listdir( assetsFolderPath + '/' + group )
             for foundFile in foundFiles:
                 if not os.path.isdir( assetsFolderPath + '/' + group + '/' + foundFile ): continue
-                if not Ramses.instance._isRamsesItemFoldername( foundFile ): continue
+                if not RamFileManager._isRamsesItemFoldername( foundFile ): continue
                 if not foundFile.split( '_' )[1] == 'A': continue
                 foundAssetName = foundFile.split( '_' )[2]
                 foundAssetPath = "04-ASSETS/" + group + "/" + foundFile
@@ -173,7 +173,7 @@ class RamProject( RamObject ):
 
         for foundFile in foundFiles:
             if not os.path.isdir( assetsFolderPath + '/' + foundFile ): continue
-            if Ramses.instance._isRamsesItemFoldername( foundFile ): continue
+            if RamFileManager._isRamsesItemFoldername( foundFile ): continue
             assetGroups.append( foundFile )
 
         return assetGroups
@@ -219,7 +219,7 @@ class RamProject( RamObject ):
 
         for foundFile in foundFiles:
             if not os.path.isdir( shotsFolderPath + '/' + foundFile ): continue
-            if not Ramses.instance._isRamsesItemFoldername( foundFile ): continue
+            if not RamFileManager._isRamsesItemFoldername( foundFile ): continue
             if not foundFile.split('_')[1] == 'S': continue
 
             foundShotName = foundFile.split('_')[2]

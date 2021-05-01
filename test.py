@@ -1,5 +1,16 @@
-from ramses import (RamAsset, RamFileType, RamItem, RamProject, Ramses,
-                    RamShot, RamState, RamStep, RamUser, daemon_interface)
+from ramses import (
+    RamAsset,
+    RamFileType,
+    RamItem,
+    RamProject,
+    Ramses,
+    RamShot,
+    RamState,
+    RamStep,
+    RamUser,
+    daemon_interface,
+    RamFileManager
+    )
 
 import sys
 
@@ -113,6 +124,15 @@ def testSettings():
     ramses.settings().autoConnect = False
     ramses.settings().save()
 
+def testFileManager():
+    testFiles = (
+        'D:/DEV_SRC/RxOT/Ramses/Ramses/Project-Tree-Example/Project01/04-ASSETS/Characters/Projet01_A_ISOLDE/Projet01_A_ISOLDE_MOD/Projet01_A_ISOLDE_MOD.blend',
+        'D:/DEV_SRC/RxOT/Ramses/Ramses/Project-Tree-Example/Project01/04-ASSETS/Characters/Projet01_A_ISOLDE/Projet01_A_ISOLDE_MOD/_versions/Projet01_A_ISOLDE_MOD_test_pub002.blend',
+        'D:/DEV_SRC/RxOT/Ramses/Ramses/Project-Tree-Example/Project01/04-ASSETS/Project01_G_PROD_An info file.txt',
+    )
+    for f in testFiles:
+        print ( RamFileManager.increment(f) )
+
 # testUserClass()
 # testItemClass()
 # testProjectClass()
@@ -122,9 +142,9 @@ def testSettings():
 # testFileType()
 # testRamsesMethods()
 # testStepClass()
-testSettings()
+# testSettings()
+testFileManager()
 
 # "folder": "C:/Users/Megaport/Ramses/Projects/FPE/02-PROD/FPE_SD",
 # "folder": "C:/Users/Megaport/Ramses/Projects/FPE/04-ASSETS/Characters",
 
-# sys.exit()

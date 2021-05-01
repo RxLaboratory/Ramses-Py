@@ -2,7 +2,10 @@ import os
 import platform
 import json
 from .ramState import RamState
-from .logger import log
+from .logger import (
+    log,
+    LogLevel
+)
 
 class FolderNames():
     preview = "_preview"
@@ -32,8 +35,9 @@ class RamSettings:
         self.autoConnect = True # Wether to always try to (re)connect to the Daemon if offline.
         self.ramsesClientPath = "" # Location of the Ramses Client executable file (.exe on Windows, .app on MacOS, .appimage or binary on Linux)
         self.ramsesClientPort = 18185 # Listening port of the Ramses Daemon
+        self.logLevel = LogLevel.Info
 
-        # Set the path to the settings file (os-specific)
+        # Set the path to the settings file and temporary folder (os-specific)
         system = platform.system()
         if system == 'Windows':
             self._folderPath = os.path.expandvars('${APPDATA}/RxLaboratory/Ramses/Config')
@@ -49,12 +53,14 @@ class RamSettings:
             with open(self._filePath, 'r') as settingsFile:
                 settingsStr = settingsFile.read()
                 settingsDict = json.loads( settingsStr )
-                if settingsDict['autoConnect'] is not None:
+                if 'autoConnect' in settingsDict:
                     self.autoConnect = settingsDict['autoConnect']
-                if settingsDict['clientPath'] is not None:
+                if 'clientPath' in settingsDict:
                     self.ramsesClientPath = settingsDict['clientPath']
-                if settingsDict['clientPort'] is not None:
+                if 'clientPort' in settingsDict:
                     self.ramsesClientPort = settingsDict['clientPort']
+                if 'logLevel' in settingsDict:
+                    self.logLevel = settingsDict['logLevel']
 
         # Not Documented: these are not settings to be customized (yet)
         self.folderNames = FolderNames()
@@ -64,6 +70,7 @@ class RamSettings:
             RamState("Work in progress", "WIP", 0.5,  [255,255,127]), # Light Yellow
             RamState("OK", "OK", 1.0, [0, 170, 0]), # Green
         ]
+        self.versionPrefixes = ['v','pub'] # The prefixes used in version files which are not states
 
     def folderPath(self):
         return self._folderPath
@@ -79,7 +86,8 @@ class RamSettings:
         settingsDict = {
             'autoConnect': self.autoConnect,
             'clientPath': self.ramsesClientPath,
-            'clientPort': self.ramsesClientPort
+            'clientPort': self.ramsesClientPort,
+            'logLevel': self.logLevel
         }
 
         if self._filePath == '':

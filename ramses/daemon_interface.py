@@ -1,6 +1,6 @@
 import socket
 import json
-from .logger import log
+from .logger import log, LogLevel, Log
 
 class RamDaemonInterface():
     """The Class used to communicate with the Ramses Daemon
@@ -70,15 +70,15 @@ class RamDaemonInterface():
 
         query = self.__buildQuery( query )
 
-        log("Posting query: " + query)
+        log( query, LogLevel.DataSent)
 
         try: s.connect((self.address, self.port))
         except ConnectionRefusedError:
-            log("Daemon can't be reached")
+            log("Daemon can't be reached", LogLevel.Debug)
             return
         except Exception as e:
-            log("Daemon can't be reached")
-            log("Error: " + e)
+            log("Daemon can't be reached", LogLevel.Debug)
+            log("Error: " + e, LogLevel.Critical)
             return
 
         s.sendall(query.encode('utf-8'))
@@ -93,16 +93,16 @@ class RamDaemonInterface():
         try:
             obj = json.loads(data)
         except:
-            log("Invalid reply data from the Ramses Daemon.")
+            log("Invalid reply data from the Ramses Daemon.", LogLevel.Critical)
             obj = {
                 'accepted': False,
                 'success': False
             }
             return obj
 
-        if not obj['accepted']: log("Unknown Ramses Daemon query: " + obj['query'])
-        if not obj['success']: log("Warning: the Ramses Daemon could not reply to the query: " + obj['query'])       
-        if obj['message']: log(obj['message'])
+        if not obj['accepted']: log("Unknown Ramses Daemon query: " + obj['query'], LogLevel.Critical)
+        if not obj['success']: log("Warning: the Ramses Daemon could not reply to the query: " + obj['query'], LogLevel.Critical)       
+        if obj['message']: log(obj['message'], LogLevel.Debug)
 
         return obj
 
@@ -112,7 +112,7 @@ class RamDaemonInterface():
         data = self.ping()
 
         if data is None:
-            log("Daemon unavailable")
+            log("Daemon unavailable", LogLevel.Debug)
             return False
   
         content = data['content']
@@ -121,7 +121,7 @@ class RamDaemonInterface():
             return False
         if content['ramses'] == "Ramses": return True
 
-        log("Invalid content in the Daemon reply")
+        log("Invalid content in the Daemon reply", LogLevel.Critical)
         return False
 
     def __checkUser(self):
@@ -136,12 +136,11 @@ class RamDaemonInterface():
         return ok
 
     def __noUserReply(self, query):
-        message = "There's no current user. You may need to log in first."
-        log(message)
+        log( Log.NoUser, LogLevel.Debug)
         return {
             'accepted': False,
             'success': False,
-            'message': message,
+            'message': Log.NoUser,
             'query': query,
             'content': None
         }

@@ -5,6 +5,7 @@ from .ramObject import RamObject
 from .ramStatus import RamStatus
 from .ramStep import RamStep
 from .ramSettings import FolderNames
+from .file_manager import RamFileManager
 from .daemon_interface import RamDaemonInterface
 from .logger import log
 
@@ -25,7 +26,6 @@ class RamItem( RamObject ):
         super().__init__( itemName, itemShortName )
         self._folderPath = itemFolder
         self._daemon = RamDaemonInterface()
-
 
     def currentStatus( self, step, resource="" ): #TODO if online
         """The current status for the given step
@@ -95,7 +95,6 @@ class RamItem( RamObject ):
             
             return self._folderPath + '/' + shotFolderName + '_' + step # add the step subfolder
 
-
         if itemType == "ASSET":
             # Go to assets
             folderPath = folderPath + '04-ASSETS'
@@ -160,7 +159,7 @@ class RamItem( RamObject ):
             highestVersion = 0
 
             for filesWithState in listWithState:
-                decomposedFoundFile = Ramses.instance._decomposeRamsesFileName( filesWithState )
+                decomposedFoundFile = RamFileManager.decomposeRamsesFileName( filesWithState )
 
                 if decomposedFoundFile == None:
                     continue
@@ -213,7 +212,7 @@ class RamItem( RamObject ):
             if not os.path.isfile( stepFolderPath + '/ramses_versions/' + foundFile ): #This is in case the user has created folders in ramses_versions
                 continue
 
-            decomposedFoundFile = Ramses.instance._decomposeRamsesFileName( foundFile )
+            decomposedFoundFile = RamFileManager.decomposeRamsesFileName( foundFile )
 
             if decomposedFoundFile == None:
                 continue
@@ -349,7 +348,7 @@ class RamItem( RamObject ):
             if os.path.isdir( foundFile ):
                 continue
 
-            blocks = Ramses.instance._decomposeRamsesFileName( foundFile )
+            blocks = RamFileManager.decomposeRamsesFileName( foundFile )
 
             if blocks == None:
                 continue
@@ -431,7 +430,7 @@ class RamItem( RamObject ):
             if not os.path.isfile( stepFolderPath + '/ramses_versions/' + foundFile ): # This is in case the user has created folders in ramses_versions
                 continue
 
-            decomposedFoundFile = Ramses.instance._decomposeRamsesFileName( foundFile )
+            decomposedFoundFile = RamFileManager.decomposeRamsesFileName( foundFile )
 
             if decomposedFoundFile == None:
                 continue

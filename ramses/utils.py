@@ -13,3 +13,8 @@ def escapeRegEx( string ):
             result = result + char
     return result
 
+def intToStr( i, numDigits=3):
+    intStr = str(i)
+    while len(intStr) < numDigits:
+        intStr = '0' + intStr
+    return intStr
