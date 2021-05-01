@@ -31,7 +31,7 @@ class Ramses:
             Exception
         """
         if Ramses.instance:
-            raise Exception("There cannot be more than one instance of Ramses. Ramses is a Singleton!")
+            return Ramses.instance
 
         self._daemon = RamDaemonInterface()
         self._settings = RamSettings()
@@ -160,15 +160,12 @@ class Ramses:
         """
         pass
 
-    def connect(self, overrideAutoConnect=False):
+    def connect(self):
         """Checks Daemon availability and initiates the connection. Returns success.
 
         Returns:
             bool
         """
-
-        if not self._settings.autoConnect and not overrideAutoConnect:
-            return False
 
         log("Checking if the Daemon is available")
         # Check if already online
