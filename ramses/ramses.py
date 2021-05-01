@@ -160,12 +160,15 @@ class Ramses:
         """
         pass
 
-    def connect(self):
+    def connect(self, overrideAutoConnect=False):
         """Checks Daemon availability and initiates the connection. Returns success.
 
         Returns:
             bool
         """
+
+        if not self._settings.autoConnect and not overrideAutoConnect:
+            return False
 
         log("Checking if the Daemon is available")
         # Check if already online
