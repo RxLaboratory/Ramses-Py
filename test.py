@@ -107,12 +107,11 @@ def testStepClass():
     print("=> templatesFolderPath = " + step.templatesFolderPath())
     print("=> stepType = " + step.stepType())
 
-
-ramses = Ramses.instance
-ramses.settings().ramsesClientPath = "E:/RAINBOX/LAB/DEV/02 - Applications/Ramses/Deploy/Ramses-Win/ramses.exe"
-# ramses.settings().ramsesClientPath = "E:/RAINBOX/LAB/DEV/02 - Applications/DuME/DEV_DuME_Deploy/DuME-Win/DuME.exe"
-# ramses.settings().ramsesClientPath = "dume"
-
+def testSettings():
+    ramses = Ramses.instance
+    ramses.settings().ramsesClientPath = "E:/RAINBOX/LAB/DEV/02 - Applications/Ramses/Deploy/Ramses-Win/ramses.exe"
+    ramses.settings().autoConnect = False
+    ramses.settings().save()
 
 # testUserClass()
 # testItemClass()
@@ -121,8 +120,9 @@ ramses.settings().ramsesClientPath = "E:/RAINBOX/LAB/DEV/02 - Applications/Ramse
 # testAssetClass()
 # testStateClass()
 # testFileType()
-testRamsesMethods()
+# testRamsesMethods()
 # testStepClass()
+testSettings()
 
 # "folder": "C:/Users/Megaport/Ramses/Projects/FPE/02-PROD/FPE_SD",
 # "folder": "C:/Users/Megaport/Ramses/Projects/FPE/04-ASSETS/Characters",

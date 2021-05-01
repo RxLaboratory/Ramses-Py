@@ -39,6 +39,7 @@ class Ramses:
 
         # autoConnect
         if self._settings.autoConnect:
+            log("I'm trying to contact the Ramses Client (auto-connection is enabled).")
             self.connect()
 
         Ramses.instance = self
