@@ -32,4 +32,5 @@ def log( message, level = LogLevel.Info ):
 
     now = datetime.now()
 
-    print( now.strftime("[%Y/%m/%d - %H:%M:%s] ") + message )
+    #print( "[" + now.strftime("%Y/%m/%d - %H:%M:%s") + "] " + message )
+    print( message )

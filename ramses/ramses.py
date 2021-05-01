@@ -307,7 +307,7 @@ class Ramses:
         return self._settings
 
     @staticmethod
-    def version(self):  # TODO
+    def version(self):
         """The current version of this API
 
         Returns:

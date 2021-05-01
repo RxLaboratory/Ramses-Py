@@ -11,7 +11,7 @@ class RamFileManager():
     """A Class to help managing file versions"""
 
     @staticmethod
-    def increment( filePath, stateShortName="v" ):
+    def increment( filePath, stateShortName="v" ): # TODO If in publish or preview folder!
         """Copies and increments a file into the version folder
         
         Returns the filePath of the new file version"""

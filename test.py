@@ -9,7 +9,10 @@ from ramses import (
     RamStep,
     RamUser,
     daemon_interface,
-    RamFileManager
+    RamFileManager,
+    log,
+    LogLevel,
+    Log
     )
 
 import sys
@@ -132,6 +135,9 @@ def testFileManager():
     )
     for f in testFiles:
         print ( RamFileManager.increment(f) )
+
+
+Ramses.instance.settings().logLevel = LogLevel.Debug
 
 # testUserClass()
 # testItemClass()
