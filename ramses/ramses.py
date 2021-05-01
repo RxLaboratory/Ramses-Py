@@ -19,6 +19,12 @@ class Ramses:
     # The prefixes used in version files which are not states
     _versionPrefixes = ['v','pub']
 
+    # API Settings
+    version = "0.0.1-dev"
+    apiReferenceUrl = "https://ramses-docs.rainboxlab.org/dev/add-ons-reference/"
+    addonsHelpUrl = "https://ramses-docs.rainboxlab.org/addons/"
+    generalHelpUrl = "https://ramses-docs.rainboxlab.org/"
+
     instance = None
 
     def __init__(self, port=18185, connect=True):
