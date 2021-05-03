@@ -20,7 +20,7 @@ apiReferenceUrl = "https://ramses-docs.rainboxlab.org/dev/add-ons-reference/"
 addonsHelpUrl = "https://ramses-docs.rainboxlab.org/addons/"
 generalHelpUrl = "https://ramses-docs.rainboxlab.org/"
 # Default values
-defaultAutoConnect = True # Wether to always try to (re)connect to the Daemon if offline.
+defaultOnline = True # Wether to always try to (re)connect to the Daemon if offline.
 defaultRamsesClientPath = "" # Location of the Ramses Client executable file (.exe on Windows, .app on MacOS, .appimage or binary on Linux)
 defaultRamsesClientPort = 18185 # Listening port of the Ramses Daemon
 defaultLogLevel = LogLevel.Info
@@ -61,12 +61,12 @@ class RamSettings( object ):
             cls._instance = cls.__new__(cls)
 
             # Default Values
-            cls.autoConnect = defaultAutoConnect 
+            cls.online = defaultOnline 
             cls.ramsesClientPath = defaultRamsesClientPath 
             cls.ramsesClientPort = defaultRamsesClientPort 
             cls.logLevel = defaultLogLevel
 
-            cls.defaultAutoConnect = defaultAutoConnect
+            cls.defaultOnline = defaultOnline
             cls.defaultRamsesClientPath = defaultRamsesClientPath
             cls.defaultRamsesClientPort = defaultRamsesClientPort
             cls.defaultLogLevel = defaultLogLevel
@@ -98,8 +98,8 @@ class RamSettings( object ):
                 with open(cls._filePath, 'r') as settingsFile:
                     settingsStr = settingsFile.read()
                     settingsDict = json.loads( settingsStr )
-                    if 'autoConnect' in settingsDict:
-                        cls.autoConnect = settingsDict['autoConnect']
+                    if 'online' in settingsDict:
+                        cls.online = settingsDict['online']
                     if 'clientPath' in settingsDict:
                         cls.ramsesClientPath = settingsDict['clientPath']
                     if 'clientPort' in settingsDict:
@@ -121,7 +121,7 @@ class RamSettings( object ):
         log("I'm saving your settings...")
 
         settingsDict = {
-            'autoConnect': self.autoConnect,
+            'online': self.online,
             'clientPath': self.ramsesClientPath,
             'clientPort': self.ramsesClientPort,
             'logLevel': self.logLevel
