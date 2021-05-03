@@ -6,12 +6,12 @@
 - [x] RamUser
 - [x] RamState
 - [x] RamFileType
-- [ ] RamItem       (folderPath fini : à vérifier) Question : N° des Shots ??
+- [ ] RamItem       (folderPath fini => à vérifier) Question : N° des Shots ??
 - [*] RamShot
 - [*] RamAsset
 - [*] RamStep
 - [ ] RamPipe
-- [ ] RamProject    (assets, shots, steps : OKr)
+- [ ] RamProject    (tout OK sauf steps : pas fini le online)
 - [ ] Ramses        (getStates : ok)
 
 ## Refactor

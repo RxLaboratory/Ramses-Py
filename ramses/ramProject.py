@@ -1,6 +1,7 @@
 import os
 import re
 
+from .file_manager import RamFileManager
 from .logger import log
 from .ramObject import RamObject
 from .ramses import Ramses
@@ -110,7 +111,7 @@ class RamProject( RamObject ):
                     if not foundFile.split( '_' )[1] == 'A': continue
                     foundAssetName = foundFile.split( '_' )[2]
                     foundAssetPath = "04-ASSETS/" + foundFile
-                    foundAsset = RamAsset(assetName = "", assetShortName = foundAssetName, assetFolder = foundAssetPath, assetGroup = "", assetTags = "" )
+                    foundAsset = RamAsset( assetName = "", assetShortName = foundAssetName, assetFolder = foundAssetPath, assetGroup = "", assetTags = "" )
                     newAssetsList.append( foundAsset )
                 else:
                     groupsToCheck.append( foundFile )
@@ -146,12 +147,14 @@ class RamProject( RamObject ):
         if Ramses.instance().online():
             assetsDict = self._daemon.getAssetGroups()
             # check if successful
-            # if RamDaemonInterface.checkReply( assetsDict ):  ATTENTION : à décommenter quand daemon OK
+            if RamDaemonInterface.checkReply( assetsDict ):
+                content = assetsDict['content']
+                foundAssets = content['assetGroups']
 
-            for foundFile in assetsDict:
-                groupName = foundFile['name']
-                assetGroups.append(groupName)
-            return assetGroups
+                for foundFile in foundAssets:
+                    groupName = foundFile['name']
+                    assetGroups.append(groupName)
+                return assetGroups
 
         # Else check in the folders
         assetsFolderPath = self._folderPath + '/04-ASSETS'
@@ -254,16 +257,72 @@ class RamProject( RamObject ):
                     return stepsList
 
         # Else, check in the folders
-        stepsFolderPath = self._folderPath 
-        # faire avec 01-PRE-PROD, 02-PROD, 03-POST-PROD
-        # dans PROJECTID_MOD "mod" c'est le shortname
-        # check https://ramses-docs.rainboxlab.org/files/tree/
 
+        stepsListPreProd = []
+        stepsListPostProd = []
+        stepsListProd = []
 
+        # Check StepType: first, Pre-Prod
+        if stepType == StepType.PRE_PRODUCTION:
+            stepsFolderPath = self._folderPath + "/01-PRE-PROD"
 
-            
+            if not os.path.isdir( stepsFolderPath ):
+                return []
 
+            preProdFiles = os.listdir( stepsFolderPath )
+            for preProdFile in preProdFiles:
+                # we keep only the folders
+                if not os.path.isdir( stepsFolderPath + "/" + preProdFile ):
+                    continue
+                else:
+                    preProdFilePath = preProdFile
+                    # we split the name of the folders to keep only the step
+                    preProdFileName = preProdFile.split( "_" )[-1]
+                    newRamStep = RamStep( stepName="", stepShortName=preProdFileName, stepFolder=preProdFilePath, stepType=stepType )
+                    stepsListPreProd.append( newRamStep )
+            stepsList = stepsListPreProd
+
+        # Check StepType: Prod (assets + shots)
+        elif stepType == StepType.PRODUCTION:
+            stepsFolderPath = self._folderPath + "/02-PROD"
+
+            if not os.path.isdir( stepsFolderPath ):
+                return []
+
+            prodFiles = os.listdir( stepsFolderPath)
+            for prodFile in prodFiles:
+                # we keep only the folders
+                if not os.path.isdir( stepsFolderPath + "/" + prodFile ):
+                    continue
+                else:
+                    prodFilePath = prodFile
+                    # we split the name of the folders to keep only the step
+                    prodFileName = prodFile.split( "_" )[-1]
+                    newRamStep = RamStep( stepName="", stepShortName=prodFileName, stepFolder=prodFilePath, stepType=stepType )
+                    stepsListProd.append( newRamStep )
+            stepsList = stepsListProd
+
+        # Check StepType: Post-Prod
+        elif stepType == StepType.POST_PRODUCTION:
+            stepsFolderPath = self._folderPath + "/03-POST-PROD"
+
+            if not os.path.isdir( stepsFolderPath ):
+                return []
+
+            postProdFiles = os.listdir( stepsFolderPath )
+            for postProdFile in postProdFiles:
+                # we keep only the folders
+                if not os.path.isdir( stepsFolderPath + "/" + postProdFile ):
+                    continue
+                else:
+                    postProdFilePath = postProdFile
+                    # we split the name of the folders to keep only the step
+                    postProdFileName = postProdFile.split( "_" )[-1]
+                    newRamStep = RamStep( stepName="", stepShortName=postProdFileName, stepFolder=postProdFilePath, stepType=stepType)
+                    stepsListPostProd.append( newRamStep )
+            stepsList = stepsListPostProd
+
+        return stepsList
 
     def folderPath( self ):
         return self.absolutePath( )
-

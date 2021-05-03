@@ -2,6 +2,7 @@ import os
 
 from .logger import log
 from .ramItem import RamItem
+from .file_manager import RamFileManager
 from . import Ramses
 
 

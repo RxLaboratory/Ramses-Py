@@ -317,4 +317,3 @@ class Ramses( object ):
         """
         return Ramses._version
 
-    
