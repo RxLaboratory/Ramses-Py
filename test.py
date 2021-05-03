@@ -152,8 +152,6 @@ RamSettings.instance().logLevel = LogLevel.Debug
 # testSettings()
 # testFileManager()
 
-print ( Ramses.instance().settings().logLevel )
-
 # "folder": "C:/Users/Megaport/Ramses/Projects/FPE/02-PROD/FPE_SD",
 # "folder": "C:/Users/Megaport/Ramses/Projects/FPE/04-ASSETS/Characters",
 
