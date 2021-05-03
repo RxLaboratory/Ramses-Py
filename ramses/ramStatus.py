@@ -16,8 +16,6 @@ class RamStatus:
             stateDate (datetime, optional): The date at which this status was created. Defaults to None.
             completionRatio (float, optional): The ratio of completion of this status. Defaults to None.
         """
-        if not Ramses.instance:
-            raise Exception( "Ramses has to be instantiated first." )
 
         self.state = state
         self.completionRatio = completionRatio
@@ -26,8 +24,7 @@ class RamStatus:
 
         # Get J. Doe
         if not user:
-            # user = Ramses.instance.getUser()
-            user = Ramses.instance.currentUser()
+            user = Ramses.instance().currentUser()
         self.user = user
 
         if not stateDate:
@@ -47,12 +44,11 @@ class RamStatus:
         Returns:
             RamStatus
         """
-        if not Ramses.instance:
-            raise Exception( "Ramses has to be instantiated first." )
+
         if not isinstance( filePath, str ):
             raise TypeError( "File path needs to be a str" )
         if not os.path.isfile( filePath ):
-            filePath = Ramses.instance.currentProject().absolutePath( filePath )
+            filePath = Ramses.instance().currentProject().absolutePath( filePath )
             if not os.path.isfile( filePath ):
                 print( "The given file could not be found" )
                 return None
@@ -90,7 +86,7 @@ class RamStatus:
                     stateId = latestVersionBlocks[ "state" ]
                     stateId = stateId.upper()
 
-        state = Ramses.instance.state( stateId )
+        state = Ramses.instance().state( stateId )
 
         dateTimeStamp = os.path.getmtime( filePath )
         dateTime = datetime.fromtimestamp( dateTimeStamp )

@@ -11,7 +11,5 @@ from .ramStep import RamStep
 from .file_manager import RamFileManager
 from .logger import log, Log, LogLevel
 
-# Initialization
-Ramses.instance = Ramses()
 
 

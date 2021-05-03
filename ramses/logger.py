@@ -14,7 +14,7 @@ class LogLevel():
 
 def log( message, level = LogLevel.Info ):
     from .ramses import Ramses
-    minLevel = Ramses.instance.settings().logLevel
+    minLevel = Ramses.instance().settings().logLevel
     if (level < minLevel ): return
     
     if level == LogLevel.DataReceived:

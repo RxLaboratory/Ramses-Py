@@ -31,28 +31,21 @@ class RamProject( RamObject ):
         self._height = height
         self._framerate = framerate
 
-    def width( self ): #TODO
+    def width( self ):
         """
         Returns:
             int
         """
-        # if not Ramses.instance:
-        #     raise Exception( "Ramses has to be instantiated first." )
-        # # If we're online, ask the client
-        # if Ramses.instance.online:
-        #     # TODO ask the client
-        #     return None
-
         return self._width
 
-    def height( self ): #TODO
+    def height( self ):
         """
         Returns:
             int
         """
         return self._height
 
-    def framerate( self ): #TODO
+    def framerate( self ):
         """
         Returns:
             float
@@ -80,8 +73,7 @@ class RamProject( RamObject ):
         Returns:
             list of RamAsset
         """
-        if not Ramses.instance:
-            raise Exception( "Ramses has to be instantiated first." )
+
         if not isinstance( groupName, str ):
             raise TypeError( "Group name must be a str" )
 
@@ -90,7 +82,7 @@ class RamProject( RamObject ):
         newAssetsList = []
 
         # If we're online, ask the client (return a dict)
-        if Ramses.instance.online:
+        if Ramses.instance().online():
             assetsDict = self._daemon.getAssets()
             # check if successful
             if RamDaemonInterface.checkReply( assetsDict ):
@@ -150,11 +142,8 @@ class RamProject( RamObject ):
         """
         assetGroups = []
 
-        if not Ramses.instance:
-            raise Exception( "Ramses has to be instantiated first." )
-
         # If we're online, ask the client
-        if Ramses.instance.online:
+        if Ramses.instance().online():
             assetsDict = self._daemon.getAssetGroups()
             # check if successful
             # if RamDaemonInterface.checkReply( assetsDict ):  ATTENTION : à décommenter quand daemon OK
@@ -187,12 +176,10 @@ class RamProject( RamObject ):
         Returns:
             list of RamShot
         """
-        if not Ramses.instance:
-            raise Exception( "Ramses has to be instantiated first." )
 
         # If we're online, ask the client (return a dict)
         shotsList = []
-        if Ramses.instance.online:
+        if Ramses.instance().online():
             shotsDict = self._daemon.getShots()
             # check if successful
             if RamDaemonInterface.checkReply( shotsDict ):
@@ -245,13 +232,11 @@ class RamProject( RamObject ):
         Returns:
             list of RamStep
         """
-        if not Ramses.instance:
-            raise Exception( "Ramses has to be instantiated first." )
 
         stepsList = []
 
         # If we're online, ask the client (return a dict)
-        if Ramses.instance.online:
+        if Ramses.instance().online():
             stepsDict = self._daemon.getSteps()
             # check if successful
             if RamDaemonInterface.checkReply( stepsDict ):

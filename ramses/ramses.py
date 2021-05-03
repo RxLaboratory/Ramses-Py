@@ -9,7 +9,7 @@ from .ramState import RamState
 from .ramSettings import RamSettings
 from .ramUser import RamUser, UserRole
 
-class Ramses:
+class Ramses( object ):
     """The main class. One (and only one) instance globally available, instantiated during init time.
 
     Static Attributes:
@@ -23,30 +23,30 @@ class Ramses:
     addonsHelpUrl = "https://ramses-docs.rainboxlab.org/addons/"
     generalHelpUrl = "https://ramses-docs.rainboxlab.org/"
 
-    instance = None
+    _instance = None
 
     def __init__(self):
         """
-        Args:
-            port (int, optional): Defaults to 18185.
-            connect (bool, optional): Defaults to True.
+        Ramses is a singleton and cannot be initialized with `Ramses()`. Call Ramses.instance() instead.
 
         Raises:
-            Exception
+            RuntimeError
         """
-        if Ramses.instance:
-            return Ramses.instance
+        raise RuntimeError("Ramses can't be initialized with `Ramses()`, it is a singleton. Call Ramses.instance() instead.")
 
-        self._daemon = RamDaemonInterface()
-        self._settings = RamSettings()
-        self._offline = False  # If True, never try to connect again
+    @classmethod
+    def instance( cls ):
+        if cls._instance is None:
+            cls._instance = cls.__new__(cls)
+            cls._daemon = RamDaemonInterface()
+            cls._settings = RamSettings()
+            cls._offline = False
 
-        # autoConnect
-        if self._settings.autoConnect:
-            log("I'm trying to contact the Ramses Client (auto-connection is enabled).")
-            self.connect()
+            if cls._settings.autoConnect:
+                log("I'm trying to contact the Ramses Client (auto-connection is enabled).", LogLevel.Info)
+                cls.connect()
 
-        Ramses.instance = self
+        return cls._instance
 
     def currentProject(self):
         from .ramProject import RamProject
@@ -57,7 +57,7 @@ class Ramses:
         """
 
         # If online, ask the daemon
-        if not self._offline and self.connect():
+        if not self._offline:
             # Ask (the daemon returns a dict)
             projDict = self._daemon.getCurrentProject()
             # Check if successful
@@ -81,7 +81,7 @@ class Ramses:
         """
 
         # If online, ask the daemon
-        if not self._offline and self.connect():
+        if not self._offline:
             # Ask (the daemon returns a dict)
             stepDict = self._daemon.getSteps()
             # Check if successful
@@ -105,7 +105,7 @@ class Ramses:
         """
 
         # If online, ask the daemon
-        if not self._offline and self.connect():
+        if not self._offline:
             # Ask (the daemon returns a dict)
             userDict = self._daemon.getCurrentUser()
 
@@ -247,7 +247,7 @@ class Ramses:
         newStateList = []
 
         # If online, ask the daemon
-        if not self._offline and self.connect():
+        if not self._offline:
             # Ask (the daemon returns a dict)
             replyDict = self._daemon.getStates()
 
@@ -264,7 +264,7 @@ class Ramses:
 
         return self._settings.defaultStates
 
-    def showClient(self):  # TODO
+    def showClient(self):
         """Raises the Ramses Client window, launches the client if it is not already running.
         """
 

@@ -30,8 +30,6 @@ class RamStep( RamObject ):
         Returns:
             str
         """
-        if not Ramses.instance:
-            raise Exception( "Ramses has to be instantiated first." )
 
         dir = ""
 
@@ -47,8 +45,8 @@ class RamStep( RamObject ):
         if self._folderPath != "":
             return self._folderPath
         else:
-            name = Ramses.instance.currentProject().shortName()
-            path = Ramses.instance.currentProject().folderPath()
+            name = Ramses.instance().currentProject().shortName()
+            path = Ramses.instance().currentProject().folderPath()
             self._folderPath = path + dir + "/" + name + "_" + self.shortName()
             return self._folderPath
 
@@ -58,11 +56,9 @@ class RamStep( RamObject ):
         Returns:
             str
         """
-        if not Ramses.instance:
-            raise Exception( "Ramses has to be instantiated first." )
 
-        projectId = Ramses.instance.currentProject().shortName()
-        templatesName = Ramses.instance.settings().folderNames.stepTemplates
+        projectId = Ramses.instance().currentProject().shortName()
+        templatesName = Ramses.instance().settings().folderNames.stepTemplates
         stepFolder = self.commonFolderPath()
 
         if stepFolder == "": return ""

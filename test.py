@@ -122,7 +122,7 @@ def testStepClass():
     print("=> stepType = " + step.stepType())
 
 def testSettings():
-    ramses = Ramses.instance
+    ramses = Ramses.instance()
     ramses.settings().ramsesClientPath = "E:/RAINBOX/LAB/DEV/02 - Applications/Ramses/Deploy/Ramses-Win/ramses.exe"
     ramses.settings().autoConnect = False
     ramses.settings().save()
@@ -137,7 +137,7 @@ def testFileManager():
         print ( RamFileManager.increment(f) )
 
 
-Ramses.instance.settings().logLevel = LogLevel.Debug
+Ramses.instance().settings().logLevel = LogLevel.Debug
 
 # testUserClass()
 # testItemClass()
@@ -149,7 +149,7 @@ Ramses.instance.settings().logLevel = LogLevel.Debug
 # testRamsesMethods()
 # testStepClass()
 # testSettings()
-testFileManager()
+# testFileManager()
 
 # "folder": "C:/Users/Megaport/Ramses/Projects/FPE/02-PROD/FPE_SD",
 # "folder": "C:/Users/Megaport/Ramses/Projects/FPE/04-ASSETS/Characters",

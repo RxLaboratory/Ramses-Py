@@ -39,7 +39,7 @@ class RamUser( RamObject ):
             str
         """
         from . import Ramses
-        path = Ramses.instance.settings().folderNames.userConfig
+        path = Ramses.instance().settings().folderNames.userConfig
         if absolute: path = self._folderPath + "/" + path
         return path
 

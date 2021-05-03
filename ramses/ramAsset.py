@@ -37,8 +37,6 @@ class RamAsset( RamItem ):
         Returns:
             str
         """
-        if not Ramses.instance:
-            raise Exception( "Ramses has to be instantiated first." )
 
         if self._folderPath == '':
             log( "The given item has no folderPath." )
@@ -67,10 +65,9 @@ class RamAsset( RamItem ):
         Returns:
             RamAsset
         """
-        if not Ramses.instance:
-            raise Exception( "Ramses has to be instantiated first." )
+
         if not os.path.isdir( folderPath ):
-            folderPath = Ramses.instance.currentProject().absolutePath( folderPath )
+            folderPath = Ramses.instance().currentProject().absolutePath( folderPath )
             if not os.path.isdir( folderPath ):
                 log( "The given folder could not be found" )
                 return None
@@ -88,7 +85,7 @@ class RamAsset( RamItem ):
             return None
 
         shortName = folderBlocks[ 2 ]
-        assetFolderPath = os.path.relpath( folderPath, Ramses.instance.currentProject().folderPath )
+        assetFolderPath = os.path.relpath( folderPath, Ramses.instance().currentProject().folderPath )
 
         asset = RamAsset( assetName = "", assetShortName = shortName, assetFolder = assetFolderPath )
         return asset

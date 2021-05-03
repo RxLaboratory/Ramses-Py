@@ -27,7 +27,7 @@ class RamFileManager():
         
         # Get the versions folder
         fileFolder = os.path.dirname( filePath )
-        versionsFolderName = Ramses.instance.settings().folderNames.versions
+        versionsFolderName = Ramses.instance().settings().folderNames.versions
         if os.path.basename( fileFolder ) == versionsFolderName:
             versionsFolder = fileFolder
         else:
@@ -269,9 +269,10 @@ class RamFileManager():
         Version prefixes consist of all the available states' shortnames ( see Ramses.getStates() ) and some additional prefixes ( see Ramses._versionPrefixes ).
         """
         
-        prefixes = Ramses.instance.settings().versionPrefixes
+        ramses = Ramses.instance()
+        prefixes = ramses.settings().versionPrefixes
 
-        for state in Ramses.instance.states():
+        for state in ramses.states():
             prefixes.append( state.shortName() )
 
         regexStr = ''

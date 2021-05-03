@@ -27,10 +27,15 @@ class RamSettings:
         Windows: %appdata%/RxLaboratory/Ramses/Config
         MacOS: ?
 
-    There is only one instance of RamSettings, available with the Ramses.instance.settings() method
+    There is only one instance of RamSettings, available with the Ramses.instance().settings() method
     """
+
+    _instance = None
     
     def __init__( self ):
+        if RamSettings._instance is not None:
+            raise RuntimeError("RamSettings must not be instantiated; get it from Ramses.instance().settings().")
+
         # Default Values
         self.autoConnect = True # Wether to always try to (re)connect to the Daemon if offline.
         self.ramsesClientPath = "" # Location of the Ramses Client executable file (.exe on Windows, .app on MacOS, .appimage or binary on Linux)
@@ -71,6 +76,8 @@ class RamSettings:
             RamState("OK", "OK", 1.0, [0, 170, 0]), # Green
         ]
         self.versionPrefixes = ['v','pub'] # The prefixes used in version files which are not states
+
+        RamSettings._instance = self
 
     def folderPath(self):
         return self._folderPath

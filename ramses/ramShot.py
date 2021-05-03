@@ -37,10 +37,9 @@ class RamShot( RamItem ):
         Returns:
             RamShot
         """
-        if not Ramses.instance:
-            raise Exception( "Ramses has to be instantiated first." )
+
         if not os.path.isdir( folderPath ):
-            folderPath = Ramses.instance.currentProject().absolutePath( folderPath )
+            folderPath = Ramses.instance().currentProject().absolutePath( folderPath )
             if not os.path.isdir( folderPath ):
                 log( "The given folder could not be found" )
                 return None
@@ -58,7 +57,7 @@ class RamShot( RamItem ):
             return None
 
         shortName = folderBlocks[ 2 ]
-        shotFolderPath = os.path.relpath( folderPath, Ramses.instance.currentProject().folderPath )
+        shotFolderPath = os.path.relpath( folderPath, Ramses.instance().currentProject().folderPath )
 
         shot = RamShot( shotName = shortName, shotShortName = shortName, shotFolderPath = shotFolderPath )
 
