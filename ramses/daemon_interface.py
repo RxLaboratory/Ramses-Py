@@ -1,8 +1,9 @@
 import socket
 import json
 from .logger import log, LogLevel, Log
+from .ramSettings import RamSettings
 
-class RamDaemonInterface():
+class RamDaemonInterface( object ):
     """The Class used to communicate with the Ramses Daemon
 
     Attributes:
@@ -12,17 +13,27 @@ class RamDaemonInterface():
             True if the Daemon is available
     """
 
+    _instance = None
+
     @staticmethod
     def checkReply( obj ):
         return obj['accepted'] and obj['success'] and obj['content'] is not None
 
-    def __init__(self, port = 18185):
+    def __init__(self):
         """
         Args:
             port: int.
         """
-        self.port = port
-        self.address = 'localhost'
+        raise RuntimeError("RamDaemonInterface can't be initialized with `RamDaemonInterface()`, it is a singleton. Call RamDaemonInterface.instance() or Ramses.instance().daemonInterface() instead.")
+    
+    @classmethod
+    def instance( cls ):
+        if cls._instance is None:
+            cls._instance = cls.__new__(cls)
+            cls._port = RamSettings.instance().ramsesClientPort
+            cls._address = 'localhost'
+
+        return cls._instance
 
     def online(self):
         return self.__testConnection()
@@ -72,7 +83,7 @@ class RamDaemonInterface():
 
         log( query, LogLevel.DataSent)
 
-        try: s.connect((self.address, self.port))
+        try: s.connect((self._address, self.port))
         except ConnectionRefusedError:
             log("Daemon can't be reached", LogLevel.Debug)
             return

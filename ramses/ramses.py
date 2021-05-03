@@ -38,7 +38,7 @@ class Ramses( object ):
     def instance( cls ):
         if cls._instance is None:
             cls._instance = cls.__new__(cls)
-            cls._daemon = RamDaemonInterface()
+            cls._daemon = RamDaemonInterface.instance()
             cls._settings = RamSettings.instance()
             cls._offline = False
 
