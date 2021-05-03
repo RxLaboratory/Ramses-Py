@@ -55,15 +55,19 @@ def testItemClass():
 
 
 def testProjectClass():
-    proj = RamProject("ProjectName", "ProjectShortName", "/home/user/duduf/Ramses/Users/Duduf", 1920, 1080, 5.8)
+    proj = RamProject("ProjectName", "ProjectShortName", "C:/Users/Megaport/Ramses/Projects/FPE", 1920, 1080, 5.8)
 
-    print(proj.name())
-    print(proj.shortName())
-    print(proj._folderPath)
-    # print( proj.absolutePath( relativePath ) )
-    print(proj.assets("Sets"))
-    print(proj.assetGroups())
-    print(proj.shots())
+    # print(proj.name())
+    # print(proj.shortName())
+    # print(proj.width())
+    # print(proj.height())
+    # print(proj.framerate())
+    # print(proj._folderPath)
+    # print(proj.folderPath())
+    # print(proj.absolutePath("05-SHOTS/PROJECTID_S_01-001"))
+    # print(proj.assets("Sets"))
+    # print(proj.assetGroups())
+    # print(proj.shots())
     print(proj.steps("SHOT_PRODUCTION"))
 
 
@@ -78,13 +82,13 @@ def testShotClass():
 
 
 def testAssetClass():
-    asset = RamAsset("AssetName", "AssetShortName", "J:/RAINBOX/TESTRAMSESPATH/04-ASSETS/", "Props", ["bla", "bla"])
+    asset = RamAsset("AssetName", "AssetShortName", "J:/RAINBOX/TESTRAMSESPATH/04-ASSETS/Characters/FPE_A_TRI/", "Props", ["bla", "bla"])
 
     print(asset.name())
     print(asset.shortName())
-    print(asset.folderPath())  # Attention RamItem pas fini donc return None
+    print(asset.folderPath())       # Normalement, c'est OK
     print(asset.tags())
-    print(asset.group())
+    print(asset.group())            # A VERIFIER...
     print(asset.getFromPath("J:/RAINBOX/TESTRAMSESPATH/04-ASSETS/Characters/FPE_A_TRI/"))
 
 
@@ -150,7 +154,7 @@ RamSettings.instance().logLevel = LogLevel.Debug
 
 # testUserClass()
 # testItemClass()
-# testProjectClass()
+testProjectClass()
 # testShotClass()
 # testAssetClass()
 # testStateClass()
@@ -158,7 +162,7 @@ RamSettings.instance().logLevel = LogLevel.Debug
 # testRamsesMethods()
 # testStepClass()
 # testSettings()
-testFileManager()
+# testFileManager()
 
 # "folder": "C:/Users/Megaport/Ramses/Projects/FPE/02-PROD/FPE_SD",
 # "folder": "C:/Users/Megaport/Ramses/Projects/FPE/04-ASSETS/Characters",

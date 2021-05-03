@@ -65,6 +65,7 @@ class RamAsset( RamItem ):
         Returns:
             RamAsset
         """
+        from . import RamFileManager
 
         if not os.path.isdir( folderPath ):
             folderPath = Ramses.instance().currentProject().absolutePath( folderPath )
