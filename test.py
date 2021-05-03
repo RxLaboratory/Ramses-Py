@@ -134,6 +134,8 @@ def testFileManager():
         'published': 'D:/DEV_SRC/RxOT/Ramses/Ramses/Project-Tree-Example/Project01/04-ASSETS/Characters/Projet01_A_ISOLDE/Projet01_A_ISOLDE_MOD/_published/Projet01_A_ISOLDE_MOD.abc',
         'version': 'D:/DEV_SRC/RxOT/Ramses/Ramses/Project-Tree-Example/Project01/04-ASSETS/Characters/Projet01_A_ISOLDE/Projet01_A_ISOLDE_MOD/_versions/Projet01_A_ISOLDE_MOD_test_pub002.blend',
         'general': 'D:/DEV_SRC/RxOT/Ramses/Ramses/Project-Tree-Example/Project01/04-ASSETS/Project01_G_PROD_An info file.txt',
+        'missing': 'D:/DEV_SRC/RxOT/Ramses/Ramses/Project-Tree-Example/Project01/04-ASSETS/Project01_G_PROD_An info file+restored-v12+.txt',
+        'restored': 'D:/DEV_SRC/RxOT/Ramses/Ramses/Project-Tree-Example/Project01/04-ASSETS/Characters/Projet01_A_ISOLDE/Projet01_A_ISOLDE_MOD/Projet01_A_ISOLDE_MOD_+restored-v10+.blend',
     }
 
     fm = RamFileManager

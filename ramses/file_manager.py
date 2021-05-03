@@ -34,7 +34,8 @@ class RamFileManager():
         if RamFileManager.inReservedFolder( filePath ):
             saveFolder = os.path.dirname( saveFolder )
 
-        # TODO if the file is a restored file from an older version (has restore-\d in resourceStr)        
+        # Check if this is a restored file
+        resourceStr = re.sub( '\+restored-v\d+\+', "", decomposedFileName['resourceStr'])
 
         saveFileName = RamFileManager.buildRamsesFileName(
             decomposedFileName['projectID'],
@@ -42,7 +43,7 @@ class RamFileManager():
             decomposedFileName['extension'],
             decomposedFileName['ramType'],
             decomposedFileName['objectShortName'],
-            decomposedFileName['resourceStr'],
+            resourceStr,
             )
 
         return saveFolder + '/' + saveFileName
@@ -72,6 +73,9 @@ class RamFileManager():
 
         if increment:
             versionNumber = versionNumber + 1
+
+        if versionNumber <= 0:
+            versionNumber = 1
 
         newFileName = RamFileManager.buildRamsesFileName(
             decomposedFileName['projectID'],
