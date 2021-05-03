@@ -13,8 +13,9 @@ class LogLevel():
     Fatal = 3
 
 def log( message, level = LogLevel.Info ):
-    from .ramses import Ramses
-    minLevel = Ramses.instance().settings().logLevel
+    from .ramSettings import RamSettings
+    
+    minLevel = RamSettings.instance().logLevel
     if (level < minLevel ): return
     
     if level == LogLevel.DataReceived:

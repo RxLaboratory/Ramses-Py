@@ -1,5 +1,6 @@
 from .ramObject import RamObject
 from .ramses import Ramses
+from .ramSettings import RamSettings
 
 class StepType():
     PRE_PRODUCTION = 'PRE_PRODUCTION'
@@ -58,7 +59,7 @@ class RamStep( RamObject ):
         """
 
         projectId = Ramses.instance().currentProject().shortName()
-        templatesName = Ramses.instance().settings().folderNames.stepTemplates
+        templatesName = RamSettings.instance().folderNames.stepTemplates
         stepFolder = self.commonFolderPath()
 
         if stepFolder == "": return ""

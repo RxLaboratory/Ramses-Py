@@ -1,6 +1,7 @@
 import os, re, shutil
 
 from .ramses import Ramses
+from .ramSettings import RamSettings
 from .utils import intToStr
 from .logger import (
     log,
@@ -27,7 +28,7 @@ class RamFileManager():
         
         # Get the versions folder
         fileFolder = os.path.dirname( filePath )
-        versionsFolderName = Ramses.instance().settings().folderNames.versions
+        versionsFolderName = RamSettings.instance().folderNames.versions
         if os.path.basename( fileFolder ) == versionsFolderName:
             versionsFolder = fileFolder
         else:
