@@ -153,6 +153,7 @@ def testFileManager():
     assetp = RamAsset.getFromPath( testFiles['published'] ) # ok
     item = RamItem.getFromPath( testFiles['wip'] ) # ok
     shot = RamShot.getFromPath( testFiles['wip'] ) # None
+    itemg = RamItem.getFromPath( testFiles['general'] ) # ok
 
     print(asset.shortName())
     print( asset.group() )
@@ -164,6 +165,10 @@ def testFileManager():
     print( item.itemType() )
 
     print ( shot )
+
+    print( itemg.shortName() )
+    print( itemg.name() )
+    print ( itemg.folderPath() )
 
     
 
