@@ -10,6 +10,7 @@ from ramses import (
     RamUser,
     daemon_interface,
     RamFileManager,
+    RamSettings,
     log,
     LogLevel,
     Log
@@ -137,7 +138,7 @@ def testFileManager():
         print ( RamFileManager.increment(f) )
 
 
-Ramses.instance().settings().logLevel = LogLevel.Debug
+RamSettings.instance().logLevel = LogLevel.Debug
 
 # testUserClass()
 # testItemClass()
@@ -150,6 +151,8 @@ Ramses.instance().settings().logLevel = LogLevel.Debug
 # testStepClass()
 # testSettings()
 # testFileManager()
+
+print ( Ramses.instance().settings().logLevel )
 
 # "folder": "C:/Users/Megaport/Ramses/Projects/FPE/02-PROD/FPE_SD",
 # "folder": "C:/Users/Megaport/Ramses/Projects/FPE/04-ASSETS/Characters",

@@ -39,7 +39,7 @@ class Ramses( object ):
         if cls._instance is None:
             cls._instance = cls.__new__(cls)
             cls._daemon = RamDaemonInterface()
-            cls._settings = RamSettings()
+            cls._settings = RamSettings.instance()
             cls._offline = False
 
             if cls._settings.autoConnect:
@@ -298,7 +298,7 @@ class Ramses( object ):
         
         return False
             
-    def settings(self):  # TODO
+    def settings(self):
         """
 
         Args:

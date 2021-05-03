@@ -57,7 +57,7 @@ class RamItem( RamObject ):
             return None
 
         currentVersionPath = self._folderPath + '/' + currentVersionPath
-        currentVersionPath = ()).currentProject().absolutePath( currentVersionPath )
+        currentVersionPath = Ramses.instance().currentProject().absolutePath( currentVersionPath )
 
         currentStatus = RamStatus.getFromPath( currentVersionPath )
 
@@ -379,7 +379,7 @@ class RamItem( RamObject ):
         """ 
 
         # If we're online, ask the client
-        if Ramses.instance()).online:
+        if Ramses.instance().online():
             #TODO ask the client
             return None
         

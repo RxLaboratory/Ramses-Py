@@ -8,6 +8,7 @@ from .ramAsset import RamAsset
 from .ramState import RamState
 from .ramFileType import RamFileType
 from .ramStep import RamStep
+from .ramSettings import RamSettings
 from .file_manager import RamFileManager
 from .logger import log, Log, LogLevel
 
