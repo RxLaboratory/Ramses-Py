@@ -3,6 +3,8 @@ from datetime import datetime
 class Log():
     MalformedName = "Cannot work on this file as it does not respect the Ramses' naming scheme, sorry."
     NoUser = "There's no current user. You may need to log in."
+    PathNotFound = "The file or folder path could not be found."
+    NoProject = "There's no current project. Select a project first."
 
 class LogLevel():
     DataReceived = -2
