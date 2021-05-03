@@ -7,6 +7,13 @@ from .logger import (
     LogLevel
 )
 
+class FolderNames():
+    preview = "_preview"
+    versions = "_versions"
+    publish = "_published"
+    userConfig = "Config"
+    stepTemplates = "Templates"
+
 # API Settings
 version = "0.0.1-dev"
 apiReferenceUrl = "https://ramses-docs.rainboxlab.org/dev/add-ons-reference/"
@@ -26,14 +33,6 @@ defaultStates = [
     RamState("OK", "OK", 1.0, [0, 170, 0]), # Green
 ]
 versionPrefixes = ['v','pub'] # The prefixes used in version files which are not states
-
-
-class FolderNames():
-    preview = "_preview"
-    versions = "_versions"
-    publish = "_published"
-    userConfig = "Config"
-    stepTemplates = "Templates"
 
 class RamSettings( object ):
     """Gets and saves settings used by Ramses.

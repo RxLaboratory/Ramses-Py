@@ -26,7 +26,7 @@ class RamProject( RamObject ):
         """
         super().__init__( projectName, projectShortName )
         self._folderPath = projectPath
-        self._daemon = RamDaemonInterface()
+        self._daemon = RamDaemonInterface.instance()
         self._width = width
         self._height = height
         self._framerate = framerate

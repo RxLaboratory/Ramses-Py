@@ -83,13 +83,13 @@ class RamDaemonInterface( object ):
 
         log( query, LogLevel.DataSent)
 
-        try: s.connect((self._address, self.port))
+        try: s.connect((self._address, self._port))
         except ConnectionRefusedError:
             log("Daemon can't be reached", LogLevel.Debug)
             return
         except Exception as e:
             log("Daemon can't be reached", LogLevel.Debug)
-            log("Error: " + e, LogLevel.Critical)
+            log(str(e), LogLevel.Critical)
             return
 
         s.sendall(query.encode('utf-8'))
@@ -136,7 +136,8 @@ class RamDaemonInterface( object ):
         return False
 
     def __checkUser(self):
-        data = self.__post('ping')
+        data = self.ping()
+        
         if data is None: return False
         content = data['content']
         if content is None: return False
@@ -308,4 +309,4 @@ class RamDaemonInterface( object ):
 # used for testing
 if __name__ == "__main__":
     daemon = RamDaemonInterface()
-    print ( daemon.getCurrentStatus("SEA", "Sea", "ASSET") )
+    print ( daemon.getCurrentProject("SEA", "Sea", "ASSET") )

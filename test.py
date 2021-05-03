@@ -138,7 +138,7 @@ def testFileManager():
         print ( RamFileManager.increment(f) )
 
 
-RamSettings.instance().logLevel = LogLevel.Debug
+RamSettings.instance().logLevel = LogLevel.DataReceived
 
 # testUserClass()
 # testItemClass()
@@ -151,6 +151,9 @@ RamSettings.instance().logLevel = LogLevel.Debug
 # testStepClass()
 # testSettings()
 # testFileManager()
+
+print ( Ramses.instance().online() )
+print ( Ramses.instance().currentProject() )
 
 # "folder": "C:/Users/Megaport/Ramses/Projects/FPE/02-PROD/FPE_SD",
 # "folder": "C:/Users/Megaport/Ramses/Projects/FPE/04-ASSETS/Characters",

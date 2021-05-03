@@ -173,8 +173,12 @@ class Ramses( object ):
 
         # Check if already online
         daemon = self._daemon
+        print("test")
         if daemon.online():
-            if daemon.getCurrentUser():
+            user = daemon.getCurrentUser()
+            print("online")
+            print(user)
+            if user:
                 return True
             else:
                 daemon.raiseWindow()
