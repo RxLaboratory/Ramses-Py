@@ -11,7 +11,7 @@
 - [*] RamAsset
 - [*] RamStep
 - [ ] RamPipe
-- [ ] RamProject    (tout OK sauf steps : pas fini le online)
+- [X] RamProject
 - [ ] Ramses        (getStates : ok)
 
 ## Refactor

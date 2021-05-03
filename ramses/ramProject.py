@@ -224,7 +224,7 @@ class RamProject( RamObject ):
 
         return foundShots
 
-    def steps( self, stepType=StepType.ALL ): #TODO finir le offline
+    def steps( self, stepType=StepType.ALL ):
         """Available steps in this project. Use type to filter the results.
             One of: RamStep.ALL, RamStep.ASSET_PODUCTION, RamStep.SHOT_PRODUCTION, RamStep.PRE_PRODUCTION, RamStep.PRODUCTION, RamStep.POST_PRODUCTION.
             RamStep.PRODUCTION represents a combination of SHOT and ASSET
