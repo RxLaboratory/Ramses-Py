@@ -51,4 +51,4 @@ class RamShot( RamItem ):
     # Hidden and not documented: documented in RamItem.folderPath()
     def folderPath( self, step="" ):   # def folderPath( self, itemType='SHOT', step="", assetGroup=None ):
         """Re-implemented from RamItem to pass it the type"""
-        return super().folderPath('SHOT', step)
+        return super().folderPath( ItemType.SHOT, step)

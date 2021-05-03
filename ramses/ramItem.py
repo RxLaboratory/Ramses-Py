@@ -72,7 +72,7 @@ class RamItem( RamObject ):
 
     # Do not document "type" and "assetGroup" arguments, they should stay hidden
     # (not needed in derived classes RamShot.folderPath() and RamAsset.folderPath())
-    def folderPath( self, itemType, step="", assetGroup="" ):
+    def folderPath( self, itemType=ItemType.GENERAL, step="", assetGroup="" ):
         """The absolute path to the folder containing the asset, or to the step subfolder if provided
 
         Args:
@@ -89,7 +89,7 @@ class RamItem( RamObject ):
         # Project path
         folderPath = project.folderPath()
 
-        if itemType == "SHOT":
+        if itemType == ItemType.SHOT:
             # Go to shots
             folderPath = folderPath + '05-SHOTS'
             # Get the shot folder name
@@ -101,7 +101,7 @@ class RamItem( RamObject ):
             
             return self._folderPath + '/' + shotFolderName + '_' + step # add the step subfolder
 
-        if itemType == "ASSET":
+        if itemType == ItemType.ASSET:
             # Go to assets
             folderPath = folderPath + '04-ASSETS'
             # The asset folder name
@@ -533,30 +533,32 @@ class RamItem( RamObject ):
             RamAsset or RamShot
         """
 
-        #TODO TEST and build general items (which are stored anywhere, just build from savename and folder)
+        #TODO Test general items
+        #TODO Test from (step) folders and not only files
 
-        itemStepFolder = os.path.dirname( RamFileManager.getSaveFilePath( path ) )
-        itemFolder = os.path.dirname( itemStepFolder )
-        print( itemFolder )
+        saveFilePath = RamFileManager.getSaveFilePath( path )
+        saveFolder = os.path.dirname( saveFilePath )
+        itemFolder = saveFolder
+        itemFolderName = os.path.basename( itemFolder )
 
-        if not os.path.isdir( itemFolder ):
-            if Ramses.instance().currentProject() is None:
-                log( Log.NoProject, LogLevel.Debug )
-                log( Log.PathNotFound, LogLevel.Debug )
-                return None
+        if not RamFileManager._isRamsesItemFoldername( itemFolderName ): # We're probably in a step subfolder
+            itemFolder = os.path.dirname( saveFolder )
+            itemFolderName = os.path.basename( itemFolder )
+            if not RamFileManager._isRamsesItemFoldername( itemFolderName ): # Still wrong: consider it's a general item
+                saveFileName = os.path.basename( saveFilePath )
+                decomposedFileName = RamFileManager.decomposeRamsesFileName( saveFileName )
+                if not decomposedFileName: # Wrong name, we can't do anything more
+                    log (Log.MalformedName, LogLevel.Debug)
+                    return None
+                return RamItem(
+                    itemName=decomposedFileName['resourceStr'],
+                    itemShortName=decomposedFileName['objectShortName'],
+                    itemFolder=saveFolder
+                )
 
-            itemFolder = Ramses.instance().currentProject().absolutePath( itemFolder )
-            if not os.path.isdir( itemFolder ):
-                log( Log.PathNotFound, LogLevel.Debug )
-                return None
-
-        folderName = os.path.basename( itemFolder )
-
-        if not RamFileManager._isRamsesItemFoldername( folderName ):
-            log( "The given folder does not respect Ramses' naming convention", LogLevel.Debug )
-            return None
         
-        folderBlocks = folderName.split( '_' )
+
+        folderBlocks = itemFolderName.split( '_' )
         typeBlock = folderBlocks[ 1 ]
         shortName = folderBlocks[ 2 ]
 
