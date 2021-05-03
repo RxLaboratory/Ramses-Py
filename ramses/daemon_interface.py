@@ -24,7 +24,7 @@ class RamDaemonInterface( object ):
         Args:
             port: int.
         """
-        # raise RuntimeError("RamDaemonInterface can't be initialized with `RamDaemonInterface()`, it is a singleton. Call RamDaemonInterface.instance() or Ramses.instance().daemonInterface() instead.")
+        raise RuntimeError("RamDaemonInterface can't be initialized with `RamDaemonInterface()`, it is a singleton. Call RamDaemonInterface.instance() or Ramses.instance().daemonInterface() instead.")
     
     @classmethod
     def instance( cls ):

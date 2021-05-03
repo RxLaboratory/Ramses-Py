@@ -3,6 +3,7 @@ import os
 from . import Ramses
 from .logger import log
 from .ramItem import RamItem
+from .file_manager import RamFileManager
 
 
 class RamAsset( RamItem ):
@@ -65,7 +66,6 @@ class RamAsset( RamItem ):
         Returns:
             RamAsset
         """
-        from . import RamFileManager
 
         if not os.path.isdir( folderPath ):
             folderPath = Ramses.instance().currentProject().absolutePath( folderPath )

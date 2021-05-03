@@ -154,9 +154,9 @@ RamSettings.instance().logLevel = LogLevel.Debug
 
 # testUserClass()
 # testItemClass()
-testProjectClass()
+# testProjectClass()
 # testShotClass()
-# testAssetClass()
+testAssetClass()
 # testStateClass()
 # testFileType()
 # testRamsesMethods()

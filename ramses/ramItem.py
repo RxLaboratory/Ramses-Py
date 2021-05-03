@@ -9,6 +9,8 @@ from .file_manager import RamFileManager
 from .daemon_interface import RamDaemonInterface
 from .logger import log
 
+# Keep the daemon at hand
+daemon = RamDaemonInterface.instance()
 
 class RamItem( RamObject ):
     """
@@ -25,7 +27,6 @@ class RamItem( RamObject ):
         """
         super().__init__( itemName, itemShortName )
         self._folderPath = itemFolder
-        self._daemon = RamDaemonInterface()
 
     def currentStatus( self, step, resource="" ): #TODO if online
         """The current status for the given step
@@ -39,10 +40,10 @@ class RamItem( RamObject ):
         """
 
         # If we're online, ask the client (return a dict)
-        if Ramses.instance().online:
-            statusDict = self._daemon.getCurrentStatus( self._shortName, self._name )
+        if Ramses.instance().online():
+            statusDict = daemon.getCurrentStatus( self._shortName, self._name )
             # check if successful
-            if RamDaemonInterface.checkReply( statusDict ):
+            if daemon.checkReply( statusDict ):
                 content = statusDict['content']
                 foundStatus = content['status']
                 log(foundStatus)
@@ -136,7 +137,7 @@ class RamItem( RamObject ):
  
         # If we're online, ask the client
         if Ramses.instance().online:
-            folderPath = self._folderPath
+            folderPath = self.folderPath()
             # >>> e.g.  C:/Users/Megaport/Ramses/Projects/FPE/04 - ASSETS/Characters/FPE_A_TRI
 
             baseName = os.path.basename( folderPath )
@@ -177,7 +178,7 @@ class RamItem( RamObject ):
             log( "The given item has no folderPath." )
             return None
 
-        folderPath = Ramses.instance().currentProject().folderPath + '/' + self.folderPath #Makes it absolute
+        folderPath = Ramses.instance().currentProject().folderPath() + '/' + self.folderPath() #Makes it absolute
 
         if not os.path.isdir( folderPath ):
             log( "The given item's folder was not found.\nThis is the path that was checked:\n" + folderPath )
