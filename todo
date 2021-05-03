@@ -28,9 +28,10 @@ Est-ce que ça peut aller ?
 ## RESUME :
 
 - Test de RamAsset OK sauf :
-    - foderPath renvoie None car RamItem pas encore fini
     - getFromPath renvoie Ramses says: The given folder does not respect Ramses' naming convention :-(
 
 - Test de RamShot : idem RamAsset
 
 - Test de RamStep : normalement, tout est OK
+
+- Test de RamProject : normalement, tout est OK
