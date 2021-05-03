@@ -23,7 +23,7 @@ def log( message, level = LogLevel.Info ):
     elif level == LogLevel.DataSent:
         message = "Ramses has just sent some data: " + message
     elif level == LogLevel.Debug:
-        message = "Ramses says: Debugging: " + message
+        message = "Debug Info from Ramses: " + message
     elif level == LogLevel.Info:
         message = "Ramses says: " + message
     elif level == LogLevel.Critical:

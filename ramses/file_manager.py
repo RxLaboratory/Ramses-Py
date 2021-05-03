@@ -5,6 +5,7 @@ from .ramSettings import RamSettings
 from .utils import intToStr
 from .logger import (
     log,
+    LogLevel,
     Log
 )
 
@@ -12,13 +13,17 @@ class RamFileManager():
     """A Class to help managing file versions"""
 
     @staticmethod
-    def increment( filePath, stateShortName="v" ): # TODO If in publish or preview folder!
+    def increment( filePath, stateShortName="v" ):
         """Copies and increments a file into the version folder
         
         Returns the filePath of the new file version"""
 
         if not os.path.isfile( filePath ):
             raise Exception( "Missing File: Cannot increment a file which does not exists: " + filePath )
+
+        settings = RamSettings.instance()
+        
+        log("Incrementing version for file: " + filePath, LogLevel.Debug)
 
         # Check File Name
         fileName = os.path.basename( filePath )
@@ -28,9 +33,13 @@ class RamFileManager():
         
         # Get the versions folder
         fileFolder = os.path.dirname( filePath )
-        versionsFolderName = RamSettings.instance().folderNames.versions
-        if os.path.basename( fileFolder ) == versionsFolderName:
+        fileFolderName = os.path.basename( fileFolder )
+        versionsFolderName = settings.folderNames.versions
+        if fileFolderName == versionsFolderName:
             versionsFolder = fileFolder
+        elif fileFolderName == settings.folderNames.publish or fileFolderName == settings.folderNames.preview:
+            wipFolder = os.path.dirname( fileFolder )
+            versionsFolder = wipFolder + '/' + versionsFolderName
         else:
             versionsFolder = fileFolder + '/' + versionsFolderName
 
@@ -198,8 +207,7 @@ class RamFileManager():
             Else, returns a dictionary made of all the blocks: {"projectId", "ramType", "objectShortName", "ramStep", "resourceStr", "state", "version", "extension"}
         """
         if type(ramsesFileName) != str:
-            print("The given filename is not a str.")
-            return None
+            raise TypeError( "ramsesFileName must be a string." )
 
         splitRamsesName = re.match(RamFileManager._getRamsesNameRegEx(), ramsesFileName)
 

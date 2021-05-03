@@ -131,6 +131,7 @@ def testSettings():
 def testFileManager():
     testFiles = (
         'D:/DEV_SRC/RxOT/Ramses/Ramses/Project-Tree-Example/Project01/04-ASSETS/Characters/Projet01_A_ISOLDE/Projet01_A_ISOLDE_MOD/Projet01_A_ISOLDE_MOD.blend',
+        'D:/DEV_SRC/RxOT/Ramses/Ramses/Project-Tree-Example/Project01/04-ASSETS/Characters/Projet01_A_ISOLDE/Projet01_A_ISOLDE_MOD/_published/Projet01_A_ISOLDE_MOD.abc',
         'D:/DEV_SRC/RxOT/Ramses/Ramses/Project-Tree-Example/Project01/04-ASSETS/Characters/Projet01_A_ISOLDE/Projet01_A_ISOLDE_MOD/_versions/Projet01_A_ISOLDE_MOD_test_pub002.blend',
         'D:/DEV_SRC/RxOT/Ramses/Ramses/Project-Tree-Example/Project01/04-ASSETS/Project01_G_PROD_An info file.txt',
     )
@@ -138,7 +139,7 @@ def testFileManager():
         print ( RamFileManager.increment(f) )
 
 
-RamSettings.instance().logLevel = LogLevel.DataReceived
+RamSettings.instance().logLevel = LogLevel.Debug
 
 # testUserClass()
 # testItemClass()
@@ -150,10 +151,7 @@ RamSettings.instance().logLevel = LogLevel.DataReceived
 # testRamsesMethods()
 # testStepClass()
 # testSettings()
-# testFileManager()
-
-print ( Ramses.instance().online() )
-print ( Ramses.instance().currentProject() )
+testFileManager()
 
 # "folder": "C:/Users/Megaport/Ramses/Projects/FPE/02-PROD/FPE_SD",
 # "folder": "C:/Users/Megaport/Ramses/Projects/FPE/04-ASSETS/Characters",

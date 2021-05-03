@@ -306,7 +306,3 @@ class RamDaemonInterface( object ):
             ('type', itemType)
             ), 8192 )
 
-# used for testing
-if __name__ == "__main__":
-    daemon = RamDaemonInterface()
-    print ( daemon.getCurrentProject("SEA", "Sea", "ASSET") )
