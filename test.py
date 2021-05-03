@@ -148,7 +148,24 @@ def testFileManager():
         f = testFiles[t]
         print ( "Testing " + f )
         print( fm.getSaveFilePath( f ) )
+    
+    asset = RamAsset.getFromPath( testFiles['wip'] ) # ok
+    assetp = RamAsset.getFromPath( testFiles['published'] ) # ok
+    item = RamItem.getFromPath( testFiles['wip'] ) # ok
+    shot = RamShot.getFromPath( testFiles['wip'] ) # None
 
+    print(asset.shortName())
+    print( asset.group() )
+    print(asset.folderPath())
+
+    print( assetp.name() )
+
+    print( item.shortName() )
+    print( item.itemType() )
+
+    print ( shot )
+
+    
 
 RamSettings.instance().logLevel = LogLevel.Debug
 
@@ -156,13 +173,13 @@ RamSettings.instance().logLevel = LogLevel.Debug
 # testItemClass()
 # testProjectClass()
 # testShotClass()
-testAssetClass()
+# testAssetClass()
 # testStateClass()
 # testFileType()
 # testRamsesMethods()
 # testStepClass()
 # testSettings()
-# testFileManager()
+testFileManager()
 
 # "folder": "C:/Users/Megaport/Ramses/Projects/FPE/02-PROD/FPE_SD",
 # "folder": "C:/Users/Megaport/Ramses/Projects/FPE/04-ASSETS/Characters",

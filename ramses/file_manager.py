@@ -348,7 +348,7 @@ class RamFileManager():
         return blocks
 
     @staticmethod
-    def _isRamsesItemFoldername( n):
+    def _isRamsesItemFoldername( n ):
         """Low-level, undocumented. Used to check if a given folder respects Ramses' naming convention for items' root folders.
         
         The root folder should look like this:

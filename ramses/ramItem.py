@@ -7,10 +7,15 @@ from .ramStep import RamStep
 from .ramSettings import FolderNames
 from .file_manager import RamFileManager
 from .daemon_interface import RamDaemonInterface
-from .logger import log
+from .logger import log, Log, LogLevel
 
 # Keep the daemon at hand
 daemon = RamDaemonInterface.instance()
+
+class ItemType():
+    GENERAL='G'
+    ASSET='A'
+    SHOT='S'
 
 class RamItem( RamObject ):
     """
@@ -18,7 +23,7 @@ class RamItem( RamObject ):
     An item of the project, either an asset or a shot.
     """
 
-    def __init__( self, itemName, itemShortName, itemFolder="" ):
+    def __init__( self, itemName, itemShortName, itemFolder="", itemType=ItemType.GENERAL ):
         """
         Args:
             itemName (str)
@@ -27,6 +32,7 @@ class RamItem( RamObject ):
         """
         super().__init__( itemName, itemShortName )
         self._folderPath = itemFolder
+        self._itemType = itemType
 
     def currentStatus( self, step, resource="" ): #TODO if online
         """The current status for the given step
@@ -508,13 +514,71 @@ class RamItem( RamObject ):
         """ 
         pass
 
-    def status( self, step ): #TODO
-        """Gets the current status for the given step
+    def itemType( self ):
+        """Returns the type of the item"""
+        return self._itemType
+
+    @staticmethod
+    def getFromPath( path ): #TODO
+        from .ramShot import RamShot
+        from .ramAsset import RamAsset
+        """Returns a RamAsset or RamShot instance built using the given path.
+        The path can be any file or folder path from the asset 
+        (a version file, a preview file, etc)
 
         Args:
-            step (RamStep)
+            path (str)
 
         Returns:
-            RamStatus
-        """ 
-        pass
+            RamAsset or RamShot
+        """
+
+        #TODO TEST and build general items (which are stored anywhere, just build from savename and folder)
+
+        itemStepFolder = os.path.dirname( RamFileManager.getSaveFilePath( path ) )
+        itemFolder = os.path.dirname( itemStepFolder )
+        print( itemFolder )
+
+        if not os.path.isdir( itemFolder ):
+            if Ramses.instance().currentProject() is None:
+                log( Log.NoProject, LogLevel.Debug )
+                log( Log.PathNotFound, LogLevel.Debug )
+                return None
+
+            itemFolder = Ramses.instance().currentProject().absolutePath( itemFolder )
+            if not os.path.isdir( itemFolder ):
+                log( Log.PathNotFound, LogLevel.Debug )
+                return None
+
+        folderName = os.path.basename( itemFolder )
+
+        if not RamFileManager._isRamsesItemFoldername( folderName ):
+            log( "The given folder does not respect Ramses' naming convention", LogLevel.Debug )
+            return None
+        
+        folderBlocks = folderName.split( '_' )
+        typeBlock = folderBlocks[ 1 ]
+        shortName = folderBlocks[ 2 ]
+
+        if typeBlock == ItemType.ASSET: 
+            # Get the group name
+            assetGroupFolder = os.path.dirname( itemFolder )
+            assetGroup = os.path.basename( assetGroupFolder )
+            return RamAsset(
+                assetName=shortName,
+                assetShortName=shortName,
+                assetFolder=itemFolder,
+                assetGroupName=assetGroup
+            )
+
+        if typeBlock == ItemType.SHOT:
+            return RamShot(
+                shotName=shortName,
+                shotShortName=shortName,
+                shotFolder=itemFolder
+            )
+
+        
+
+        log( "The given path does not belong to a shot nor an asset", LogLevel.Debug )
+        return None

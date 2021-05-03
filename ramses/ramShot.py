@@ -1,7 +1,7 @@
 import os
 
 from .logger import log
-from .ramItem import RamItem
+from .ramItem import RamItem, ItemType
 from .file_manager import RamFileManager
 from . import Ramses
 
@@ -15,7 +15,7 @@ class RamShot( RamItem ):
             shotName (str)
             shotShortName (str)
         """
-        super().__init__( shotName, shotShortName, shotFolder )
+        super().__init__( shotName, shotShortName, shotFolder, ItemType.SHOT )
         self._duration = duration
 
     def duration( self ):
@@ -27,40 +27,24 @@ class RamShot( RamItem ):
         return self._duration
 
     @staticmethod
-    def getFromPath( folderPath ):
-        """Returns a RamShot instance built using the given folder path.
+    def getFromPath( path ):
+        """Returns a RamShot instance built using the given path.
             The path can be any file or folder path from the asset
             (a version file, a preview file, etc)
 
         Args:
-            folderPath (str)
+            path (str)
 
         Returns:
             RamShot
         """
+        shot = RamItem.getFromPath( path )
 
-        if not os.path.isdir( folderPath ):
-            folderPath = Ramses.instance().currentProject().absolutePath( folderPath )
-            if not os.path.isdir( folderPath ):
-                log( "The given folder could not be found" )
-                return None
-        
-        folderName = os.path.basename( folderPath )
-
-        if not RamFileManager._isRamsesItemFoldername( folderName ):
-            log( "The given folder does not respect Ramses' naming convention" )
+        if not shot:
             return None
 
-        folderBlocks = folderName.split( '_' )
-
-        if not folderBlocks[ 1 ] == 'S':
-            log( "The given folder does not belong to a shot" )
+        if not shot.itemType() == ItemType.SHOT:
             return None
-
-        shortName = folderBlocks[ 2 ]
-        shotFolderPath = os.path.relpath( folderPath, Ramses.instance().currentProject().folderPath )
-
-        shot = RamShot( shotName = shortName, shotShortName = shortName, shotFolderPath = shotFolderPath )
 
         return shot
 

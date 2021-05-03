@@ -2,7 +2,7 @@ import os
 
 from . import Ramses
 from .logger import log
-from .ramItem import RamItem
+from .ramItem import RamItem, ItemType
 from .file_manager import RamFileManager
 
 
@@ -18,7 +18,7 @@ class RamAsset( RamItem ):
             assetGroupName (str)
             tags (list of str)
         """
-        super().__init__( assetName, assetShortName, assetFolder )
+        super().__init__( assetName, assetShortName, assetFolder, ItemType.ASSET )
         if tags is None:
             tags = []
         self._group = assetGroupName
@@ -39,6 +39,9 @@ class RamAsset( RamItem ):
             str
         """
 
+        if self._group != "":
+            return self._group
+
         if self._folderPath == '':
             log( "The given item has no folderPath." )
             return self._group
@@ -55,40 +58,25 @@ class RamAsset( RamItem ):
         return self._group
 
     @staticmethod
-    def getFromPath( folderPath ):
+    def getFromPath( path ):
         """Returns a RamAsset instance built using the given path.
-        The path can be any file or folder path from the asset 
-        (a version file, a preview file, etc)
+            The path can be any file or folder path from the asset
+            (a version file, a preview file, etc)
 
         Args:
-            folderPath (str)
+            path (str)
 
         Returns:
             RamAsset
         """
+        asset = RamItem.getFromPath( path )
 
-        if not os.path.isdir( folderPath ):
-            folderPath = Ramses.instance().currentProject().absolutePath( folderPath )
-            if not os.path.isdir( folderPath ):
-                log( "The given folder could not be found" )
-                return None
-
-        folderName = os.path.basename( folderPath )
-
-        if not RamFileManager._isRamsesItemFoldername( folderName ):
-            log( "The given folder does not respect Ramses' naming convention" )
-            return None
-        
-        folderBlocks = folderName.split( '_' )
-
-        if not folderBlocks[ 1 ] == 'A':
-            log( "The given folder does not belong to an asset" )
+        if not asset:
             return None
 
-        shortName = folderBlocks[ 2 ]
-        assetFolderPath = os.path.relpath( folderPath, Ramses.instance().currentProject().folderPath )
+        if not asset.itemType() == ItemType.ASSET:
+            return None
 
-        asset = RamAsset( assetName = "", assetShortName = shortName, assetFolder = assetFolderPath )
         return asset
 
     # Hidden and not documented: documented in RamItem.folderPath()
