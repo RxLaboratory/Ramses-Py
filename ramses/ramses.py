@@ -18,10 +18,10 @@ class Ramses( object ):
     """
 
     # API Settings
-    _version = "0.0.1-dev"
-    apiReferenceUrl = "https://ramses-docs.rainboxlab.org/dev/add-ons-reference/"
-    addonsHelpUrl = "https://ramses-docs.rainboxlab.org/addons/"
-    generalHelpUrl = "https://ramses-docs.rainboxlab.org/"
+    _version = RamSettings.instance().version
+    apiReferenceUrl = RamSettings.instance().apiReferenceUrl
+    addonsHelpUrl = RamSettings.instance().addonsHelpUrl
+    generalHelpUrl = RamSettings.instance().generalHelpUrl
 
     _instance = None
 

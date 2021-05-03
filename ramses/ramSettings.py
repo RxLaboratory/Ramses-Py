@@ -7,6 +7,27 @@ from .logger import (
     LogLevel
 )
 
+# API Settings
+version = "0.0.1-dev"
+apiReferenceUrl = "https://ramses-docs.rainboxlab.org/dev/add-ons-reference/"
+addonsHelpUrl = "https://ramses-docs.rainboxlab.org/addons/"
+generalHelpUrl = "https://ramses-docs.rainboxlab.org/"
+# Default values
+defaultAutoConnect = True # Wether to always try to (re)connect to the Daemon if offline.
+defaultRamsesClientPath = "" # Location of the Ramses Client executable file (.exe on Windows, .app on MacOS, .appimage or binary on Linux)
+defaultRamsesClientPort = 18185 # Listening port of the Ramses Daemon
+defaultLogLevel = LogLevel.Info
+# Not Documented: these are not settings to be customized (yet)
+folderNames = FolderNames()
+defaultStates = [
+    RamState("No", "NO", 1.0, [25,25,25]), # Very dark gray
+    RamState("To Do", "TODO", 0.0, [85, 170, 255]), # Blue
+    RamState("Work in progress", "WIP", 0.5,  [255,255,127]), # Light Yellow
+    RamState("OK", "OK", 1.0, [0, 170, 0]), # Green
+]
+versionPrefixes = ['v','pub'] # The prefixes used in version files which are not states
+
+
 class FolderNames():
     preview = "_preview"
     versions = "_versions"
@@ -39,11 +60,28 @@ class RamSettings( object ):
     def instance( cls ):
         if cls._instance is None:
             cls._instance = cls.__new__(cls)
+
             # Default Values
-            cls.autoConnect = True # Wether to always try to (re)connect to the Daemon if offline.
-            cls.ramsesClientPath = "" # Location of the Ramses Client executable file (.exe on Windows, .app on MacOS, .appimage or binary on Linux)
-            cls.ramsesClientPort = 18185 # Listening port of the Ramses Daemon
-            cls.logLevel = LogLevel.Info
+            cls.autoConnect = defaultAutoConnect 
+            cls.ramsesClientPath = defaultRamsesClientPath 
+            cls.ramsesClientPort = defaultRamsesClientPort 
+            cls.logLevel = defaultLogLevel
+
+            cls.defaultAutoConnect = defaultAutoConnect
+            cls.defaultRamsesClientPath = defaultRamsesClientPath
+            cls.defaultRamsesClientPort = defaultRamsesClientPort
+            cls.defaultLogLevel = defaultLogLevel
+
+            # Not Documented: these are not settings to be customized (yet)
+            cls.folderNames = folderNames
+            cls.defaultStates = defaultStates
+            cls.versionPrefixes = versionPrefixes
+
+            # API Settings
+            cls.version = version
+            cls.apiReferenceUrl = apiReferenceUrl
+            cls.addonsHelpUrl = addonsHelpUrl
+            cls.generalHelpUrl = generalHelpUrl
 
             # Set the path to the settings file and temporary folder (os-specific)
             system = platform.system()
@@ -68,17 +106,7 @@ class RamSettings( object ):
                     if 'clientPort' in settingsDict:
                         cls.ramsesClientPort = settingsDict['clientPort']
                     if 'logLevel' in settingsDict:
-                        cls.logLevel = settingsDict['logLevel']
-
-            # Not Documented: these are not settings to be customized (yet)
-            cls.folderNames = FolderNames()
-            cls.defaultStates = [
-                RamState("No", "NO", 1.0, [25,25,25]), # Very dark gray
-                RamState("To Do", "TODO", 0.0, [85, 170, 255]), # Blue
-                RamState("Work in progress", "WIP", 0.5,  [255,255,127]), # Light Yellow
-                RamState("OK", "OK", 1.0, [0, 170, 0]), # Green
-            ]
-            cls.versionPrefixes = ['v','pub'] # The prefixes used in version files which are not states
+                        cls.logLevel = settingsDict['logLevel'] 
 
         return cls._instance
 
