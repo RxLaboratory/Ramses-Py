@@ -139,12 +139,20 @@ class RamDaemonInterface( object ):
         data = self.ping()
         
         if data is None: return False
-        content = data['content']
-        if content is None: return False
-        try:
-            ok = content['logged-in']
-        except KeyError:
+        
+        if 'content' in data:
+            content = data['content']
+        else:
             return False
+
+        if content is None:
+            return False
+
+        if 'logged-in' in content:
+            ok = content['logged-in']
+        else:
+            return False
+            
         return ok
 
     def __noUserReply(self, query):

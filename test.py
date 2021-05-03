@@ -129,14 +129,19 @@ def testSettings():
     ramses.settings().save()
 
 def testFileManager():
-    testFiles = (
-        'D:/DEV_SRC/RxOT/Ramses/Ramses/Project-Tree-Example/Project01/04-ASSETS/Characters/Projet01_A_ISOLDE/Projet01_A_ISOLDE_MOD/Projet01_A_ISOLDE_MOD.blend',
-        'D:/DEV_SRC/RxOT/Ramses/Ramses/Project-Tree-Example/Project01/04-ASSETS/Characters/Projet01_A_ISOLDE/Projet01_A_ISOLDE_MOD/_published/Projet01_A_ISOLDE_MOD.abc',
-        'D:/DEV_SRC/RxOT/Ramses/Ramses/Project-Tree-Example/Project01/04-ASSETS/Characters/Projet01_A_ISOLDE/Projet01_A_ISOLDE_MOD/_versions/Projet01_A_ISOLDE_MOD_test_pub002.blend',
-        'D:/DEV_SRC/RxOT/Ramses/Ramses/Project-Tree-Example/Project01/04-ASSETS/Project01_G_PROD_An info file.txt',
-    )
-    for f in testFiles:
-        print ( RamFileManager.increment(f) )
+    testFiles = {
+        'wip': 'D:/DEV_SRC/RxOT/Ramses/Ramses/Project-Tree-Example/Project01/04-ASSETS/Characters/Projet01_A_ISOLDE/Projet01_A_ISOLDE_MOD/Projet01_A_ISOLDE_MOD.blend',
+        'published': 'D:/DEV_SRC/RxOT/Ramses/Ramses/Project-Tree-Example/Project01/04-ASSETS/Characters/Projet01_A_ISOLDE/Projet01_A_ISOLDE_MOD/_published/Projet01_A_ISOLDE_MOD.abc',
+        'version': 'D:/DEV_SRC/RxOT/Ramses/Ramses/Project-Tree-Example/Project01/04-ASSETS/Characters/Projet01_A_ISOLDE/Projet01_A_ISOLDE_MOD/_versions/Projet01_A_ISOLDE_MOD_test_pub002.blend',
+        'general': 'D:/DEV_SRC/RxOT/Ramses/Ramses/Project-Tree-Example/Project01/04-ASSETS/Project01_G_PROD_An info file.txt',
+    }
+
+    fm = RamFileManager
+    
+    for t in testFiles:
+        f = testFiles[t]
+        print ( "Testing " + f )
+        print( fm.getSaveFilePath( f ) )
 
 
 RamSettings.instance().logLevel = LogLevel.Debug

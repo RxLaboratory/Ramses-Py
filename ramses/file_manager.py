@@ -9,20 +9,53 @@ from .logger import (
     Log
 )
 
+# Keep the settings at hand
+settings = RamSettings.instance()
+
 class RamFileManager():
     """A Class to help managing file versions"""
 
     @staticmethod
-    def increment( filePath, stateShortName="v" ):
+    def getSaveFilePath( filePath ):
+        """Gets the save path for an existing file.
+        This path is not the same as the file path if the file path is located in the versions/preview/publish subfolder"""
+
+        fileName = os.path.basename( filePath )
+
+        # Check name
+        decomposedFileName = RamFileManager.decomposeRamsesFileName( fileName )
+
+        if not decomposedFileName:
+            log( Log.MalformedName, LogLevel.Critical )
+            return None
+
+        saveFolder = os.path.dirname( filePath )
+
+        if RamFileManager.inReservedFolder( filePath ):
+            saveFolder = os.path.dirname( saveFolder )
+
+        # TODO if the file is a restored file from an older version (has restore-\d in resourceStr)        
+
+        saveFileName = RamFileManager.buildRamsesFileName(
+            decomposedFileName['projectID'],
+            decomposedFileName['ramStep'],
+            decomposedFileName['extension'],
+            decomposedFileName['ramType'],
+            decomposedFileName['objectShortName'],
+            decomposedFileName['resourceStr'],
+            )
+
+        return saveFolder + '/' + saveFileName
+        
+    @staticmethod
+    def copyToVersion( filePath, increment = False, dafaultStateShortName="v" ):
         """Copies and increments a file into the version folder
         
         Returns the filePath of the new file version"""
 
         if not os.path.isfile( filePath ):
             raise Exception( "Missing File: Cannot increment a file which does not exists: " + filePath )
-
-        settings = RamSettings.instance()
-        
+      
         log("Incrementing version for file: " + filePath, LogLevel.Debug)
 
         # Check File Name
@@ -30,34 +63,55 @@ class RamFileManager():
         decomposedFileName = RamFileManager.decomposeRamsesFileName( fileName )
         if not decomposedFileName:
             log( Log.MalformedName, LogLevel.Critical )
-        
-        # Get the versions folder
-        fileFolder = os.path.dirname( filePath )
-        fileFolderName = os.path.basename( fileFolder )
-        versionsFolderName = settings.folderNames.versions
-        if fileFolderName == versionsFolderName:
-            versionsFolder = fileFolder
-        elif fileFolderName == settings.folderNames.publish or fileFolderName == settings.folderNames.preview:
-            wipFolder = os.path.dirname( fileFolder )
-            versionsFolder = wipFolder + '/' + versionsFolderName
-        else:
-            versionsFolder = fileFolder + '/' + versionsFolderName
-
-        # If there's no version yet, copy as v1
-        if not os.path.isdir( versionsFolder ):
-            os.makedirs( versionsFolder )
-            newFileName = RamFileManager.composeRamsesFileName( decomposedFileName, True )
-            newFilePath = fileFolder + '/' + newFileName
-            shutil.copy2( filePath, newFilePath )
-            return newFilePath
-
+            return
+               
         # Look for the latest version to increment and save
+        version = RamFileManager.getLatestVersion( filePath, dafaultStateShortName )
+        versionNumber = version[0]
+        versionState = version[1]
+
+        if increment:
+            versionNumber = versionNumber + 1
+
+        newFileName = RamFileManager.buildRamsesFileName(
+            decomposedFileName['projectID'],
+            decomposedFileName['ramStep'],
+            decomposedFileName['extension'],
+            decomposedFileName['ramType'],
+            decomposedFileName['objectShortName'],
+            decomposedFileName['resourceStr'],
+            versionNumber,
+            versionState,
+        )
+
+        versionsFolder = RamFileManager.getVersionFolder( filePath )
+
+        newFilePath = versionsFolder + '/' + newFileName
+        shutil.copy2( filePath, newFilePath )
+        return newFilePath
+
+    @staticmethod
+    def getLatestVersion( filePath, dafaultStateShortName="v" ):
+        """Gets the latest version number and state of a file
+        
+        Returns a tuple (version, state)
+        """
+
+        # Check File Name
+        fileName = os.path.basename( filePath )
+        decomposedFileName = RamFileManager.decomposeRamsesFileName( fileName )
+        if not decomposedFileName:
+            log( Log.MalformedName, LogLevel.Critical )
+
+        # Get versions
+        versionsFolder = RamFileManager.getVersionFolder( filePath )
+
         foundFiles = os.listdir( versionsFolder )
         highestVersion = 0
-        state = 'v'
+        state = dafaultStateShortName
 
         for foundFile in foundFiles:
-            if not os.path.isfile( versionsFolder + '/' + foundFile ): #This is in case the user has created folders in _versions
+            if not os.path.isfile( versionsFolder + '/' + foundFile ): # This is in case the user has created folders in _versions
                 continue
 
             decomposedFoundFile = RamFileManager.decomposeRamsesFileName(foundFile)
@@ -80,21 +134,64 @@ class RamFileManager():
             version = decomposedFoundFile["version"]
             if version > highestVersion:
                 highestVersion = version
-                state = decomposedFoundFile["state"]
+                if decomposedFoundFile["state"] != '':
+                    state = decomposedFoundFile["state"]
+
+        return (highestVersion, state)
+
+    @staticmethod
+    def getVersionFolder( filePath ):
+        """Gets the versions folder for this file"""
+
+        fileFolder = os.path.dirname( filePath )
+        versionsFolderName = settings.folderNames.versions
+
+        if RamFileManager.inVersionsFolder( filePath ):
+            versionsFolder = fileFolder
+
+        elif RamFileManager.inPublishFolder( filePath ) or RamFileManager.inPreviewFolder( filePath ):
+            wipFolder = os.path.dirname( fileFolder )
+            versionsFolder = wipFolder + '/' + versionsFolderName
         
-        newFileName = RamFileManager.buildRamsesFileName(
-            decomposedFileName['projectID'],
-            decomposedFileName['ramStep'],
-            decomposedFileName['extension'],
-            decomposedFileName['ramType'],
-            decomposedFileName['objectShortName'],
-            decomposedFileName['resourceStr'],
-            highestVersion + 1,
-            state,
-        )
-        newFilePath = versionsFolder + '/' + newFileName
-        shutil.copy2( filePath, newFilePath )
-        return newFilePath
+        else:
+            versionsFolder = fileFolder + '/' + versionsFolderName
+
+        if not os.path.isdir( versionsFolder ):
+            os.makedirs( versionsFolder )
+
+        return versionsFolder
+
+    @staticmethod
+    def inPreviewFolder( path ):
+        """Checks if the given path is inside a "preview" folder"""
+        currentFolder = os.path.dirname(path)
+        currentFolderName = os.path.basename( currentFolder )
+        return currentFolderName == settings.folderNames.preview
+
+    @staticmethod
+    def inPublishFolder( path ):
+        """Checks if the given path is inside a "published" folder"""
+        currentFolder = os.path.dirname(path)
+        currentFolderName = os.path.basename( currentFolder )
+        return currentFolderName == settings.folderNames.publish
+
+    @staticmethod
+    def inVersionsFolder( path ):
+        """Checks if the given path is inside a "versions" folder"""
+        currentFolder = os.path.dirname(path)
+        currentFolderName = os.path.basename( currentFolder )
+        return currentFolderName == settings.folderNames.versions
+
+    @staticmethod
+    def inReservedFolder( path ):
+        """Checks if the given path is inside a "versions/preview/published" folder"""
+        currentFolder = os.path.dirname( path )
+        currentFolderName = os.path.basename( currentFolder )
+        return currentFolderName in [
+            settings.folderNames.versions,
+            settings.folderNames.publish,
+            settings.folderNames.preview
+        ]
     
     @staticmethod
     def composeRamsesFileName( ramsesFileNameDict, increment=False ):

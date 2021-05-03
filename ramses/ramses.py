@@ -42,9 +42,9 @@ class Ramses( object ):
             cls._settings = RamSettings.instance()
             cls._offline = True
 
-            if cls._settings.autoConnect:
-                log("I'm trying to contact the Ramses Client (auto-connection is enabled).", LogLevel.Info)
-                cls.connect()
+            if cls._settings.online:
+                log("I'm trying to contact the Ramses Client.", LogLevel.Info)
+                cls._instance.connect()
 
         return cls._instance
 
@@ -173,12 +173,9 @@ class Ramses( object ):
 
         # Check if already online
         daemon = self._daemon
-        cls._offline = False
-        print("test")
+        self._offline = False
         if daemon.online():
-            user = daemon.getCurrentUser()
-            print("online")
-            print(user)
+            user = self.currentUser()
             if user:
                 return True
             else:
@@ -188,7 +185,7 @@ class Ramses( object ):
             # Try to open the client
             self.showClient()
 
-        cls._offline = True
+        self._offline = True
         return False
 
     def disconnect(self):  # TODO
