@@ -1,5 +1,6 @@
 import os, re, shutil
 
+from .ramItem import ItemType
 from .ramses import Ramses
 from .ramSettings import RamSettings
 from .utils import intToStr
@@ -234,7 +235,7 @@ class RamFileManager():
         )
 
     @staticmethod
-    def buildRamsesFileName( project , step , ext , ramType = 'G' , objectShortName = '' , resourceStr = "" , version = -1 , version_prefix = 'v' ):
+    def buildRamsesFileName( project , step , ext , ramType = ItemType.GENERAL , objectShortName = '' , resourceStr = "" , version = -1 , version_prefix = 'v' ):
         """Used to build a filename respecting Ramses' naming conventions.
 
         The name will look like this:
@@ -268,7 +269,7 @@ class RamFileManager():
         resourceStr = RamFileManager._fixResourceStr( resourceStr )
         ramsesFileName = project + '_' + ramType
 
-        if ramType in ('A', 'S'):
+        if ramType in (ItemType.ASSET, ItemType.SHOT):
             ramsesFileName = ramsesFileName + '_' + objectShortName
 
         ramsesFileName = ramsesFileName + '_' + step
