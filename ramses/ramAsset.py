@@ -5,7 +5,10 @@ from .logger import log, Log, LogLevel
 from .ramItem import RamItem
 from .file_manager import RamFileManager
 from .ramSettings import ItemType
+from .daemon_interface import RamDaemonInterface
 
+# Keep the daemon at hand
+daemon = RamDaemonInterface.instance()
 
 class RamAsset( RamItem ):
     """A class representing an asset."""
@@ -46,7 +49,7 @@ class RamAsset( RamItem ):
         self._group = assetGroupName
         self._tags = tags
 
-    def tags( self ): # Mutable #TODO online
+    def tags( self ): # Mutable
         """Some tags describing the asset. An empty list if the Daemon is not available.
 
         Returns:
@@ -54,12 +57,15 @@ class RamAsset( RamItem ):
         """
 
         if Ramses.instance().online():
-            #TODO demander au démon
-            pass
+            assetDict = daemon.getAsset( self._shortName )
+            # check if successful
+            if RamDaemonInterface.checkReply( assetDict ):
+                content = assetDict['content']
+                self._tags = content['tags']
 
         return self._tags
 
-    def group( self ): # Immutable #TODO online
+    def group( self ): # Immutable
         """The name of group containing this asset. (e.g. Props)
 
         Returns:
@@ -69,10 +75,15 @@ class RamAsset( RamItem ):
         if self._group != "":
             return self._group
 
+        # If we're online, ask the client (return a dict)
         if Ramses.instance().online():
-            #TODO demander au démon
-            pass
+            assetDict = daemon.getAsset( self._shortName )
+            # check if successful
+            if RamDaemonInterface.checkReply( assetDict ):
+                content = assetDict['content']
+                self._group = content['group']
 
+        # Else, check in the folders
         folderPath = self.folderPath()
 
         if not os.path.isdir( folderPath ):
