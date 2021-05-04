@@ -363,6 +363,30 @@ class RamFileManager():
         return fullPath
 
     @staticmethod
+    def decomposeStepFolderName( ramsesStepFolderName ):
+        """Gets the three parts of a step folder:
+        - project
+        - stepType
+        - shortName"""
+        if type(ramsesStepFolderName) != str:
+            raise TypeError( "ramsesStepFolderName must be a string." )
+
+        regex = re.compile('^([a-z0-9+-]{1,10})_([ASG])_([a-z0-9+-]{1,10})', re.IGNORECASE)
+    
+        splitRamsesStepFolder = re.match( regex ,ramsesStepFolderName )
+
+        if splitRamsesStepFolder == None:
+            return None
+
+        blocks = {
+            'project': splitRamsesStepFolder.group(1),
+            'stepType': splitRamsesStepFolder.group(2),
+            'shortName': splitRamsesStepFolder.group(3)
+        }
+        
+        return blocks
+
+    @staticmethod
     def _isRamsesItemFoldername( n ):
         """Low-level, undocumented. Used to check if a given folder respects Ramses' naming convention for items' root folders.
         
@@ -371,7 +395,7 @@ class RamFileManager():
 
         Returns: bool
         """
-        if re.match('^([a-z0-9+-]{1,10})_[ASG]_([a-z0-9+-]{1,10})$' , n , re.IGNORECASE): return True
+        if re.match( '^([a-z0-9+-]{1,10})_([ASG])_([a-z0-9+-]{1,10})', n , re.IGNORECASE): return True
         return False
 
     @staticmethod
