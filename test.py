@@ -64,12 +64,12 @@ def testProjectClass():
     # print(proj.absolutePath("05-SHOTS/PROJECTID_S_01-001"))
     # print(proj.assets("Sets"))
     # print(proj.assetGroups())
-    # print(proj.shots())
+    print(proj.shots())
     # print(proj.steps("SHOT_PRODUCTION"))
 
-    for asset in proj.assets():
-        print( asset )
-        print( asset.group() )
+    #for asset in proj.assets():
+    #   print( asset )
+    #   print( asset.group() )
 
 def testShotClass():
     shot = RamShot("ShotName", "ShotShortName", "J:/RAINBOX/TESTRAMSESPATH/05-SHOTS/PROJECTID_S_01-001")

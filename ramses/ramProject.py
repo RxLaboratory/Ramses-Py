@@ -84,10 +84,56 @@ class RamProject( RamObject ):
         
         return thePath
 
-    def preProdPath( self ): #TODO
-        pass
-    
+    def preProdPath( self ):
+        """Returns the path of the PreProd folder (creates it if it does not exist yet)"""
+        projectFolder = self.folderPath()
+        if not os.path.isdir( projectFolder ):
+            return ''
+
+        thePath = RamFileManager.buildPath((
+            projectFolder,
+            '01-PRE-PROD'
+        ))
+
+        if not os.path.isdir( thePath ):
+            os.makedirs( thePath )
+
+        return thePath
+
+    def prodPath( self ):
+        """Returns the path of the Prod folder (creates it if it does not exist yet)"""
+        projectFolder = self.folderPath()
+        if not os.path.isdir( projectFolder ):
+            return ''
+
+        thePath = RamFileManager.buildPath((
+            projectFolder,
+            '02-PROD'
+        ))
+
+        if not os.path.isdir( thePath ):
+            os.makedirs( thePath )
+
+        return thePath
+
+    def postProdPath( self ):
+        """Returns the path of the PostProd folder (creates it if it does not exist yet)"""
+        projectFolder = self.folderPath()
+        if not os.path.isdir( projectFolder ):
+            return ''
+
+        thePath = RamFileManager.buildPath((
+            projectFolder,
+            '03-POST-PROD'
+        ))
+
+        if not os.path.isdir( thePath ):
+            os.makedirs( thePath )
+
+        return thePath
+
     def assetsPath( self ):
+        """Returns the path of the Assets folder (creates it if it does not exist yet)"""
         projectFolder = self.folderPath()
         if not os.path.isdir( projectFolder ):
             return ''
@@ -102,8 +148,37 @@ class RamProject( RamObject ):
         
         return thePath
 
+    def shotsPath( self ):
+        """Returns the path of the Shots folder (creates it if it does not exist yet)"""
+        projectFolder = self.folderPath()
+        if not os.path.isdir( projectFolder ):
+            return ''
 
-    #etc...
+        thePath = RamFileManager.buildPath((
+            projectFolder,
+            '05-SHOTS'
+        ))
+
+        if not os.path.isdir( thePath ):
+            os.makedirs( thePath )
+        
+        return thePath
+
+    def exportPath( self ):
+        """Returns the path of the Export folder (creates it if it does not exist yet)"""
+        projectFolder = self.folderPath()
+        if not os.path.isdir( projectFolder ):
+            return ''
+
+        thePath = RamFileManager.buildPath((
+            projectFolder,
+            '06-EXPORT'
+        ))
+
+        if not os.path.isdir( thePath ):
+            os.makedirs( thePath )
+        
+        return thePath
 
     def assets( self, groupName="" ): # Mutable
         """Available assets in this project and group.
@@ -144,8 +219,6 @@ class RamProject( RamObject ):
         if assetsFolderPath == '':
             return assetsList
 
-        print (assetsFolderPath)
-
         return self._getAssetsInFolder( assetsFolderPath, groupName )
 
     def assetGroups( self ): # Mutable
@@ -184,28 +257,38 @@ class RamProject( RamObject ):
 
         return assetGroups
 
-    def shots( self, filter = "*" ):  #TODO
+    def shots( self, nameFilter = "*" ):  #TODO
         """Available shots in this project
 
         Args:
-            filter
+            nameFilter
 
         Returns:
             list of RamShot
         """
 
-        # If we're online, ask the client (return a dict)
         shotsList = []
+
+        # If we're online, ask the client (return a dict)
+        
         if Ramses.instance().online():
             shotsDict = daemon.getShots()
             # check if successful
             if RamDaemonInterface.checkReply( shotsDict ):
                 content = shotsDict['content']
                 foundShots = content['shots']
-                for shotDict in foundShots:
-                    shotsList.append( RamShot( shotDict['name'], shotDict['shortName'], shotDict['folder'], shotDict['duration'] ))
+                if nameFilter == "":
+                    for shotDict in foundShots:
+                        shotsList.append( RamShot( shotDict['name'], shotDict['shortName'], shotDict['folder'], shotDict['duration'] ))
+                    return shotsList
+                elif "*" in nameFilter and nameFilter != "*": #Preparing regex for wildcards
+                    nameFilter = escapeRegEx( nameFilter )
+                    nameFilter = nameFilter.replace( '\\*', '([a-z0-9+-]{1,10})?' )
+                    regex = re.compile( nameFilter, re.IGNORECASE )
+                
+                    for shotsDict in foundShots:
+                        log( "Checking this filter: " + str( shotsDict ), LogLevel.Debug )
 
-                return shotsList
 
         # Else check in the folders
         shotsFolderPath = self._folderPath + '/05-SHOTS'
@@ -213,10 +296,10 @@ class RamProject( RamObject ):
         if not os.path.isdir( shotsFolderPath ):
             return []
 
-        if "*" in filter and filter != "*": #Preparing regex for wildcards
-            filter = escapeRegEx( filter )
-            filter = filter.replace( '\\*' , '([a-z0-9+-]{1,10})?' )
-            regex = re.compile( filter, re.IGNORECASE )
+        if "*" in nameFilter and nameFilter != "*": #Preparing regex for wildcards
+            nameFilter = escapeRegEx( nameFilter )
+            nameFilter = nameFilter.replace( '\\*' , '([a-z0-9+-]{1,10})?' )
+            regex = re.compile( nameFilter, re.IGNORECASE )
         
         foundFiles = os.listdir( shotsFolderPath )
         foundShots = []
@@ -228,12 +311,12 @@ class RamProject( RamObject ):
 
             foundShotName = foundFile.split('_')[2]
             
-            if not filter in ( "" , "*" ):
+            if not nameFilter in ( "" , "*" ):
                 if not re.match( regex, foundShotName ):
                     continue
 
-            foundShotPath = shotsFolderPath + '/' + foundFile
-            foundShot = RamShot( shotName = "", shotShortName = foundShotName , shotFolderPath = foundShotPath )
+            # foundShotPath = shotsFolderPath + '/' + foundFile
+            foundShot = RamShot( shotName = "", shotShortName = foundShotName )
             foundShots.append( foundShot )
 
         return foundShots
@@ -272,12 +355,11 @@ class RamProject( RamObject ):
 
         # Else, check in the folders
 
-        stepList = []
         #TODO Checker aussi dans assets et shots juste si type is:
         # all, production, asset prod, shot prod
 
         # Check StepType: first, Pre-Prod
-        if stepType == StepType.PRE_PRODUCTION or stepType == StepType.ALL:
+        if stepType == ( StepType.PRE_PRODUCTION or StepType.ALL ):
             stepsFolderPath = self.preProdPath()
 
             if stepsFolderPath != '':
@@ -288,52 +370,96 @@ class RamProject( RamObject ):
                         continue
 
                     preProdFilePath = preProdFile
-                    # we split the name of the folders to keep only the step
+                    # we split the name of the folders to keep only the step:
                     preProdFileName = preProdFile.split( "_" )[-1]
                     newRamStep = RamStep( stepName="", stepShortName=preProdFileName, stepFolder=preProdFilePath, stepType=StepType.PRE_PRODUCTION )
-                    stepList.append( newRamStep )
+                    stepsList.append( newRamStep )
 
         # Check StepType: Prod (assets + shots)
-        elif stepType == StepType.PRODUCTION:
-            stepsFolderPath = self._folderPath + "/02-PROD"
+        elif stepType == ( StepType.PRODUCTION or StepType.ALL ):
+            stepsFolderPath = self.prodPath()
 
-            if not os.path.isdir( stepsFolderPath ):
-                return []
-
-            prodFiles = os.listdir( stepsFolderPath)
-            for prodFile in prodFiles:
-                # we keep only the folders
-                if not os.path.isdir( stepsFolderPath + "/" + prodFile ):
-                    continue
-                else:
+            if stepsFolderPath != '':
+                prodFiles = os.listdir( stepsFolderPath )
+                for prodFile in prodFiles:
+                    # we keep only the folders
+                    if not os.path.isdir( stepsFolderPath + "/" + prodFile ):
+                        continue
+                    
                     prodFilePath = prodFile
-                    # we split the name of the folders to keep only the step
+                    # we split the name of the folders to keep only the step:
                     prodFileName = prodFile.split( "_" )[-1]
-                    newRamStep = RamStep( stepName="", stepShortName=prodFileName, stepFolder=prodFilePath, stepType=stepType )
-                    stepsListProd.append( newRamStep )
-            stepsList = stepsListProd
+                    newRamStep = RamStep( stepName="", stepShortName=prodFileName, stepFolder=prodFilePath, stepType=StepType.PRODUCTION )
+                    stepsList.append( newRamStep )
 
         # Check StepType: Post-Prod
-        elif stepType == StepType.POST_PRODUCTION:
-            stepsFolderPath = self._folderPath + "/03-POST-PROD"
+        elif stepType == ( StepType.POST_PRODUCTION or StepType.ALL ):
+            stepsFolderPath = self.postProdPath()
 
-            if not os.path.isdir( stepsFolderPath ):
-                return []
-
-            postProdFiles = os.listdir( stepsFolderPath )
-            for postProdFile in postProdFiles:
-                # we keep only the folders
-                if not os.path.isdir( stepsFolderPath + "/" + postProdFile ):
-                    continue
-                else:
+            if stepsFolderPath != '':
+                postProdFiles = os.listdir( stepsFolderPath )
+                for postProdFile in postProdFiles:
+                    # we keep only the folders
+                    if not os.path.isdir( stepsFolderPath + "/" + postProdFile ):
+                        continue
+                    
                     postProdFilePath = postProdFile
-                    # we split the name of the folders to keep only the step
+                    # we split the name of the folders to keep only the step:
                     postProdFileName = postProdFile.split( "_" )[-1]
-                    newRamStep = RamStep( stepName="", stepShortName=postProdFileName, stepFolder=postProdFilePath, stepType=stepType)
-                    stepsListPostProd.append( newRamStep )
-            stepsList = stepsListPostProd
+                    newRamStep = RamStep( stepName="", stepShortName=postProdFileName, stepFolder=postProdFilePath, stepType=StepType.POST_PRODUCTION )
+                    stepsList.append( newRamStep )
 
-        return stepsList
+        # Check StepType: Asset
+        elif stepType == ( StepType.ALL or StepType.PRODUCTION or StepType.ASSET_PRODUCTION ):
+            stepsFolderPath = self.assetsPath()
+
+            if stepsFolderPath !='':
+                assetProdFiles = os.listdir( stepsFolderPath )
+                for assetProdFile in assetProdFiles:
+                    # we keep only the folders
+                    # /!\ it's only the groupName folders
+                    if not os.path.isdir( stepsFolderPath + "/" + assetProdFile ):
+                        continue
+
+                    # search assets with the given groupName:
+                    ramAssetList = self.assets( assetProdFile )
+
+                    for ramAssetFile in ramAssetList:
+                        if not os.path.isdir( ramAssetFile ):
+                            continue
+
+                        assetProdFilePath = ramAssetFile
+                        # we split the name of the folders to keep only the step:
+                        assetProdFileName = ramAssetFile.split( "_" )[-1]
+                        newRamStep = RamStep( stepName="", stepShortName=assetProdFileName, stepFolder=assetProdFilePath, stepType=StepType.ASSET_PRODUCTION )
+                        stepsList.append( newRamStep )
+
+        # Check StepType: Shot
+        elif stepType == (StepType.ALL or StepType.PRODUCTION or StepType.SHOT_PRODUCTION ):
+            stepsFolderPath = self.shotsPath()
+
+            if stepsFolderPath !='':
+                shotProdFiles = os.listdir( stepsFolderPath )
+                for shotProdFile in shotProdFiles:
+                    # we keep only the folders
+                    # /!\ it's only the Shots folders
+                    if not os.path.isdir( stepsFolderPath + "/" + shotProdFile ):
+                        continue
+
+                    # search shots:
+                    ramShotList = self.shots( shotProdFile )
+
+                    for ramShotFile in ramShotList:
+                        if not os.path.isdir( ramShotFile )
+                        continue
+
+                        shotProdFilePath = ramShotFile
+                        # we split the name of the folders to keep only the step:
+                        shotProdFileName = shotProdFile.split( "_" )[-1]
+                        newRamStep = RamStep( stepName="", stepShortName=shotProdFileName, stepFolder=shotProdFilePath, stepType=StepType.SHOT_PRODUCTION )
+                        stepsList.append( newRamStep )    
+
+        return removeDuplicateObjectsFromList( stepsList )
 
     def folderPath( self ): # Immutable #TODO if online
         if self._folderPath != '':

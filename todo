@@ -44,3 +44,15 @@ Ajouts démon :
 - getShot, getAsset, getStep, getState, getProject
 - renommer getCurrentsStatus -> getCurrentStatuses (renvoie tous les steps)
 - créer getCurrentStatus -> renvoie un seul step en particulier
+
+
+
+
+
+if preprod ou all:
+
+if shotprod ou prod ou all
+
+if assetprod ou prod ou all
+
+if postprod ou all

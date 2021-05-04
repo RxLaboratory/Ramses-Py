@@ -357,6 +357,7 @@ class RamFileManager():
         for folder in folders:
             if not fullPath.endswith('/') and not fullPath == '':
                 fullPath = fullPath + '/'
+                
             fullPath = fullPath + folder
 
         return fullPath
