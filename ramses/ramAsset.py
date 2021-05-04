@@ -10,6 +10,29 @@ from .ramSettings import ItemType
 class RamAsset( RamItem ):
     """A class representing an asset."""
 
+    @staticmethod
+    # documented in RamItem.getFromPath()
+    def getFromPath( fileOrFolderPath ):
+        """Returns a RamAsset instance built using the given path.
+            The path can be any file or folder path from the asset
+            (a version file, a preview file, etc)
+
+        Args:
+            path (str)
+
+        Returns:
+            RamAsset
+        """
+        asset = RamItem.getFromPath( fileOrFolderPath )
+
+        if not asset:
+            return None
+
+        if not asset.itemType() == ItemType.ASSET:
+            return None
+
+        return asset
+
     def __init__(self, assetName, assetShortName, assetFolder="", assetGroupName="", tags=[]):
         """
         Args:
@@ -66,29 +89,8 @@ class RamAsset( RamItem ):
             
         return self._group
 
-    @staticmethod
-    def getFromPath( fileOrFolderPath ):
-        """Returns a RamAsset instance built using the given path.
-            The path can be any file or folder path from the asset
-            (a version file, a preview file, etc)
-
-        Args:
-            path (str)
-
-        Returns:
-            RamAsset
-        """
-        asset = RamItem.getFromPath( fileOrFolderPath )
-
-        if not asset:
-            return None
-
-        if not asset.itemType() == ItemType.ASSET:
-            return None
-
-        return asset
-
     # Hidden and not documented: documented in RamItem.folderPath()
     def folderPath( self, step="" ): # Immutable
         """Re-implemented from RamItem to pass it the type and group name"""
         return super().folderPath( ItemType.ASSET, step, self.group())
+
