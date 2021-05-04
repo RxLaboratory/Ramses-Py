@@ -38,3 +38,6 @@ Ajouts démon :
 - getShot, getAsset, getStep, getState, getProject
 - renommer getCurrentsStatus -> getCurrentStatuses (renvoie tous les steps)
 - créer getCurrentStatus -> renvoie un seul step en particulier
+- dans les exemples de la doc, remplacer print et $.writeln par log
+- changement de noms de dossiers (steps notamment) -> checker dans le client
+- Doc : ajouter les tables des matières dans les index
