@@ -188,13 +188,13 @@ class Ramses( object ):
         self._offline = True
         return False
 
-    def disconnect(self):  # TODO
+    def disconnect(self):
         """Gets back to offline mode.
 
         Returns:
             bool
         """
-        pass
+        self._offline = True
 
     def daemonInterface(self):
         """The Daemon interface.
