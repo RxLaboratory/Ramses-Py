@@ -291,10 +291,9 @@ class RamProject( RamObject ):
 
 
         # Else check in the folders
-        shotsFolderPath = self._folderPath + '/05-SHOTS'
-
-        if not os.path.isdir( shotsFolderPath ):
-            return []
+        shotsFolderPath = self.shotsPath()
+        if shotsFolderPath == '':
+            return shotsList
 
         if "*" in nameFilter and nameFilter != "*": #Preparing regex for wildcards
             nameFilter = escapeRegEx( nameFilter )
@@ -311,7 +310,7 @@ class RamProject( RamObject ):
 
             foundShotName = foundFile.split('_')[2]
             
-            if not nameFilter in ( "" , "*" ):
+            if not nameFilter in ( "", "*" ):
                 if not re.match( regex, foundShotName ):
                     continue
 
@@ -321,7 +320,7 @@ class RamProject( RamObject ):
 
         return foundShots
 
-    def steps( self, stepType=StepType.ALL ): # Mutable #TODO (sauf preprod)
+    def steps( self, stepType=StepType.ALL ): # Mutable 
         """Available steps in this project. Use type to filter the results.
             One of: RamStep.ALL, RamStep.ASSET_PODUCTION, RamStep.SHOT_PRODUCTION, RamStep.PRE_PRODUCTION, RamStep.PRODUCTION, RamStep.POST_PRODUCTION.
             RamStep.PRODUCTION represents a combination of SHOT and ASSET
@@ -355,10 +354,7 @@ class RamProject( RamObject ):
 
         # Else, check in the folders
 
-        #TODO Checker aussi dans assets et shots juste si type is:
-        # all, production, asset prod, shot prod
-
-        # Check StepType: first, Pre-Prod
+        # Check StepType: Pre-Prod
         if stepType == ( StepType.PRE_PRODUCTION or StepType.ALL ):
             stepsFolderPath = self.preProdPath()
 
@@ -450,8 +446,8 @@ class RamProject( RamObject ):
                     ramShotList = self.shots( shotProdFile )
 
                     for ramShotFile in ramShotList:
-                        if not os.path.isdir( ramShotFile )
-                        continue
+                        if not os.path.isdir( ramShotFile ):
+                            continue
 
                         shotProdFilePath = ramShotFile
                         # we split the name of the folders to keep only the step:
