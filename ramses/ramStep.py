@@ -2,7 +2,11 @@ from .ramObject import RamObject
 from .ramses import Ramses
 from .ramSettings import RamSettings
 from .logger import log, Log, LogLevel
-from .file_manager import RamFileManager
+from .file_manager import RamFileManager, decomposeRamsesFileName
+from .daemon_interface import RamDaemonInterface
+
+# Keep the daemon at hand
+daemon = RamDaemonInterface.instance()
 
 class StepType():
     PRE_PRODUCTION = 'PRE_PRODUCTION'
@@ -27,7 +31,7 @@ class RamStep( RamObject ):
         self._folderPath = stepFolder
         self._type = stepType
 
-    def commonFolderPath( self ): # Immutable #TODO
+    def commonFolderPath( self ): # Immutable #TODO Check
         """The absolute path to the folder containing the common files for this step
 
         Returns:
@@ -39,8 +43,11 @@ class RamStep( RamObject ):
 
         # if online
         if Ramses.instance().online():
-            #TODO demander au démon
-            pass
+            stepDict = daemon.getStep( self._shortName )
+            # check if successful
+            if RamDaemonInterface.checkReply( stepDict ):
+                content = stepDict['content']
+                self._folderPath = content['folder']
 
         stepContainerFolder = ''
 
@@ -111,24 +118,37 @@ class RamStep( RamObject ):
 
         # if online
         if Ramses.instance().online():
-            #TODO demander au démon
-            pass
+            stepDict = daemon.getStep( self._shortName )
+            # check if successful
+            if RamDaemonInterface.checkReply( stepDict ):
+                content = stepDict['content']
+                self._type = content['type']
 
         splitedPath = self.commonFolderPath().split('/')
         stepContainerFolder = splitedPath[-2]
 
         if stepContainerFolder == '01-PRE-PROD':
             self._type = StepType.PRE_PRODUCTION
-        elif stepContainerFolder == '02-PROD':
-            #TODO
-            # Grâce à self._shortName
-            # Chercher dans assets si on trouve un asset qui utilise ce shortname (utiliser decomposeRamsesFileName)
-            # sinon chercher dans shots,
-            # et on saura si on est asset prod ou shot prod
-            # et seulement en tout dernier on mettra prod si rien d'autre
-            self._type = StepType.PRODUCTION
+            
         elif stepContainerFolder == '03-POST-PROD':
             self._type = StepType.POST_PRODUCTION
+        
+        else:  # 02-PROD
+            #listdir de 02-PROD
+            # pour chaque dossier PROJ_STEP (check si c'est un dossier avec isdir )
+            # foldername.split('_')
+            # si on obtient trois morceaux : (avec len)
+            # le deuxième donne le type (A ou S) -> assetprod ou shotprod
+
+            # si on a pas trouvé, faut aller chercher dans tous les assets
+            # for asset in Ramses.instance().currentproject().assets()
+                # si self in asset.steps() -> on est un type asset donc return
+            # for shot in Ramses.instance().currentproject().shots()
+                # si self in shot.steps() -> on est un type shot donc return
+            # on sait pas, donc on est jsute "prod"
+
+            self._type = StepType.PRODUCTION
+
 
         return self._type
 
