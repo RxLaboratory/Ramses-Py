@@ -239,8 +239,47 @@ class RamDaemonInterface( object ):
         return self.__post( (
             "getShots",
             ('filter', filter)
-            ),
-            1048576  )
+        ), 1048576  )
+
+    def getShot( self, shortName, name = ''):
+        if not self.__checkUser(): return self.__noUserReply('getShot')
+        return self.__post((
+            "getShot",
+            ("shortName", shortName),
+            ("name", name),
+        ), 1024)
+
+    def getAsset( self, shortName, name = '' ):
+        if not self.__checkUser(): return self.__noUserReply('getAsset')
+        return self.__post((
+            "getAsset",
+            ("shortName", shortName),
+            ("name", name),
+        ), 1024)
+
+    def getStep( self, shortName, name = '' ):
+        if not self.__checkUser(): return self.__noUserReply('getStep')
+        return self.__post((
+            "getStep",
+            ("shortName", shortName),
+            ("name", name),
+        ), 1024)
+
+    def getState( self, shortName, name = '' ):
+        if not self.__checkUser(): return self.__noUserReply('getState')
+        return self.__post((
+            "getState",
+            ("shortName", shortName),
+            ("name", name),
+        ), 1024)
+
+    def getProject( self, shortName, name = '' ):
+        if not self.__checkUser(): return self.__noUserReply('getProject')
+        return self.__post((
+            "getProject",
+            ("shortName", shortName),
+            ("name", name),
+        ), 1024)
 
     def getStates(self):
         """Gets the list of the states
@@ -300,7 +339,7 @@ class RamDaemonInterface( object ):
         if not self.__checkUser(): return self.__noUserReply('getAssetGroups')
         return self.__post( "getAssetGroups", 2048 )
 
-    def getCurrentStatus(self, itemShortName, itemName, itemType='SHOT'):
+    def getCurrentStatuses(self, itemShortName, itemName, itemType='SHOT'):
         """Gets the current status (list) of an item
 
         Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
@@ -313,4 +352,19 @@ class RamDaemonInterface( object ):
             ('name', itemName),
             ('type', itemType)
             ), 8192 )
+
+    def getCurrentStatus(self, itemShortName, itemName, step, itemType='SHOT'):
+        """Gets the current status of an item for a specific step
+
+        Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
+        
+        Returns: list
+        """
+        return self.__post( (
+            "getCurrentStatus",
+            ('shortName', itemShortName),
+            ('name', itemName),
+            ('step', step),
+            ('type', itemType)
+            ), 1024 )
 
