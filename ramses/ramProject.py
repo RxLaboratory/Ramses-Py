@@ -355,9 +355,6 @@ class RamProject( RamObject ):
 
         # Else, check in the folders
 
-        #TODO Checker aussi dans assets et shots juste si type is:
-        # all, production, asset prod, shot prod
-
         # Check StepType: first, Pre-Prod
         if stepType == ( StepType.PRE_PRODUCTION or StepType.ALL ):
             stepsFolderPath = self.preProdPath()
@@ -450,8 +447,8 @@ class RamProject( RamObject ):
                     ramShotList = self.shots( shotProdFile )
 
                     for ramShotFile in ramShotList:
-                        if not os.path.isdir( ramShotFile )
-                        continue
+                        if not os.path.isdir( ramShotFile ):
+                            continue
 
                         shotProdFilePath = ramShotFile
                         # we split the name of the folders to keep only the step:
