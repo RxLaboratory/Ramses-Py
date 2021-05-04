@@ -1,7 +1,7 @@
 import socket
 import json
 from .logger import log, LogLevel, Log
-from .ramSettings import RamSettings
+from .ramSettings import RamSettings, ItemType
 
 class RamDaemonInterface( object ):
     """The Class used to communicate with the Ramses Daemon
@@ -212,7 +212,7 @@ class RamDaemonInterface( object ):
         if not self.__checkUser(): return self.__noUserReply('getAssetGroups')
         return self.__post( "getAssetGroups", 2048 )
 
-    def getCurrentStatuses(self, itemShortName, itemName, itemType='SHOT'):
+    def getCurrentStatuses(self, itemShortName, itemName, itemType=ItemType.SHOT):
         """Gets the current status (list) of an item
 
         Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
@@ -226,7 +226,7 @@ class RamDaemonInterface( object ):
             ('type', itemType)
             ), 8192 )
 
-    def getCurrentStatus(self, itemShortName, itemName, step, itemType='SHOT'):
+    def getCurrentStatus(self, itemShortName, itemName, step, itemType=ItemType.SHOT):
         """Gets the current status of an item for a specific step
 
         Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
@@ -241,7 +241,7 @@ class RamDaemonInterface( object ):
             ('type', itemType)
             ), 1024 )
 
-        def __buildQuery(self, query):
+    def __buildQuery(self, query):
         """Builds a query from a list of args
 
         Args:
