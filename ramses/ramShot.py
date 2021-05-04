@@ -56,4 +56,4 @@ class RamShot( RamItem ):
     # Hidden and not documented: documented in RamItem.folderPath()
     def folderPath( self, step="" ): # Immutable 
         """Re-implemented from RamItem to pass it the type"""
-        return super().folderPath( ItemType.SHOT, step)
+        return super().folderPath( step )

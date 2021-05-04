@@ -138,7 +138,7 @@ class RamItem( RamObject ):
 
     # Do not document "type" and "assetGroup" arguments, they should stay hidden
     # (not needed in derived classes RamShot.folderPath() and RamAsset.folderPath())
-    def folderPath( self, itemType=ItemType.GENERAL, step="", assetGroup="" ):
+    def folderPath( self, step="", assetGroup="" ):
         """The absolute path to the folder containing the asset, or to the step subfolder if provided
 
         Args:
@@ -164,7 +164,7 @@ class RamItem( RamObject ):
         # Project path
         folderPath = project.folderPath()
 
-        if itemType == ItemType.SHOT:
+        if self._itemType == ItemType.SHOT:
             # Go to shots
             folderPath = folderPath + '05-SHOTS'
             # Get the shot folder name
@@ -176,7 +176,7 @@ class RamItem( RamObject ):
             
             return self._folderPath + '/' + shotFolderName + '_' + step # add the step subfolder
 
-        if itemType == ItemType.ASSET:
+        if self._itemType == ItemType.ASSET:
             # Go to assets
             folderPath = folderPath + '04-ASSETS'
             # The asset folder name
