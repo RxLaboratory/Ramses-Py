@@ -7,8 +7,8 @@
 - [x] RamState
 - [x] RamFileType
 - [ ] RamItem       (folderPath fini => à vérifier) Question : N° des Shots ??
-- [-] RamShot (duration online)
-- [-] RamAsset (group et tags online)
+- [-] RamShot 
+- [-] RamAsset
 - [-] RamStep (stepType if online et différencier shot/asset production)
 - [ ] RamPipe
 - [X] RamProject
@@ -27,12 +27,6 @@ Est-ce que ça peut aller ?
 
 ## Attention : currentStep (dans ramses.py) et getcurrentStep (dans ramStep.py) à revoir
 
-## RESUME :
-
-
-- Test de RamStep : normalement, tout est OK
-
-- Test de RamProject : normalement, tout est OK
 
 
 ## Duf
@@ -44,15 +38,3 @@ Ajouts démon :
 - getShot, getAsset, getStep, getState, getProject
 - renommer getCurrentsStatus -> getCurrentStatuses (renvoie tous les steps)
 - créer getCurrentStatus -> renvoie un seul step en particulier
-
-
-
-
-
-if preprod ou all:
-
-if shotprod ou prod ou all
-
-if assetprod ou prod ou all
-
-if postprod ou all
