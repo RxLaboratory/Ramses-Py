@@ -362,7 +362,6 @@ class RamFileManager():
 
         return fullPath
 
-
     @staticmethod
     def _isRamsesItemFoldername( n ):
         """Low-level, undocumented. Used to check if a given folder respects Ramses' naming convention for items' root folders.
