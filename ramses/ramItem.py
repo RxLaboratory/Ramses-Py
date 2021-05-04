@@ -18,6 +18,77 @@ class RamItem( RamObject ):
     An item of the project, either an asset or a shot.
     """
 
+    @staticmethod
+    def getFromPath( fileOrFolderPath ): #TODO
+        from .ramShot import RamShot
+        from .ramAsset import RamAsset
+        """Returns a RamAsset or RamShot instance built using the given path.
+        The path can be any file or folder path from the asset 
+        (a version file, a preview file, etc)
+
+        Args:
+            path (str)
+
+        Returns:
+            RamAsset or RamShot
+        """
+
+        #TODO Test general items
+        #TODO Test from (step) folders and not only files
+
+        saveFilePath = RamFileManager.getSaveFilePath( fileOrFolderPath )
+        if saveFilePath is None:
+            log( Log.PathNotFound, LogLevel.Critical )
+            return None
+
+        saveFolder = os.path.dirname( saveFilePath )
+        itemFolder = saveFolder
+        itemFolderName = os.path.basename( itemFolder )
+
+        if not RamFileManager._isRamsesItemFoldername( itemFolderName ): # We're probably in a step subfolder
+            itemFolder = os.path.dirname( saveFolder )
+            itemFolderName = os.path.basename( itemFolder )
+            if not RamFileManager._isRamsesItemFoldername( itemFolderName ): # Still wrong: consider it's a general item
+                saveFileName = os.path.basename( saveFilePath )
+                decomposedFileName = RamFileManager.decomposeRamsesFileName( saveFileName )
+                if not decomposedFileName: # Wrong name, we can't do anything more
+                    log (Log.MalformedName, LogLevel.Debug)
+                    return None
+                return RamItem(
+                    itemName=decomposedFileName['resourceStr'],
+                    itemShortName=decomposedFileName['objectShortName'],
+                    itemFolder=saveFolder
+                )
+
+        
+
+        folderBlocks = itemFolderName.split( '_' )
+        typeBlock = folderBlocks[ 1 ]
+        shortName = folderBlocks[ 2 ]
+
+        if typeBlock == ItemType.ASSET: 
+            # Get the group name
+            assetGroupFolder = os.path.dirname( itemFolder )
+            assetGroup = os.path.basename( assetGroupFolder )
+            return RamAsset(
+                assetName=shortName,
+                assetShortName=shortName,
+                assetFolder=itemFolder,
+                assetGroupName=assetGroup
+            )
+
+        if typeBlock == ItemType.SHOT:
+            return RamShot(
+                shotName=shortName,
+                shotShortName=shortName,
+                shotFolder=itemFolder
+            )
+
+        
+
+        log( "The given path does not belong to a shot nor an asset", LogLevel.Debug )
+        return None
+
     def __init__( self, itemName, itemShortName, itemFolder="", itemType=ItemType.GENERAL ):
         """
         Args:
@@ -521,74 +592,3 @@ class RamItem( RamObject ):
     def itemType( self ):
         """Returns the type of the item"""
         return self._itemType
-
-    @staticmethod
-    def getFromPath( fileOrFolderPath ): #TODO
-        from .ramShot import RamShot
-        from .ramAsset import RamAsset
-        """Returns a RamAsset or RamShot instance built using the given path.
-        The path can be any file or folder path from the asset 
-        (a version file, a preview file, etc)
-
-        Args:
-            path (str)
-
-        Returns:
-            RamAsset or RamShot
-        """
-
-        #TODO Test general items
-        #TODO Test from (step) folders and not only files
-
-        saveFilePath = RamFileManager.getSaveFilePath( fileOrFolderPath )
-        if saveFilePath is None:
-            log( Log.PathNotFound, LogLevel.Critical )
-            return None
-
-        saveFolder = os.path.dirname( saveFilePath )
-        itemFolder = saveFolder
-        itemFolderName = os.path.basename( itemFolder )
-
-        if not RamFileManager._isRamsesItemFoldername( itemFolderName ): # We're probably in a step subfolder
-            itemFolder = os.path.dirname( saveFolder )
-            itemFolderName = os.path.basename( itemFolder )
-            if not RamFileManager._isRamsesItemFoldername( itemFolderName ): # Still wrong: consider it's a general item
-                saveFileName = os.path.basename( saveFilePath )
-                decomposedFileName = RamFileManager.decomposeRamsesFileName( saveFileName )
-                if not decomposedFileName: # Wrong name, we can't do anything more
-                    log (Log.MalformedName, LogLevel.Debug)
-                    return None
-                return RamItem(
-                    itemName=decomposedFileName['resourceStr'],
-                    itemShortName=decomposedFileName['objectShortName'],
-                    itemFolder=saveFolder
-                )
-
-        
-
-        folderBlocks = itemFolderName.split( '_' )
-        typeBlock = folderBlocks[ 1 ]
-        shortName = folderBlocks[ 2 ]
-
-        if typeBlock == ItemType.ASSET: 
-            # Get the group name
-            assetGroupFolder = os.path.dirname( itemFolder )
-            assetGroup = os.path.basename( assetGroupFolder )
-            return RamAsset(
-                assetName=shortName,
-                assetShortName=shortName,
-                assetFolder=itemFolder,
-                assetGroupName=assetGroup
-            )
-
-        if typeBlock == ItemType.SHOT:
-            return RamShot(
-                shotName=shortName,
-                shotShortName=shortName,
-                shotFolder=itemFolder
-            )
-
-        
-
-        log( "The given path does not belong to a shot nor an asset", LogLevel.Debug )
-        return None
