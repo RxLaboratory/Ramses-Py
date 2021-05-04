@@ -592,3 +592,16 @@ class RamItem( RamObject ):
     def itemType( self ):
         """Returns the type of the item"""
         return self._itemType
+
+    def steps( self ): #TODO
+        """Returns the steps used by this asset"""
+
+        # si online
+        # demander au démon avec getCurrentStatuses
+        # renvoyer une liste de ramstep
+
+        # sinon aller voir les sous-dossiers dans folderPath()
+        # PROJECTID_A_TRISTAN_DESIGN
+        # -> split('_'), si 4 éléments, le dernier est le shortname
+        # -> RamStep depuis le shortName
+        # -> renvoyer la liste des ramsteps
