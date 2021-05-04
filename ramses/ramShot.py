@@ -4,7 +4,11 @@ from .logger import log
 from .ramItem import RamItem
 from .file_manager import RamFileManager
 from .ramSettings import ItemType
+from .daemon_interface import RamDaemonInterface
 from . import Ramses
+
+# Keep the daemon at hand
+daemon = RamDaemonInterface.instance()
 
 class RamShot( RamItem ):
     """A shot"""
@@ -40,7 +44,7 @@ class RamShot( RamItem ):
         super().__init__( shotName, shotShortName, shotFolder, ItemType.SHOT )
         self._duration = duration
 
-    def duration( self ): # Mutable #TODO ask daemon
+    def duration( self ): # Mutable
         """The shot duration, in seconds
 
         Returns:
@@ -48,9 +52,12 @@ class RamShot( RamItem ):
         """
 
         if Ramses.instance().online():
-            #TODO demander au démon
-            pass
-
+            shotDict = daemon.getShot( self._shortName )
+            # check if successful
+            if RamDaemonInterface.checkReply( shotDict ):
+                content = shotDict['content']
+                self._duration = content['duration']
+                
         return self._duration
 
     # Hidden and not documented: documented in RamItem.folderPath()

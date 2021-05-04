@@ -371,7 +371,7 @@ class RamFileManager():
 
         Returns: bool
         """
-        if re.match('^([a-z0-9+-]{1,10})_[ASG]_([a-z0-9+-]{1,10})$' , n , re.IGNORECASE): return True
+        if re.match( '^([a-z0-9+-]{1,10})_([ASG])_([a-z0-9+-]{1,10})', n , re.IGNORECASE): return True
         return False
 
     @staticmethod
