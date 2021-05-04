@@ -24,3 +24,10 @@ class RamObject:
             str
         """
         return self._shortName
+
+    def __str__( self ):
+        return self._shortName + " | " + self._name
+
+    def __eq__(self, other):
+        return self._shortName == other._shortName
+

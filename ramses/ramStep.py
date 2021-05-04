@@ -1,6 +1,8 @@
 from .ramObject import RamObject
 from .ramses import Ramses
 from .ramSettings import RamSettings
+from .logger import log, Log, LogLevel
+from .file_manager import RamFileManager
 
 class StepType():
     PRE_PRODUCTION = 'PRE_PRODUCTION'
@@ -25,32 +27,50 @@ class RamStep( RamObject ):
         self._folderPath = stepFolder
         self._type = stepType
 
-    def commonFolderPath( self ): #TODO
+    def commonFolderPath( self ): # Immutable #TODO
         """The absolute path to the folder containing the common files for this step
 
         Returns:
             str
         """
 
-        dir = ""
+        if self._folderPath != '':
+            return self._folderPath
 
-        if self._type == "":
-            return ""
-        elif self._type == StepType().PRE_PRODUCTION:
-            dir = "01-PRE-PROD"
+        # if online
+        if Ramses.instance().online():
+            #TODO demander au démon
+            pass
+
+        stepContainerFolder = ''
+
+        if self._type == '':
+            self._folderPath = ''
+            return self._folderPath
+
+        if self._type == StepType().PRE_PRODUCTION:
+            stepContainerFolder = "01-PRE-PROD"
         elif self._type == StepType().PRODUCTION:
-            dir = "02-PROD"
+            stepContainerFolder = "02-PROD"
         elif self._type == StepType().POST_PRODUCTION:
-            dir = "03-POST-PROD"
+            stepContainerFolder = "03-POST-PROD"
 
-        if self._folderPath != "":
-            return self._folderPath
-        else:
-            name = Ramses.instance().currentProject().shortName()
-            path = Ramses.instance().currentProject().folderPath()
-            self._folderPath = path + dir + "/" + name + "_" + self.shortName()
+        project = Ramses.instance().currentProject()
+        if project is None:
+            log( Log.NoProject, LogLevel.Critical )
+            self._folderPath = ''
             return self._folderPath
 
+        projectShortName = project.shortName()
+        projectPath = project.folderPath()
+
+        self._folderPath = RamFileManager.buildPath( (
+            projectPath,
+            stepContainerFolder,
+            projectShortName + "_" + self.shortName()
+        ) ) # /path/to/ProjectID/02-PROD/ProjectID_stepID
+
+        return self._folderPath
 
     def templatesFolderPath( self ):
         """The path to the template files of this step, relative to the common folder
@@ -58,14 +78,25 @@ class RamStep( RamObject ):
             str
         """
 
-        projectId = Ramses.instance().currentProject().shortName()
-        templatesName = RamSettings.instance().folderNames.stepTemplates
+        project = Ramses.instance().currentProject()
+        if project is None:
+            log( Log.NoProject, LogLevel.Critical )
+            self._folderPath = ''
+            return self._folderPath
+
+        projectShortName = project.shortName()
+        templatesFolderName = RamSettings.instance().folderNames.stepTemplates
         stepFolder = self.commonFolderPath()
 
-        if stepFolder == "": return ""
-        return stepFolder + '/' + projectId + "_" + self._shortName + "_" + templatesName
+        if stepFolder == "":
+            return ""
 
-    def stepType( self ): #TODO
+        return RamFileManager.buildPath( (
+            stepFolder,
+            projectShortName + "_" + self._shortName + "_" + templatesFolderName
+        ))
+
+    def stepType( self ): #Immutable #TODO
         """The type of this step, one of RamStep.PRE_PRODUCTION, RamStep.SHOT_PRODUCTION,
             RamStep.ASSET_PRODUCTION, RamStep.POST_PRODUCTION
 
@@ -74,11 +105,30 @@ class RamStep( RamObject ):
         """
         if self._type != "":
             return self._type
-        elif self.commonFolderPath() == "":
+
+        if self.commonFolderPath() == "":
             return ""
-        else:
-            splitedPath = self.commonFolderPath().split('/')
-            self._type = splitedPath[-2]
+
+        # if online
+        if Ramses.instance().online():
+            #TODO demander au démon
+            pass
+
+        splitedPath = self.commonFolderPath().split('/')
+        stepContainerFolder = splitedPath[-2]
+
+        if stepContainerFolder == '01-PRE-PROD':
+            self._type = StepType.PRE_PRODUCTION
+        elif stepContainerFolder == '02-PROD':
+            #TODO
+            # Grâce à self._shortName
+            # Chercher dans assets si on trouve un asset qui utilise ce shortname (utiliser decomposeRamsesFileName)
+            # sinon chercher dans shots,
+            # et on saura si on est asset prod ou shot prod
+            # et seulement en tout dernier on mettra prod si rien d'autre
+            self._type = StepType.PRODUCTION
+        elif stepContainerFolder == '03-POST-PROD':
+            self._type = StepType.POST_PRODUCTION
 
         return self._type
 

@@ -18,3 +18,10 @@ def intToStr( i, numDigits=3):
     while len(intStr) < numDigits:
         intStr = '0' + intStr
     return intStr
+
+def removeDuplicateObjectsFromList( l ):
+    newList = []
+    for i in l:
+        if not i in newList:
+            newList.append(i)
+    return newList

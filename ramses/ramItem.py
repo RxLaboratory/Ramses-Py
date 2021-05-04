@@ -4,18 +4,13 @@ from .ramses import Ramses
 from .ramObject import RamObject
 from .ramStatus import RamStatus
 from .ramStep import RamStep
-from .ramSettings import FolderNames
+from .ramSettings import FolderNames, ItemType
 from .file_manager import RamFileManager
 from .daemon_interface import RamDaemonInterface
 from .logger import log, Log, LogLevel
 
 # Keep the daemon at hand
 daemon = RamDaemonInterface.instance()
-
-class ItemType():
-    GENERAL='G'
-    ASSET='A'
-    SHOT='S'
 
 class RamItem( RamObject ):
     """
@@ -83,6 +78,15 @@ class RamItem( RamObject ):
         """
         if self._folderPath != "":
             return self._folderPath
+
+        #TODO online
+        if Ramses.instance().online():
+            #TODO demander au démon
+            # Get the shot
+            # replyDict = daemon.getShot( self._shortName, self._name )
+            # if RamDaemonInterface.checkReply( replyDict ):
+                # return replyDict['content']['folder']
+            pass
 
         # Project
         project = Ramses.instance().currentProject()
@@ -519,7 +523,7 @@ class RamItem( RamObject ):
         return self._itemType
 
     @staticmethod
-    def getFromPath( path ): #TODO
+    def getFromPath( fileOrFolderPath ): #TODO
         from .ramShot import RamShot
         from .ramAsset import RamAsset
         """Returns a RamAsset or RamShot instance built using the given path.
@@ -536,7 +540,11 @@ class RamItem( RamObject ):
         #TODO Test general items
         #TODO Test from (step) folders and not only files
 
-        saveFilePath = RamFileManager.getSaveFilePath( path )
+        saveFilePath = RamFileManager.getSaveFilePath( fileOrFolderPath )
+        if saveFilePath is None:
+            log( Log.PathNotFound, LogLevel.Critical )
+            return None
+
         saveFolder = os.path.dirname( saveFilePath )
         itemFolder = saveFolder
         itemFolderName = os.path.basename( itemFolder )

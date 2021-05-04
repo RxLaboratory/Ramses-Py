@@ -7,6 +7,11 @@ from .logger import (
     LogLevel
 )
 
+class ItemType():
+    GENERAL='G'
+    ASSET='A'
+    SHOT='S'
+
 class FolderNames():
     preview = "_preview"
     versions = "_versions"

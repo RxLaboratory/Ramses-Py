@@ -18,7 +18,6 @@ from ramses import (
 
 import sys
 
-
 def testUserClass():
     user = RamUser("Nicolas Dufresne", "Duduf", "/home/user/duduf/Ramses/Users/Duduf", 'ADMIN')
 
@@ -28,7 +27,6 @@ def testUserClass():
     print(user.folderPath())
     print(user.configPath())
     print(user.configPath(True))
-
 
 def testItemClass():
     item = RamItem("Sea", "SEA", "")
@@ -53,9 +51,8 @@ def testItemClass():
     # print( item.setStatus( status, 'SHOT_PRODUCTION' ) )
     # print( item.status( 'SHOT_PRODUCTION' ) )
 
-
 def testProjectClass():
-    proj = RamProject("ProjectName", "ProjectShortName", "C:/Users/Megaport/Ramses/Projects/FPE", 1920, 1080, 5.8)
+    proj = RamProject("ProjectName", "Project01", "/home/rainbox/Documents/RAINBOX/DEV-SRC/RxOT/Ramses/Ramses/Project-Tree-Example/Project01", 1920, 1080, 5.8)
 
     # print(proj.name())
     # print(proj.shortName())
@@ -68,8 +65,11 @@ def testProjectClass():
     # print(proj.assets("Sets"))
     # print(proj.assetGroups())
     # print(proj.shots())
-    print(proj.steps("SHOT_PRODUCTION"))
+    # print(proj.steps("SHOT_PRODUCTION"))
 
+    for asset in proj.assets():
+        print( asset )
+        print( asset.group() )
 
 def testShotClass():
     shot = RamShot("ShotName", "ShotShortName", "J:/RAINBOX/TESTRAMSESPATH/05-SHOTS/PROJECTID_S_01-001")
@@ -80,17 +80,25 @@ def testShotClass():
     print(shot.getFromPath("J:/RAINBOX/TESTRAMSESPATH/05-SHOTS/PROJECTID_S_01-001/"))
     print(shot.folderPath())  # Attention RamItem pas fini donc return None
 
-
 def testAssetClass():
-    asset = RamAsset("AssetName", "AssetShortName", "J:/RAINBOX/TESTRAMSESPATH/04-ASSETS/Characters/FPE_A_TRI/", "Props", ["bla", "bla"])
+    asset = RamAsset( "AssetName", "AssetShortName", "J:/RAINBOX/TESTRAMSESPATH/04-ASSETS/Characters/FPE_A_TRI/", "Props", ["bla", "bla"])
+    other = RamAsset( "otherName", "otherShortName" )
+    same = RamAsset( "AssetName", "AssetShortName" )
 
     print(asset.name())
     print(asset.shortName())
     print(asset.folderPath())       # Normalement, c'est OK
     print(asset.tags())
     print(asset.group())            # A VERIFIER...
-    print(asset.getFromPath("J:/RAINBOX/TESTRAMSESPATH/04-ASSETS/Characters/FPE_A_TRI/"))
+    print(RamAsset.getFromPath("J:/RAINBOX/TESTRAMSESPATH/04-ASSETS/Characters/FPE_A_TRI/"))
 
+    print ( asset )
+    print ( str(asset) )
+
+
+    print (asset == other) # False
+    print (asset == same) # True
+    print (asset != same) # False
 
 def testStateClass():
     state = RamState("Work in progress", "WIP", 50, [255, 0, 0])
@@ -100,14 +108,12 @@ def testStateClass():
     print(state.completionRatio())
     print(state.color())
 
-
 def testFileType():
     fileType = RamFileType("NameFichier", "ShortNameFichier", [".txt", ".py"])
 
     print(fileType.name())
     print(fileType.shortName())
     print(fileType.extensions())
-
 
 def testRamsesMethods():
     # print( ramses.currentUser() )
@@ -116,7 +122,6 @@ def testRamsesMethods():
     # print( ramses.states() )
     # print(ramses.states())
     ramses.showClient()
-
 
 def testStepClass():
     step = RamStep("Modeling", "MOD", "", "PRE_PRODUCTION")
@@ -176,7 +181,7 @@ RamSettings.instance().logLevel = LogLevel.Debug
 
 # testUserClass()
 # testItemClass()
-# testProjectClass()
+testProjectClass()
 # testShotClass()
 # testAssetClass()
 # testStateClass()
@@ -184,7 +189,7 @@ RamSettings.instance().logLevel = LogLevel.Debug
 # testRamsesMethods()
 # testStepClass()
 # testSettings()
-testFileManager()
+# testFileManager()
 
 # "folder": "C:/Users/Megaport/Ramses/Projects/FPE/02-PROD/FPE_SD",
 # "folder": "C:/Users/Megaport/Ramses/Projects/FPE/04-ASSETS/Characters",

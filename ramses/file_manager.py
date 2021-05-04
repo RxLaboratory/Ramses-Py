@@ -1,8 +1,7 @@
 import os, re, shutil
 
-from .ramItem import ItemType
 from .ramses import Ramses
-from .ramSettings import RamSettings
+from .ramSettings import RamSettings, ItemType
 from .utils import intToStr
 from .logger import (
     log,
@@ -347,6 +346,21 @@ class RamFileManager():
         }
 
         return blocks
+
+    @staticmethod
+    def buildPath( folders ):
+        """Builds a path with a list of folder names or subpaths,
+        adding the '/' only if needed"""
+
+        fullPath = ''
+
+        for folder in folders:
+            if not fullPath.endswith('/') and not fullPath == '':
+                fullPath = fullPath + '/'
+            fullPath = fullPath + folder
+
+        return fullPath
+
 
     @staticmethod
     def _isRamsesItemFoldername( n ):

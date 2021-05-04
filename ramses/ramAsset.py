@@ -1,15 +1,16 @@
 import os
 
 from . import Ramses
-from .logger import log
-from .ramItem import RamItem, ItemType
+from .logger import log, Log, LogLevel
+from .ramItem import RamItem
 from .file_manager import RamFileManager
+from .ramSettings import ItemType
 
 
 class RamAsset( RamItem ):
     """A class representing an asset."""
 
-    def __init__(self, assetName, assetShortName, assetFolder, assetGroupName="", tags=None):
+    def __init__(self, assetName, assetShortName, assetFolder="", assetGroupName="", tags=[]):
         """
         Args:
             assetName (str)
@@ -19,20 +20,23 @@ class RamAsset( RamItem ):
             tags (list of str)
         """
         super().__init__( assetName, assetShortName, assetFolder, ItemType.ASSET )
-        if tags is None:
-            tags = []
         self._group = assetGroupName
         self._tags = tags
 
-    def tags( self ):
+    def tags( self ): # Mutable #TODO online
         """Some tags describing the asset. An empty list if the Daemon is not available.
 
         Returns:
             list of str
         """
+
+        if Ramses.instance().online():
+            #TODO demander au démon
+            pass
+
         return self._tags
 
-    def group( self ):
+    def group( self ): # Immutable #TODO online
         """The name of group containing this asset. (e.g. Props)
 
         Returns:
@@ -42,23 +46,28 @@ class RamAsset( RamItem ):
         if self._group != "":
             return self._group
 
-        if self._folderPath == '':
-            log( "The given item has no folderPath." )
-            return self._group
-        if not os.path.isdir( self._folderPath ):
-            log( "The given item's folder was not found.\nThis is the path that was checked:\n" + self._folderPath )
+        if Ramses.instance().online():
+            #TODO demander au démon
+            pass
+
+        folderPath = self.folderPath()
+
+        if not os.path.isdir( folderPath ):
+            log( Log.PathNotFound + " " + folderPath, LogLevel.Critical )
             return self._group
 
-        parentFolder = os.path.dirname( self._folderPath )
+        parentFolder = os.path.dirname( folderPath )
         parentFolderName = os.path.basename( parentFolder )
 
         if parentFolderName != '04-ASSETS':
-            return parentFolderName
+            self._group = parentFolderName
+        else:
+            self._group = ''
             
         return self._group
 
     @staticmethod
-    def getFromPath( path ):
+    def getFromPath( fileOrFolderPath ):
         """Returns a RamAsset instance built using the given path.
             The path can be any file or folder path from the asset
             (a version file, a preview file, etc)
@@ -69,7 +78,7 @@ class RamAsset( RamItem ):
         Returns:
             RamAsset
         """
-        asset = RamItem.getFromPath( path )
+        asset = RamItem.getFromPath( fileOrFolderPath )
 
         if not asset:
             return None
@@ -80,6 +89,6 @@ class RamAsset( RamItem ):
         return asset
 
     # Hidden and not documented: documented in RamItem.folderPath()
-    def folderPath( self, step="" ):    # def folderPath( self, itemType='ASSET', step="", assetGroup=None  ):
+    def folderPath( self, step="" ): # Immutable
         """Re-implemented from RamItem to pass it the type and group name"""
         return super().folderPath( ItemType.ASSET, step, self.group())

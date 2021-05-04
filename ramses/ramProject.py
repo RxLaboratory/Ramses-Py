@@ -2,20 +2,21 @@ import os
 import re
 
 from .file_manager import RamFileManager
-from .logger import log
+from .logger import log, Log, LogLevel
 from .ramObject import RamObject
 from .ramses import Ramses
 from .ramStep import RamStep, StepType
 from .ramAsset import RamAsset
 from .ramShot import RamShot
-from .utils import escapeRegEx
+from .utils import escapeRegEx, removeDuplicateObjectsFromList
 from .daemon_interface import RamDaemonInterface
 
+daemon = RamDaemonInterface.instance()
 
 class RamProject( RamObject ):
     """A project handled by Ramses. Projects contains general items, assets and shots."""
 
-    def __init__( self, projectName, projectShortName, projectPath, width, height, framerate ):
+    def __init__( self, projectName, projectShortName, projectPath='', width=1920, height=1080, framerate=24.0 ):
         """
         Args:
             projectName (str)
@@ -27,26 +28,26 @@ class RamProject( RamObject ):
         """
         super().__init__( projectName, projectShortName )
         self._folderPath = projectPath
-        self._daemon = RamDaemonInterface.instance()
         self._width = width
         self._height = height
         self._framerate = framerate
 
-    def width( self ):
+    def width( self ): #Mutable #TODO if online
         """
         Returns:
             int
         """
+
         return self._width
 
-    def height( self ):
+    def height( self ): #Mutable #TODO if online
         """
         Returns:
             int
         """
         return self._height
 
-    def framerate( self ):
+    def framerate( self ): #Mutable #TODO if online
         """
         Returns:
             float
@@ -62,9 +63,49 @@ class RamProject( RamObject ):
         Returns:
             str
         """
-        return self._folderPath + '/' + relativePath
+        return RamFileManager.buildPath((
+            self.folderPath(),
+            relativePath
+        ))
 
-    def assets( self, groupName="" ): 
+    def adminPath( self ):
+        """Returns the path of the Admin folder (creates it if it does not exist yet)"""
+        projectFolder = self.folderPath()
+        if not os.path.isdir( projectFolder ):
+            return ''
+
+        thePath = RamFileManager.buildPath((
+            projectFolder,
+            '00-ADMIN'
+        ))
+
+        if not os.path.isdir( thePath ):
+            os.makedirs( thePath )
+        
+        return thePath
+
+    def preProdPath( self ): #TODO
+        pass
+    
+    def assetsPath( self ):
+        projectFolder = self.folderPath()
+        if not os.path.isdir( projectFolder ):
+            return ''
+
+        thePath = RamFileManager.buildPath((
+            projectFolder,
+            '04-ASSETS'
+        ))
+
+        if not os.path.isdir( thePath ):
+            os.makedirs( thePath )
+        
+        return thePath
+
+
+    #etc...
+
+    def assets( self, groupName="" ): # Mutable
         """Available assets in this project and group.
         If groupName is an empty string, returns all assets.
 
@@ -78,13 +119,11 @@ class RamProject( RamObject ):
         if not isinstance( groupName, str ):
             raise TypeError( "Group name must be a str" )
 
-        groupsToCheck = []
         assetsList = []
-        newAssetsList = []
 
         # If we're online, ask the client (return a dict)
         if Ramses.instance().online():
-            assetsDict = self._daemon.getAssets()
+            assetsDict = daemon.getAssets()
             # check if successful
             if RamDaemonInterface.checkReply( assetsDict ):
                 content = assetsDict['content']
@@ -95,47 +134,21 @@ class RamProject( RamObject ):
                     return assetsList
                 else:
                     for assetDict in foundAssets:
-                        log( "Checking this group: " + str( assetDict ) )
-                        if assetDict.get( 'group' ) == groupName:
+                        log( "Checking this group: " + str( assetDict ), LogLevel.Debug )
+                        if assetDict['group'] == groupName:
                              assetsList.append( RamAsset( assetDict['name'], assetDict['shortName'], assetDict['folder'], assetDict['group'], assetDict['tags'] ) )
                     return assetsList
 
         # Else, check in the folders
-        assetsFolderPath = self._folderPath + '/04-ASSETS'
+        assetsFolderPath = self.assetsPath()
+        if assetsFolderPath == '':
+            return assetsList
 
-        if groupName == "": #List all assets and groups found at the root
-            foundFiles = os.listdir( assetsFolderPath )
-            for foundFile in foundFiles:
-                if not os.path.isdir( assetsFolderPath + '/' + foundFile ): continue
-                if RamFileManager._isRamsesItemFoldername( n = foundFile ):
-                    if not foundFile.split( '_' )[1] == 'A': continue
-                    foundAssetName = foundFile.split( '_' )[2]
-                    foundAssetPath = "04-ASSETS/" + foundFile
-                    foundAsset = RamAsset( assetName = "", assetShortName = foundAssetName, assetFolder = foundAssetPath, assetGroup = "", assetTags = "" )
-                    newAssetsList.append( foundAsset )
-                else:
-                    groupsToCheck.append( foundFile )
-        else:
-            if not os.path.isdir( assetsFolderPath + '/' + groupName ):
-                log( "The following group of assets: " + groupName + " could not be found" )
-                return None
-            groupsToCheck.append( groupName )
-        
-        for group in groupsToCheck:
-            log( "Checking this group: " + group )
-            foundFiles = os.listdir( assetsFolderPath + '/' + group )
-            for foundFile in foundFiles:
-                if not os.path.isdir( assetsFolderPath + '/' + group + '/' + foundFile ): continue
-                if not RamFileManager._isRamsesItemFoldername( foundFile ): continue
-                if not foundFile.split( '_' )[1] == 'A': continue
-                foundAssetName = foundFile.split( '_' )[2]
-                foundAssetPath = "04-ASSETS/" + group + "/" + foundFile
-                foundAsset = RamAsset( assetName = "", assetShortName = foundAssetName, assetFolder = foundAssetPath, assetGroup = "", assetTags = "" )
-                newAssetsList.append( foundAsset )
-        
-        return newAssetsList
+        print (assetsFolderPath)
 
-    def assetGroups( self ): 
+        return self._getAssetsInFolder( assetsFolderPath, groupName )
+
+    def assetGroups( self ): # Mutable
         """Available asset groups in this project
 
         Returns:
@@ -145,7 +158,7 @@ class RamProject( RamObject ):
 
         # If we're online, ask the client
         if Ramses.instance().online():
-            assetsDict = self._daemon.getAssetGroups()
+            assetsDict = daemon.getAssetGroups()
             # check if successful
             if RamDaemonInterface.checkReply( assetsDict ):
                 content = assetsDict['content']
@@ -157,9 +170,10 @@ class RamProject( RamObject ):
                 return assetGroups
 
         # Else check in the folders
-        assetsFolderPath = self._folderPath + '/04-ASSETS'
-        if not os.path.isdir( assetsFolderPath ):
-            raise Exception( "The asset folder for " + self._name + " (" + self._shortName + ") " + "could not be found." )
+        assetsFolderPath = self.assetsPath()
+
+        if assetsFolderPath == '':
+            return assetGroups
 
         foundFiles = os.listdir( assetsFolderPath )
 
@@ -170,7 +184,7 @@ class RamProject( RamObject ):
 
         return assetGroups
 
-    def shots( self, filter = "*" ):  
+    def shots( self, filter = "*" ):  #TODO
         """Available shots in this project
 
         Args:
@@ -183,7 +197,7 @@ class RamProject( RamObject ):
         # If we're online, ask the client (return a dict)
         shotsList = []
         if Ramses.instance().online():
-            shotsDict = self._daemon.getShots()
+            shotsDict = daemon.getShots()
             # check if successful
             if RamDaemonInterface.checkReply( shotsDict ):
                 content = shotsDict['content']
@@ -224,7 +238,7 @@ class RamProject( RamObject ):
 
         return foundShots
 
-    def steps( self, stepType=StepType.ALL ):
+    def steps( self, stepType=StepType.ALL ): # Mutable #TODO (sauf preprod)
         """Available steps in this project. Use type to filter the results.
             One of: RamStep.ALL, RamStep.ASSET_PODUCTION, RamStep.SHOT_PRODUCTION, RamStep.PRE_PRODUCTION, RamStep.PRODUCTION, RamStep.POST_PRODUCTION.
             RamStep.PRODUCTION represents a combination of SHOT and ASSET
@@ -240,7 +254,7 @@ class RamProject( RamObject ):
 
         # If we're online, ask the client (return a dict)
         if Ramses.instance().online():
-            stepsDict = self._daemon.getSteps()
+            stepsDict = daemon.getSteps()
             # check if successful
             if RamDaemonInterface.checkReply( stepsDict ):
                 content = stepsDict['content']
@@ -258,29 +272,26 @@ class RamProject( RamObject ):
 
         # Else, check in the folders
 
-        stepsListPreProd = []
-        stepsListPostProd = []
-        stepsListProd = []
+        stepList = []
+        #TODO Checker aussi dans assets et shots juste si type is:
+        # all, production, asset prod, shot prod
 
         # Check StepType: first, Pre-Prod
-        if stepType == StepType.PRE_PRODUCTION:
-            stepsFolderPath = self._folderPath + "/01-PRE-PROD"
+        if stepType == StepType.PRE_PRODUCTION or stepType == StepType.ALL:
+            stepsFolderPath = self.preProdPath()
 
-            if not os.path.isdir( stepsFolderPath ):
-                return []
+            if stepsFolderPath != '':
+                preProdFiles = os.listdir( stepsFolderPath )
+                for preProdFile in preProdFiles:
+                    # we keep only the folders
+                    if not os.path.isdir( stepsFolderPath + "/" + preProdFile ):
+                        continue
 
-            preProdFiles = os.listdir( stepsFolderPath )
-            for preProdFile in preProdFiles:
-                # we keep only the folders
-                if not os.path.isdir( stepsFolderPath + "/" + preProdFile ):
-                    continue
-                else:
                     preProdFilePath = preProdFile
                     # we split the name of the folders to keep only the step
                     preProdFileName = preProdFile.split( "_" )[-1]
-                    newRamStep = RamStep( stepName="", stepShortName=preProdFileName, stepFolder=preProdFilePath, stepType=stepType )
-                    stepsListPreProd.append( newRamStep )
-            stepsList = stepsListPreProd
+                    newRamStep = RamStep( stepName="", stepShortName=preProdFileName, stepFolder=preProdFilePath, stepType=StepType.PRE_PRODUCTION )
+                    stepList.append( newRamStep )
 
         # Check StepType: Prod (assets + shots)
         elif stepType == StepType.PRODUCTION:
@@ -324,5 +335,34 @@ class RamProject( RamObject ):
 
         return stepsList
 
-    def folderPath( self ):
-        return self.absolutePath( )
+    def folderPath( self ): # Immutable #TODO if online
+        if self._folderPath != '':
+            return self._folderPath
+
+        # TODO if online
+
+        return self._folderPath
+
+    def _getAssetsInFolder(self, folderPath, groupName='' ):
+        """lists and returns all assets in the given folder"""
+        foundFiles = os.listdir( folderPath )
+
+        assetList = []
+        
+        for foundFile in foundFiles:
+            # look in first 
+            if os.path.isdir( folderPath + '/' + foundFile ):
+                assets = self._getAssetsInFolder( folderPath + '/' + foundFile )
+                assetList = assetList + assets
+            else:
+                # Try anyway
+                asset = RamAsset.getFromPath( folderPath + '/' + foundFile )
+                if asset is None:
+                    continue
+                if groupName == '' or asset.group() == groupName:
+                    assetList.append( asset )
+
+        return removeDuplicateObjectsFromList( assetList )
+
+    def _getStepsInFolder(self, folderPath, stepType=StepType.ALL):
+        pass

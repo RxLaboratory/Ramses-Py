@@ -7,12 +7,14 @@
 - [x] RamState
 - [x] RamFileType
 - [ ] RamItem       (folderPath fini => à vérifier) Question : N° des Shots ??
-- [*] RamShot
-- [*] RamAsset
-- [*] RamStep
+- [-] RamShot (duration online)
+- [-] RamAsset (group et tags online)
+- [-] RamStep (stepType if online et différencier shot/asset production)
 - [ ] RamPipe
 - [X] RamProject
 - [ ] Ramses        (getStates : ok)
+
+pour if online : le modèle est dans RamItem.folderPath()
 
 ## Refactor
 
@@ -27,11 +29,18 @@ Est-ce que ça peut aller ?
 
 ## RESUME :
 
-- Test de RamAsset OK sauf :
-    - getFromPath renvoie Ramses says: The given folder does not respect Ramses' naming convention :-(
-
-- Test de RamShot : idem RamAsset
 
 - Test de RamStep : normalement, tout est OK
 
 - Test de RamProject : normalement, tout est OK
+
+
+## Duf
+
+- daemon setCurrentProject doit renvoyer les memes infos que getCurrentProject
+
+Ajouts démon :
+
+- getShot, getAsset, getStep, getState, getProject
+- renommer getCurrentsStatus -> getCurrentStatuses (renvoie tous les steps)
+- créer getCurrentStatus -> renvoie un seul step en particulier

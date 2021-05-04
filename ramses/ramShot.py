@@ -1,30 +1,13 @@
 import os
 
 from .logger import log
-from .ramItem import RamItem, ItemType
+from .ramItem import RamItem
 from .file_manager import RamFileManager
+from .ramSettings import ItemType
 from . import Ramses
-
 
 class RamShot( RamItem ):
     """A shot"""
-
-    def __init__( self, shotName, shotShortName, shotFolder, duration=0.0 ):
-        """
-        Args:
-            shotName (str)
-            shotShortName (str)
-        """
-        super().__init__( shotName, shotShortName, shotFolder, ItemType.SHOT )
-        self._duration = duration
-
-    def duration( self ):
-        """The shot duration, in seconds
-
-        Returns:
-            float
-        """
-        return self._duration
 
     @staticmethod
     def getFromPath( path ):
@@ -48,7 +31,29 @@ class RamShot( RamItem ):
 
         return shot
 
+    def __init__( self, shotName, shotShortName, shotFolder="", duration=0.0 ):
+        """
+        Args:
+            shotName (str)
+            shotShortName (str)
+        """
+        super().__init__( shotName, shotShortName, shotFolder, ItemType.SHOT )
+        self._duration = duration
+
+    def duration( self ): # Mutable #TODO ask daemon
+        """The shot duration, in seconds
+
+        Returns:
+            float
+        """
+
+        if Ramses.instance().online():
+            #TODO demander au démon
+            pass
+
+        return self._duration
+
     # Hidden and not documented: documented in RamItem.folderPath()
-    def folderPath( self, step="" ):   # def folderPath( self, itemType='SHOT', step="", assetGroup=None ):
+    def folderPath( self, step="" ): # Immutable 
         """Re-implemented from RamItem to pass it the type"""
         return super().folderPath( ItemType.SHOT, step)
