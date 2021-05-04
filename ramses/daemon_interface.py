@@ -158,7 +158,6 @@ class RamDaemonInterface( object ):
             }
         }
 
-
     def getProject( self, shortName, name = '' ):
         if not self.__checkUser(): return self.__noUserReply('getProject')
         return self.__post((
