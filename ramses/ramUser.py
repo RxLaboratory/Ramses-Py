@@ -30,7 +30,7 @@ class RamUser( RamObject ):
         """
         return self._role
 
-    def configPath( self, absolute=False ): 
+    def configPath( self ): 
         """The path to the Config folder
 
         Arguments:
@@ -39,10 +39,9 @@ class RamUser( RamObject ):
         Returns:
             str
         """
-        from . import Ramses
+
         path = RamSettings.instance().folderNames.userConfig
-        if absolute: path = self._folderPath + "/" + path
-        return path
+        return self.folderPath() + "/" + path
 
     def folderPath( self ):
         """The absolute path to the user folder

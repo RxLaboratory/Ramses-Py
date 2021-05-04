@@ -26,6 +26,7 @@ class RamStep( RamObject ):
         self._fileType = None
         self._folderPath = stepFolder
         self._type = stepType
+        self._templatesFolder = ''
 
     def commonFolderPath( self ): # Immutable #TODO
         """The absolute path to the folder containing the common files for this step
@@ -72,29 +73,33 @@ class RamStep( RamObject ):
 
         return self._folderPath
 
-    def templatesFolderPath( self ):
+    def templatesFolderPath( self ): # Immutable
         """The path to the template files of this step, relative to the common folder
         Returns:
             str
         """
 
+        if self._templatesFolder != '':
+            return self._templatesFolder
+
         project = Ramses.instance().currentProject()
         if project is None:
             log( Log.NoProject, LogLevel.Critical )
-            self._folderPath = ''
-            return self._folderPath
+            return ''
 
         projectShortName = project.shortName()
         templatesFolderName = RamSettings.instance().folderNames.stepTemplates
         stepFolder = self.commonFolderPath()
 
-        if stepFolder == "":
-            return ""
+        if stepFolder == '':
+            return ''
 
-        return RamFileManager.buildPath( (
+        self._templatesFolder = RamFileManager.buildPath((
             stepFolder,
             projectShortName + "_" + self._shortName + "_" + templatesFolderName
         ))
+
+        return self._templatesFolder
 
     def stepType( self ): #Immutable #TODO
         """The type of this step, one of RamStep.PRE_PRODUCTION, RamStep.SHOT_PRODUCTION,
