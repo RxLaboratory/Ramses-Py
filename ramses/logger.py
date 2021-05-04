@@ -29,9 +29,9 @@ def log( message, level = LogLevel.Info ):
     elif level == LogLevel.Info:
         message = "Ramses says: " + message
     elif level == LogLevel.Critical:
-        message = "/!\ Critical error, Ramses is shouting: " + message
-    elif level == LogLevel.Faral:
-        message = "/!\ Fatal error, Ramses last words are: " + message
+        message = "/!\\ Critical error, Ramses is shouting: " + message
+    elif level == LogLevel.Fatal:
+        message = "/!\\ Fatal error, Ramses last words are: " + message
 
     now = datetime.now()
 
