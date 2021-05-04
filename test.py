@@ -8,7 +8,7 @@ from ramses import (
     RamState,
     RamStep,
     RamUser,
-    daemon_interface,
+    RamDaemonInterface,
     RamFileManager,
     RamSettings,
     log,
@@ -177,13 +177,22 @@ def testFileManager():
 
     
 
-RamSettings.instance().logLevel = LogLevel.Debug
+RamSettings.instance().logLevel = LogLevel.DataReceived
+
+daemon = RamDaemonInterface.instance()
+
+print (daemon.getAsset( "SEA" ))
+print (daemon.getCurrentStatus( "SEA", "Sea", "CD", "A" ))
+print (daemon.getProject( "MayaProd" ))
+print (daemon.getShot( "004" ))
+print (daemon.getState( "WIP" ))
+print (daemon.getStep( "RIG" ))
 
 # testUserClass()
 # testItemClass()
 # testProjectClass()
 # testShotClass()
-testAssetClass()
+# testAssetClass()
 # testStateClass()
 # testFileType()
 # testRamsesMethods()

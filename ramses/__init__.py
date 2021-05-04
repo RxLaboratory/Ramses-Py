@@ -9,6 +9,7 @@ from .ramState import RamState
 from .ramFileType import RamFileType
 from .ramStep import RamStep
 from .ramSettings import RamSettings
+from .daemon_interface import RamDaemonInterface
 from .file_manager import RamFileManager
 from .logger import log, Log, LogLevel
 

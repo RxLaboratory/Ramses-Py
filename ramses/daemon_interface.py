@@ -139,24 +139,12 @@ class RamDaemonInterface( object ):
         ), 1024)
 
     def getState( self, shortName, name = '' ):
-        # if not self.__checkUser(): return self.__noUserReply('getState')
-        # return self.__post((
-        #     "getState",
-        #     ("shortName", shortName),
-        #     ("name", name),
-        # ), 1024)
-        return {
-            "accepted": True,
-            "query": "getState",
-            "success": True,
-            "message": "Asset list retrived.",
-            "content": {
-                "shortName": shortName,
-                "name": "un truc",
-                "completionRatio": 50,
-                "color": [67,67,67]
-            }
-        }
+        if not self.__checkUser(): return self.__noUserReply('getState')
+        return self.__post((
+            "getState",
+            ("shortName", shortName),
+            ("name", name),
+        ), 1024)
 
     def getProject( self, shortName, name = '' ):
         if not self.__checkUser(): return self.__noUserReply('getProject')

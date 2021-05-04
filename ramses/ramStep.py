@@ -2,7 +2,7 @@ from .ramObject import RamObject
 from .ramses import Ramses
 from .ramSettings import RamSettings
 from .logger import log, Log, LogLevel
-from .file_manager import RamFileManager, decomposeRamsesFileName
+from .file_manager import RamFileManager
 from .daemon_interface import RamDaemonInterface
 
 # Keep the daemon at hand
