@@ -1,15 +1,15 @@
 import os
 import re
 
+from .daemon_interface import RamDaemonInterface
 from .file_manager import RamFileManager
-from .logger import log, Log, LogLevel
+from .logger import Log, LogLevel, log
+from .ramAsset import RamAsset
 from .ramObject import RamObject
 from .ramses import Ramses
-from .ramStep import RamStep, StepType
-from .ramAsset import RamAsset
 from .ramShot import RamShot
+from .ramStep import RamStep, StepType
 from .utils import escapeRegEx, removeDuplicateObjectsFromList
-from .daemon_interface import RamDaemonInterface
 
 daemon = RamDaemonInterface.instance()
 
@@ -179,6 +179,29 @@ class RamProject( RamObject ):
             os.makedirs( thePath )
         
         return thePath
+
+    def asset( self, assetShortName ):
+        """Gets an asset with its short name.
+
+        Args:
+            assetShortName (str): the shortname
+
+        Returns:
+            RamAsset
+        """
+        if not isinstance( assetShortName, str ):
+            raise TypeError( "assetShortName must be a str" )
+
+        if Ramses.instance().online():
+            assetDict = daemon.getAsset( assetShortName )
+            # check if successful
+            if RamDaemonInterface.checkReply( assetDict ):
+                content = assetDict['content']
+                asset = RamAsset( assetName=content['name'], assetShortName=content['shortName'],
+                                  assetFolder=content['folder'], assetGroupName=content['group'],
+                                  tags=content['tags'])
+        return asset
+
 
     def assets( self, groupName="" ): # Mutable
         """Available assets in this project and group.
