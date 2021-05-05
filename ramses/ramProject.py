@@ -9,6 +9,7 @@ from .ramObject import RamObject
 from .ramses import Ramses
 from .ramShot import RamShot
 from .ramStep import RamStep, StepType
+from .ramState import RamState
 from .utils import escapeRegEx, removeDuplicateObjectsFromList
 
 daemon = RamDaemonInterface.instance()
@@ -192,6 +193,7 @@ class RamProject( RamObject ):
         if not isinstance( assetShortName, str ):
             raise TypeError( "assetShortName must be a str" )
 
+        # If we're online, ask the client (return a dict)
         if Ramses.instance().online():
             assetDict = daemon.getAsset( assetShortName )
             # check if successful
@@ -201,6 +203,11 @@ class RamProject( RamObject ):
                                   assetFolder=content['folder'], assetGroupName=content['group'],
                                   tags=content['tags'])
                 return asset
+
+        # Else, check in the folders
+        folder = self.folderPath()
+        print(folder)
+        print("coucou")
 
     def assets( self, groupName="" ): # Mutable
         """Available assets in this project and group.
@@ -292,6 +299,7 @@ class RamProject( RamObject ):
         if not isinstance( shotShortName, str ):
             raise TypeError( "shotShortName must be a str" )
 
+        # If we're online, ask the client (return a dict)
         if Ramses.instance().online():
             shortDict = daemon.getShot( shotShortName )
             # check if successful
@@ -364,6 +372,52 @@ class RamProject( RamObject ):
             foundShots.append( foundShot )
 
         return foundShots
+
+    def state( self, stateShortName ):
+        """Gets a state with its short name.
+
+        Args:
+            stateShortName ([str])
+
+        Returns:
+            [RamState]
+        """
+        if not isinstance( stateShortName, str ):
+            raise TypeError( "stateShortName must be a str" )
+
+        # If we're online, ask the client (return a dict)
+        if Ramses.instance().online():
+            stateDict = daemon.getState( stateShortName )
+            # check if successful
+            if RamDaemonInterface.checkReply( stateDict ):
+                content = stateDict['content']
+                state = RamState( stateName=content['name'], stateShortName=content['shortName'],
+                                  completionRatio=content['completionRatio'], color=content['color'])
+
+                return state
+
+    def step( self, stepShortName ):
+        """Gets a step with its short name.
+
+        Args:
+            stepShortName (str): the shortname
+
+        Returns:
+            RamStep
+        """
+        if not isinstance( stepShortName, str ):
+            raise TypeError( "stepShortName must be a str" )
+
+        # If we're online, ask the client (return a dict)
+        if Ramses.instance().online():
+            stepDict = daemon.getStep( stepShortName )
+            # check if successful
+            if RamDaemonInterface.checkReply( stepDict ):
+                content = stepDict['content']
+                step = RamStep( stepName=content['name'], stepShortName=content['shortName'],
+                                stepFolder=content['folder'], stepType=content['type'])
+
+                return step
 
     def steps( self, stepType=StepType.ALL ): # Mutable 
         """Available steps in this project. Use type to filter the results.

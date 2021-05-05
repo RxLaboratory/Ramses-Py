@@ -27,6 +27,11 @@ Est-ce que ça peut aller ?
 
 ## Attention : currentStep (dans ramses.py) et getcurrentStep (dans ramStep.py) à revoir
 
+### JP :
+    Dans RamProject, il manque encore :
+    - inputPipes
+    - outputPipes
+    - pipes
 
 
 ## Duf

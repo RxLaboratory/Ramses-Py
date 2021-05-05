@@ -52,7 +52,7 @@ def testItemClass():
     # print( item.status( 'SHOT_PRODUCTION' ) )
 
 def testProjectClass():
-    proj = RamProject("ProjectName", "Project01", "/home/rainbox/Documents/RAINBOX/DEV-SRC/RxOT/Ramses/Ramses/Project-Tree-Example/Project01", 1920, 1080, 5.8)
+    proj = RamProject("", "", "")
 
     # print(proj.name())
     # print(proj.shortName())
@@ -64,9 +64,13 @@ def testProjectClass():
     # print(proj.absolutePath("05-SHOTS/PROJECTID_S_01-001"))
     # print(proj.assets("Sets"))
     # print(proj.assetGroups())
-    print(proj.shots())
-    # print(proj.steps("SHOT_PRODUCTION"))
-
+    # print(proj.shots())
+    # print(proj.steps())
+    print( proj.asset( "SEA" ) )
+    print( proj.shot( "004" ) )
+    print( proj.step( "RIG" ) )
+    print( proj.state( "WIP" ) )
+    
     #for asset in proj.assets():
     #   print( asset )
     #   print( asset.group() )
@@ -181,16 +185,16 @@ RamSettings.instance().logLevel = LogLevel.DataReceived
 
 daemon = RamDaemonInterface.instance()
 
-print (daemon.getAsset( "SEA" ))
-print (daemon.getCurrentStatus( "SEA", "Sea", "CD", "A" ))
-print (daemon.getProject( "MayaProd" ))
-print (daemon.getShot( "004" ))
-print (daemon.getState( "WIP" ))
-print (daemon.getStep( "RIG" ))
+# print (daemon.getAsset( "SEA" ))
+# print (daemon.getCurrentStatus( "SEA", "Sea", "CD", "A" ))
+# print (daemon.getProject( "MayaProd" ))
+# print (daemon.getShot( "004" ))
+# print (daemon.getState( "WIP" ))
+# print (daemon.getStep( "RIG" ))
 
 # testUserClass()
 # testItemClass()
-# testProjectClass()
+testProjectClass()
 # testShotClass()
 # testAssetClass()
 # testStateClass()
