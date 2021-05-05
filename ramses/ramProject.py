@@ -205,9 +205,7 @@ class RamProject( RamObject ):
                 return asset
 
         # Else, check in the folders
-        folder = self.folderPath()
-        print(folder)
-        print("coucou")
+
 
     def assets( self, groupName="" ): # Mutable
         """Available assets in this project and group.
@@ -309,6 +307,9 @@ class RamProject( RamObject ):
                                 shotFolder=content['folder'], duration=content['duration'])
 
                 return shot
+
+        # Else, check in the folders
+
 
     def shots( self, nameFilter = "*" ):  #TODO
         """Available shots in this project
