@@ -200,8 +200,7 @@ class RamProject( RamObject ):
                 asset = RamAsset( assetName=content['name'], assetShortName=content['shortName'],
                                   assetFolder=content['folder'], assetGroupName=content['group'],
                                   tags=content['tags'])
-        return asset
-
+                return asset
 
     def assets( self, groupName="" ): # Mutable
         """Available assets in this project and group.
@@ -279,6 +278,29 @@ class RamProject( RamObject ):
             assetGroups.append( foundFile )
 
         return assetGroups
+
+    def shot( self, shotShortName ):
+        """Gets a shot with its short name.
+
+        Args:
+            shotShortName (str): the shortname
+
+        Returns:
+            RamShot
+        """
+
+        if not isinstance( shotShortName, str ):
+            raise TypeError( "shotShortName must be a str" )
+
+        if Ramses.instance().online():
+            shortDict = daemon.getShot( shotShortName )
+            # check if successful
+            if RamDaemonInterface.checkReply( shortDict ):
+                content = shortDict['content']
+                shot = RamShot( shotName=content['name'], shotShortName=content['shortName'],
+                                shotFolder=content['folder'], duration=content['duration'])
+
+                return shot
 
     def shots( self, nameFilter = "*" ):  #TODO
         """Available shots in this project
