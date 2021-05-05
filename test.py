@@ -70,7 +70,8 @@ def testProjectClass():
     print( proj.shot( "004" ) )
     print( proj.step( "RIG" ) )
     print( proj.state( "WIP" ) )
-    
+    print( proj.project( "MayaProd" ) )
+
     #for asset in proj.assets():
     #   print( asset )
     #   print( asset.group() )

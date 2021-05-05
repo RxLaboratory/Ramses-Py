@@ -8,8 +8,8 @@ from .ramAsset import RamAsset
 from .ramObject import RamObject
 from .ramses import Ramses
 from .ramShot import RamShot
-from .ramStep import RamStep, StepType
 from .ramState import RamState
+from .ramStep import RamStep, StepType
 from .utils import escapeRegEx, removeDuplicateObjectsFromList
 
 daemon = RamDaemonInterface.instance()
@@ -555,6 +555,30 @@ class RamProject( RamObject ):
                         stepsList.append( newRamStep )    
 
         return removeDuplicateObjectsFromList( stepsList )
+
+    def project( self, projectShortName ):
+        """Gets a project with its short name.
+
+        Args:
+            projectShortName (str)
+
+        Returns:
+            RamProject
+        """
+        if not isinstance( projectShortName, str ):
+            raise TypeError( "projectShortName must be a str" )
+
+        # If we're online, ask the client (return a dict)
+        if Ramses.instance().online():
+            projDict = daemon.getProject( projectShortName )
+            # check if successful
+            if RamDaemonInterface.checkReply( projDict ):
+                content = projDict['content']
+                project = RamProject( projectName=content['name'], projectShortName=content['shortName'],
+                                      projectPath=content['folder'], width=content['width'], height=content['height'],
+                                      framerate=content['framerate'])
+
+                return project
 
     def folderPath( self ): # Immutable #TODO if online
         if self._folderPath != '':
