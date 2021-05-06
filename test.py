@@ -29,15 +29,15 @@ def testUserClass():
     print(user.configPath(True))
 
 def testItemClass():
-    item = RamItem("Sea", "SEA", "C:/Users/Megaport/Ramses/Projects/FPE/04-ASSETS/Sets/FPE_A_SEA")
+    item = RamItem("Sea", "SEA", "")
 
     # print(item.name())
     # print(item.shortName())
     # print(item._folderPath)
-    # print(item.folderPath("ASSET", "MOD", "Sets"))
-    print("*********")
-    print(item.currentStatus("MOD"))
-    print("*********")
+    print(item.folderPath("MOD"))
+    # print("*********")
+    # print(item.currentStatus("MOD"))
+    # print("*********")
     # print( item.latestVersion( "MOD", "", "WIP" ) )
     # print( item.previewFolderPath( 'SHOT_PRODUCTION' ) )
     # print( item.previewFilePaths( "MOD" ) )

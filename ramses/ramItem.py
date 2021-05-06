@@ -113,10 +113,10 @@ class RamItem( RamObject ):
 
         # If we're online, ask the client (return a dict)
         if Ramses.instance().online():
-            statusDict = daemon.getCurrentStatus( self._shortName, self._name, step )
+            replyDict = daemon.getCurrentStatus( self._shortName, self._name, step )
             # check if successful
-            if daemon.checkReply( statusDict ):
-                content = statusDict['content']
+            if daemon.checkReply( replyDict ):
+                content = replyDict['content']
                 status = RamStatus( state=content['state'], user=content['user'], comment=content['comment'],
                                     version=content['version'], stateDate=content['date'],
                                     completionRatio=content['completionRatio'])
@@ -138,8 +138,8 @@ class RamItem( RamObject ):
 
     # Do not document "type" and "assetGroup" arguments, they should stay hidden
     # (not needed in derived classes RamShot.folderPath() and RamAsset.folderPath())
-    def folderPath( self, step="", assetGroup="" ):
-        """The absolute path to the folder containing the asset, or to the step subfolder if provided
+    def folderPath( self, step="", assetGroup="" ): #ToDo : à vérifier
+        """The absolute path to the folder containing the item, or to the step subfolder if provided
 
         Args:
             step (RamStep or str, optional): Defaults to "".
@@ -150,14 +150,20 @@ class RamItem( RamObject ):
         if self._folderPath != "":
             return self._folderPath
 
-        #TODO online
+        # If we're online, ask the client (return a dict)
         if Ramses.instance().online():
-            #TODO demander au démon
-            # Get the shot
-            # replyDict = daemon.getShot( self._shortName, self._name )
-            # if RamDaemonInterface.checkReply( replyDict ):
-                # return replyDict['content']['folder']
-            pass
+            if self._itemType == ItemType.SHOT:
+                replyDict = daemon.getShot( self._shortName, self._name )
+                # check if successful
+                if daemon.checkReply( replyDict ):
+                    return replyDict['content']['folder']
+            elif self._itemType == ItemType.ASSET:
+                replyDict = daemon.getAsset(( self._shortName, self._name ))
+                # check if successful
+                if daemon.checkReply( replyDict ):
+                    return replyDict['content']['folder']
+            else:
+                return self._folderPath
 
         # Project
         project = Ramses.instance().currentProject()
