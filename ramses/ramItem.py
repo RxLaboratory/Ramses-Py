@@ -601,16 +601,16 @@ class RamItem( RamObject ):
         if os.path.isdir( stepFolderPath ) == False:
             print( "The folder for the following step: " + stepShortName + " has not been found." )
             return None
-        if os.path.isdir( stepFolderPath + '/ramses_versions' ) == False:
+        if os.path.isdir( stepFolderPath + '/_versions' ) == False:
             print( "ramses_versions directory has not been found" )
             return None
 
-        foundFiles = os.listdir( stepFolderPath + '/ramses_versions' )
+        foundFiles = os.listdir( stepFolderPath + '/_versions' )
         highestVersion = 0
         highestVersionFileName = ""
 
         for foundFile in foundFiles:
-            if not os.path.isfile( stepFolderPath + '/ramses_versions/' + foundFile ): # This is in case the user has created folders in ramses_versions
+            if not os.path.isfile( stepFolderPath + '/_versions/' + foundFile ): # This is in case the user has created folders in ramses_versions
                 continue
 
             decomposedFoundFile = RamFileManager.decomposeRamsesFileName( foundFile )
@@ -633,7 +633,7 @@ class RamItem( RamObject ):
             print( "No version was found" )
             return None
 
-        highestVersionFilePath = baseName + "/ramses_versions/" + highestVersionFileName
+        highestVersionFilePath = baseName + "/_versions/" + highestVersionFileName
 
         return highestVersionFilePath
 
@@ -646,6 +646,13 @@ class RamItem( RamObject ):
         Returns:
             str
         """
+        if self.folderPath == '':
+            print( "The given item has no folderPath." )
+            return None
+
+        if not isinstance(step, RamStep):
+            raise TypeError( "Step must be an instance of RamStep" )
+
         pass
 
     def wipFilePath( self, step, resource="" ): 
