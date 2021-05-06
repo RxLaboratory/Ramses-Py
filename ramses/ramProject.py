@@ -580,6 +580,36 @@ class RamProject( RamObject ):
 
                 return project
 
+    def inputPipes( self, inputStepShortName ): #TODO
+        """Gets all pipes using this step as input
+
+        Args:
+            inputStepShortName (str)
+
+        Returns:
+            list of RamPipe
+        """
+        pass
+
+    def outputPipes( self, outputStepShortName ):#TODO
+        """Gets all pipes using this step as output
+
+        Args:
+            outputStepShortName (str)
+
+        Returns:
+            list of RamPipe
+        """
+        pass
+
+    def pipes( self ): #TODO
+        """Available pipes in this project
+
+        Returns:
+            list of RamPipe
+        """
+        pass
+
     def folderPath( self ): # Immutable #TODO if online
         if self._folderPath != '':
             return self._folderPath

@@ -71,6 +71,9 @@ def testProjectClass():
     # print( proj.step( "RIG" ) )
     # print( proj.state( "WIP" ) )
     # print( proj.project( "MayaProd" ) )
+    # print( proj.inputPipes( "inputStepShortName" ) )
+    # print( proj.outputPipes( "outputStepShortName" ) )
+    # print( proj.pipes() )
 
     #for asset in proj.assets():
     #   print( asset )
