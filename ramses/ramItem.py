@@ -100,7 +100,7 @@ class RamItem( RamObject ):
         self._folderPath = itemFolder
         self._itemType = itemType
 
-    def currentStatus( self, step, resource="" ): #TODO if online
+    def currentStatus( self, step, resource="" ):
         """The current status for the given step
 
         Args:
@@ -113,15 +113,15 @@ class RamItem( RamObject ):
 
         # If we're online, ask the client (return a dict)
         if Ramses.instance().online():
-            statusDict = daemon.getCurrentStatus( self._shortName, self._name )
+            statusDict = daemon.getCurrentStatus( self._shortName, self._name, step )
             # check if successful
             if daemon.checkReply( statusDict ):
                 content = statusDict['content']
-                foundStatus = content['status']
-                log(foundStatus)
-                # manque le type !! Comment mettre ASSET !?
+                status = RamStatus( state=content['state'], user=content['user'], comment=content['comment'],
+                                    version=content['version'], stateDate=content['date'],
+                                    completionRatio=content['completionRatio'])
 
-            return None
+                return status
 
         # If offline
         currentVersionPath = self.versionFilePath( step, resource )
