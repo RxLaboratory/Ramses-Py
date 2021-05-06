@@ -427,9 +427,35 @@ class RamItem( RamObject ):
         # Je pense que normalement, on devrait pouvoir faire un truc comme ça, non ?
         # folderPath =  self.folderPath( step )
         # return RamFileManager.buildPath([folderPath, "_publish"])
+        # mais comme je ne suis pas sûr de moi, j'ai aussi fait ça :
 
+        proj = Ramses.instance().currentProject()
+        projName = proj.shortName()
+        folderPath = proj.absolutePath( self._folderPath )
 
-        
+        # Check if it's asset or shot
+        asset = proj.asset( self._shortName )
+        shot = proj.shot( self._shortName )
+
+        if asset != None:
+            assetShortName = asset.shortName()
+            # >>> e.g. "SEA"
+            group = asset.group()
+            # >>> e.g. "Sets", "Char", "Props"
+            workingFolder = projName + "_A_" + assetShortName
+            # >>> e.g. "FPE_A_SEA
+            folderPath = RamFileManager.buildPath( [ folderPath, "04-ASSETS", group, workingFolder,
+                                                     workingFolder + "_" + step ] )
+            return RamFileManager.buildPath( [ folderPath, "_publish" ] )
+
+        if shot != None:
+            shotShortName = shot.shortName()
+            print("*" + shotShortName)
+            workingFolder = projName + "_S_" + shot.ge
+            folderPath = RamFileManager.buildPath( [ folderPath, "05-SHOTS", workingFolder,
+                                                     workingFolder + "_" + step ] )
+            return RamFileManager.buildPath( [ folderPath, "_publish" ] )
+
 
     def publishedFilePaths( self, step, resource="" ):
         """Gets the list of file paths in the publish folder.
@@ -498,7 +524,40 @@ class RamItem( RamObject ):
         Returns:
             str
         """
-        pass
+        if not isinstance( step, (str or RamStep)):
+            raise TypeError( "Step must be a str or an instance of RamStep" )
+
+        # Je pense que normalement, on devrait pouvoir faire un truc comme ça, non ?
+        # folderPath =  self.folderPath( step )
+        # return RamFileManager.buildPath([folderPath, "_versions"])
+        # mais comme je ne suis pas sûr de moi, j'ai aussi fait ça :
+
+        proj = Ramses.instance().currentProject()
+        projName = proj.shortName()
+        folderPath = proj.absolutePath( self._folderPath )
+
+        # Check if it's asset or shot
+        asset = proj.asset( self._shortName )
+        shot = proj.shot( self._shortName )
+
+        if asset != None:
+            assetShortName = asset.shortName()
+            # >>> e.g. "SEA"
+            group = asset.group()
+            # >>> e.g. "Sets", "Char", "Props"
+            workingFolder = projName + "_A_" + assetShortName
+            # >>> e.g. "FPE_A_SEA
+            folderPath = RamFileManager.buildPath( [ folderPath, "04-ASSETS", group, workingFolder,
+                                                     workingFolder + "_" + step ] )
+            return RamFileManager.buildPath( [ folderPath, "_versions" ] )
+
+        if shot != None:
+            shotShortName = shot.shortName()
+            print("*" + shotShortName)
+            workingFolder = projName + "_S_" + shot.ge
+            folderPath = RamFileManager.buildPath( [ folderPath, "05-SHOTS", workingFolder,
+                                                     workingFolder + "_" + step ] )
+            return RamFileManager.buildPath( [ folderPath, "_versions" ] )
 
     def versionFilePath( self, step, resource="" ): #TODO if online
         """Latest version file path relative to the item root folder
