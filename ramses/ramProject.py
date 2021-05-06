@@ -206,7 +206,6 @@ class RamProject( RamObject ):
 
         # Else, check in the folders
 
-
     def assets( self, groupName="" ): # Mutable
         """Available assets in this project and group.
         If groupName is an empty string, returns all assets.

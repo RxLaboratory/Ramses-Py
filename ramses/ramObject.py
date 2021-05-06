@@ -29,5 +29,8 @@ class RamObject:
         return self._shortName + " | " + self._name
 
     def __eq__(self, other):
-        return self._shortName == other._shortName
-
+        try:
+            test = self._shortName == other._shortName
+            return test
+        except:
+            print("Exception RamObject.__eq__")
