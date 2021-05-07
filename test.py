@@ -29,7 +29,7 @@ def testUserClass():
     print(user.configPath(True))
 
 def testItemClass():
-    item = RamItem("Sea", "SEA", "C:/Users/Megaport/Ramses/Projects/FPE/04-ASSETS/Sets/FPE_A_SEA/FPE_A_SEA_MOD", "ASSET")
+    item = RamItem("Sea", "SEA", "C:/Users/Megaport/Ramses/Projects/FPE")
 
     # print(item.name())
     # print(item.shortName())

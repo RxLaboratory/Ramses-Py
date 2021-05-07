@@ -645,8 +645,11 @@ class RamItem( RamObject ):
 
         # Else check in the folders
         project = Ramses.instance().currentProject()
-
-        print(project)
+        folderName = project.folderPath()
+        
+        splitedFolderName = folderName.split("_")
+        if len( splitedFolderName ) == 4:
+            shortName = splitedFolderName[-1]
 
         # sinon aller voir les sous-dossiers dans folderPath()
         # PROJECTID_A_TRISTAN_DESIGN
