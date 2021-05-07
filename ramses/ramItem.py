@@ -8,6 +8,7 @@ from .ramSettings import FolderNames, ItemType, RamSettings
 from .file_manager import RamFileManager
 from .daemon_interface import RamDaemonInterface
 from .logger import log, Log, LogLevel
+from .utils import getObjectShortName
 
 # Keep the daemon at hand
 daemon = RamDaemonInterface.instance()
@@ -110,6 +111,9 @@ class RamItem( RamObject ):
         Returns:
             RamStatus
         """
+        # Check args, return shortName (str) or "" or raise TypeError:
+        getObjectShortName( step )
+        getObjectShortName( resource )
 
         # If we're online, ask the client (return a dict)
         if Ramses.instance().online():
@@ -147,13 +151,9 @@ class RamItem( RamObject ):
         Returns:
             str
         """
-        if isinstance( step, RamStep):
-            step = step.shortName
-        if not isinstance( step, str):
-            raise TypeError( "Step must be a str or an instance of RamStep" )
-
-        if isinstance( assetGroup, str ):
-            raise TypeError ( "AssetGroupName must be a str" )
+        # Check args, return shortName (str) or "" or raise TypeError:
+        getObjectShortName( step )
+        getObjectShortName( assetGroup )
 
         if self._folderPath != "":
             return self._folderPath
@@ -222,6 +222,10 @@ class RamItem( RamObject ):
         Returns:
             int
         """
+        # Check args, return shortName (str) or "" or raise TypeError:
+        getObjectShortName( step )
+        getObjectShortName( resource )
+        getObjectShortName( stateId )
 
         # Uniquement pour test
         # abc = Ramses.instance.daemonInterface().getCurrentStatus("SEA", "Sea", "ASSET")
@@ -281,18 +285,11 @@ class RamItem( RamObject ):
         if not isinstance( stateId, str ):
             raise TypeError( "State must be a str" )
 
-        if isinstance( step, str ):
-            stepShortName = step
-        elif isinstance( step, RamStep ):
-            stepShortName = step.shortName
-        else:
-            raise TypeError( "Step must be a str or an instance of RamStep" )
-
-        baseName = os.path.basename( self.folderPath() ) + '_' + stepShortName #Name without the resource str (added later)
+        baseName = os.path.basename( self.folderPath() ) + '_' + step #Name without the resource str (added later)
         stepFolderPath = folderPath + '/' + baseName
 
         if os.path.isdir( stepFolderPath ) == False:
-            log( "The folder for the following step: " + stepShortName + " has not been found." )
+            log( "The folder for the following step: " + step + " has not been found." )
             return None
         if os.path.isdir( stepFolderPath + '/ramses_versions' ) == False:
             log( "ramses_versions directory has not been found" )
@@ -334,14 +331,12 @@ class RamItem( RamObject ):
         Returns:
             str
         """
-        if isinstance( step, RamStep):
-            step = step.shortName
-        if not isinstance( step, str):
-            raise TypeError( "Step must be a str or an instance of RamStep" )
+        # Check args, return shortName (str) or "" or raise TypeError:
+        getObjectShortName( step )
 
         folderPath = self.folderPath( step )
         if folderPath != None:
-            return RamFileManager.buildPath([folderPath, RamSettings.instance().folderNames.preview])
+            return RamFileManager.buildPath( ( folderPath, RamSettings.instance().folderNames.preview ) )
         else:
             return ""
 
@@ -356,13 +351,9 @@ class RamItem( RamObject ):
         Returns:
             list of str
         """
-
-        if isinstance( step, str ):
-            stepShortName = step
-        elif isinstance( step, RamStep ):
-            stepShortName = step.shortName
-        else:
-            raise TypeError( "Step must be a str or an instance of RamStep" )
+        # Check args, return shortName (str) or "" or raise TypeError:
+        getObjectShortName( step )
+        getObjectShortName( resource )
 
         if self.folderPath == '':
             log( "The given item has no folderPath." )
@@ -380,7 +371,7 @@ class RamItem( RamObject ):
             log( "The given item's folder was not found.\nThis is the path that was checked:\n" + folderPath )
             return None
 
-        folderPath = folderPath + "/" + baseName + "_" + stepShortName
+        folderPath = folderPath + "/" + baseName + "_" + step
 
         if not os.path.isdir( folderPath + '/ramses_preview' ):
             log( "ramses_preview directory has not been found" )
@@ -401,14 +392,12 @@ class RamItem( RamObject ):
         Returns:
             str
         """
-        if isinstance( step, RamStep):
-            step = step.shortName
-        if not isinstance( step, str):
-            raise TypeError( "Step must be a str or an instance of RamStep" )
+        # Check args, return shortName (str) or "" or raise TypeError:
+        getObjectShortName( step )
 
         folderPath = self.folderPath( step )
         if folderPath != None:
-            return RamFileManager.buildPath([folderPath, RamSettings.instance().folderNames.publish])
+            return RamFileManager.buildPath( ( folderPath, RamSettings.instance().folderNames.publish ) )
         else:
             return ""
 
@@ -423,12 +412,9 @@ class RamItem( RamObject ):
         Returns:
             list of str
         """
-        if isinstance( step, str ):
-            stepShortName = step
-        elif isinstance( step, RamStep ):
-            stepShortName = step.shortName
-        else:
-            raise TypeError( "Step must be a str or an instance of RamStep" )
+        # Check args, return shortName (str) or "" or raise TypeError:
+        getObjectShortName( step )
+        getObjectShortName( resource )
 
         if self.folderPath == '':
             print( "The given item has no folderPath." )
@@ -441,7 +427,7 @@ class RamItem( RamObject ):
             print( "The given item's folder was not found.\nThis is the path that was checked:\n" + folderPath )
             return None
         
-        folderPath = folderPath + '/' + baseName + '_' + stepShortName
+        folderPath = folderPath + '/' + baseName + '_' + step
         if not os.path.isdir( folderPath + '/ramses_publish' ):
             print( "ramses_publish directory has not been found" )
             return None
@@ -464,7 +450,7 @@ class RamItem( RamObject ):
                 continue
 
             #Building file path relative to root of item folder
-            foundFilePath = baseName + '_' + stepShortName + '/ramses_publish/' + foundFile
+            foundFilePath = baseName + '_' + step + '/ramses_publish/' + foundFile
             publishFiles.append(foundFilePath)
             
         return publishFiles
@@ -478,14 +464,12 @@ class RamItem( RamObject ):
         Returns:
             str
         """
-        if isinstance( step, RamStep):
-            step = step.shortName
-        if not isinstance( step, str):
-            raise TypeError( "Step must be a str or an instance of RamStep" )
+        # Check args, return shortName (str) or "" or raise TypeError:
+        getObjectShortName( step )
 
         folderPath = self.folderPath( step )
         if folderPath != None:
-            return RamFileManager.buildPath([folderPath, RamSettings.instance().folderNames.versions])
+            return RamFileManager.buildPath( ( folderPath, RamSettings.instance().folderNames.versions ) )
         else:
             return ""
 
@@ -493,12 +477,15 @@ class RamItem( RamObject ):
         """Latest version file path relative to the item root folder
 
         Args:
-            step (RamStep)
+            step (RamStep or str)
             resource (str, optional): Defaults to "".
 
         Returns:
             str
-        """ 
+        """
+        # Check args, return shortName (str) or "" or raise TypeError:
+        getObjectShortName( step )
+        getObjectShortName( resource )
 
         # If we're online, ask the client
         if Ramses.instance().online():
@@ -518,18 +505,11 @@ class RamItem( RamObject ):
             print( "The given item's folder was not found.\nThis is the path that was checked:\n" + folderPath )
             return None
 
-        if isinstance( step, str ):
-            stepShortName = step
-        elif isinstance( step, RamStep ):
-            stepShortName = step.shortName
-        else:
-            raise TypeError( "Step must be a str or an instance of RamStep" )
-
-        baseName = os.path.basename( self.folderPath() ) + '_' + stepShortName # Name without the resource str (added later)
+        baseName = os.path.basename( self.folderPath() ) + '_' + step # Name without the resource str (added later)
         stepFolderPath = folderPath + '/' + baseName
 
         if os.path.isdir( stepFolderPath ) == False:
-            print( "The folder for the following step: " + stepShortName + " has not been found." )
+            print( "The folder for the following step: " + step + " has not been found." )
             return None
         if os.path.isdir( stepFolderPath + '/_versions' ) == False:
             print( "ramses_versions directory has not been found" )
@@ -576,12 +556,12 @@ class RamItem( RamObject ):
         Returns:
             str
         """
+        # Check args, return shortName (str) or "" or raise TypeError:
+        getObjectShortName( step )
+
         if self.folderPath == '':
             print( "The given item has no folderPath." )
             return None
-
-        if not isinstance(step, RamStep):
-            raise TypeError( "Step must be an instance of RamStep" )
 
         pass
 
@@ -595,12 +575,13 @@ class RamItem( RamObject ):
         Returns:
             str
         """
+        # Check args, return shortName (str) or "" or raise TypeError:
+        getObjectShortName( step )
+        getObjectShortName( resource )
+
         if self.folderPath == '':
             print( "The given item has no folderPath." )
             return None
-
-        if not isinstance(step, RamStep):
-            raise TypeError( "Step must be an instance of RamStep" )
 
         baseName = os.path.basename( self.folderPath() ) + '_' + step._shortName
 
@@ -622,6 +603,10 @@ class RamItem( RamObject ):
         Returns:
             bool
         """
+        # Check args, return shortName (str) or "" or raise TypeError:
+        getObjectShortName( step )
+        getObjectShortName( resource )
+
         result = self.publishedFilePaths( step, resource )
         if result == None:
             return False
@@ -633,7 +618,10 @@ class RamItem( RamObject ):
         Args:
             status (RamStatus)
             step (RamStep)
-        """ 
+        """
+        # Check args, return shortName (str) or "" or raise TypeError:
+        getObjectShortName( status )
+        getObjectShortName( step )
         pass
 
     def itemType( self ):

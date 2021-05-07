@@ -1,3 +1,4 @@
+from .ramObject import RamObject
 
 def getDate( e ):
     #Used in RamItem.getStepHistory to sort the list
@@ -25,3 +26,12 @@ def removeDuplicateObjectsFromList( l ):
         if not i in newList:
             newList.append(i)
     return newList
+
+def getObjectShortName( object ):
+    if isinstance( object, str ):
+        shortName = object
+    elif isinstance( object, RamObject ):
+        shortName = object.shortName
+    else:
+        raise TypeError( "Object must be a str or an instance of RamObject" )
+    return shortName
