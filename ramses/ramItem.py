@@ -20,6 +20,18 @@ class RamItem( RamObject ):
     """
 
     @staticmethod
+    def fromDict( itemDict ):
+        """Builds a RamItem from dict like the ones returned by the RamDaemonInterface"""
+
+        i = RamItem(
+            itemDict['name'],
+            itemDict['shortName'],
+            itemDict['folder'],
+            itemDict['itemType']
+        )
+        return i
+
+    @staticmethod
     def getFromPath( fileOrFolderPath ): #TODO
         from .ramShot import RamShot
         from .ramAsset import RamAsset
