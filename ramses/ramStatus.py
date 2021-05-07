@@ -47,7 +47,7 @@ class RamStatus:
         self.date = stateDate
 
     @staticmethod
-    def getFromPath( filePath ):
+    def fromPath( filePath ):
         from .ramAsset import RamAsset
         from .ramShot import RamShot
 
@@ -86,9 +86,9 @@ class RamStatus:
 
         elif blocks[ "ramType" ] in ( 'A', 'S' ): # Builds a RamItem out of the given file, to then try to get its latest version info
             if blocks[ "ramType" ] == 'A':
-                item = RamAsset.getFromPath( filePath )
+                item = RamAsset.fromPath( filePath )
             else:
-                item = RamShot.getFromPath( filePath )
+                item = RamShot.fromPath( filePath )
 
             latestVersionFilePath = item.versionFilePath( step = blocks[ "ramStep" ], resource = blocks[ "resourceStr" ] )
 

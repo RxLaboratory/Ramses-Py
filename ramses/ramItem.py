@@ -32,7 +32,7 @@ class RamItem( RamObject ):
         return i
 
     @staticmethod
-    def getFromPath( fileOrFolderPath ): #TODO
+    def fromPath( fileOrFolderPath ): #TODO
         from .ramShot import RamShot
         from .ramAsset import RamAsset
         """Returns a RamAsset or RamShot instance built using the given path.

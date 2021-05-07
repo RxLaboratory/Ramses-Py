@@ -22,7 +22,7 @@ class RamShot( RamItem ):
         return s
 
     @staticmethod
-    def getFromPath( path ):
+    def fromPath( path ):
         """Returns a RamShot instance built using the given path.
             The path can be any file or folder path from the asset
             (a version file, a preview file, etc)
@@ -33,7 +33,7 @@ class RamShot( RamItem ):
         Returns:
             RamShot
         """
-        shot = RamItem.getFromPath( path )
+        shot = RamItem.fromPath( path )
 
         if not shot:
             return None
