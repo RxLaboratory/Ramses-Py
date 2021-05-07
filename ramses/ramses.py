@@ -41,6 +41,7 @@ class Ramses( object ):
             cls._daemon = RamDaemonInterface.instance()
             cls._settings = RamSettings.instance()
             cls._offline = True
+            cls.publishScripts = []
 
             if cls._settings.online:
                 log("I'm trying to contact the Ramses Client.", LogLevel.Info)
@@ -330,3 +331,6 @@ class Ramses( object ):
         """
         return Ramses._version
 
+    def publish(self):
+        for script in self.publishScripts:
+            script()
