@@ -37,6 +37,7 @@ defaultStates = [
     RamState("Work in progress", "WIP", 50,  [255,255,127]), # Light Yellow
     RamState("OK", "OK", 100, [0, 170, 0]), # Green
 ]
+defaultState = defaultStates[2]
 versionPrefixes = ['v','pub'] # The prefixes used in version files which are not states
 
 class RamSettings( object ):
@@ -80,6 +81,7 @@ class RamSettings( object ):
             cls.folderNames = folderNames
             cls.defaultStates = defaultStates
             cls.versionPrefixes = versionPrefixes
+            cls.defaultState = defaultState
 
             # API Settings
             cls.version = version
