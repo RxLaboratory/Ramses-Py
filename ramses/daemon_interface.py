@@ -163,7 +163,7 @@ class RamDaemonInterface( object ):
         """
 
         if not self.__checkUser(): return self.__noUserReply('getStates')
-        return self.__post( "getStates", 2048 )
+        return self.__post( "getStates", 8192 )
 
     def getSteps(self):
         """Gets the list of the steps
@@ -313,6 +313,8 @@ class RamDaemonInterface( object ):
                 'success': False
             }
             return obj
+
+        log (str(data), LogLevel.DataReceived )
 
         if not obj['accepted']: log("Unknown Ramses Daemon query: " + obj['query'], LogLevel.Critical)
         if not obj['success']: log("Warning: the Ramses Daemon could not reply to the query: " + obj['query'], LogLevel.Critical)       
