@@ -39,7 +39,7 @@ def testItemClass():
     # print(item.currentStatus("MOD"))
     # print("*********")
     # print( item.latestVersion( "MOD", "", "WIP" ) )
-    print( item.previewFolderPath( "MOD" ) )
+    # print( item.previewFolderPath( "MOD" ) )
     # print( item.previewFilePaths( "MOD" ) )
     # print( item.publishedFolderPath( 'SHOT_PRODUCTION' ) )
     # print( item.publishedFilePaths( 'SHOT_PRODUCTION' ) )
@@ -50,6 +50,7 @@ def testItemClass():
     # print( item.isPublished( 'SHOT_PRODUCTION' ) )
     # print( item.setStatus( status, 'SHOT_PRODUCTION' ) )
     # print( item.status( 'SHOT_PRODUCTION' ) )
+    print( item.steps() )
 
 def testProjectClass():
     proj = RamProject("", "", "")

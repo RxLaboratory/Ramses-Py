@@ -245,7 +245,7 @@ class RamItem( RamObject ):
         step = getObjectShortName( step )
 
         # Uniquement pour test
-        # abc = Ramses.instance.daemonInterface().getCurrentStatus("SEA", "Sea", "ASSET")
+        # abc = Ramses.instance().daemonInterface().getCurrentStatus("SEA", "Sea", "ASSET")
         # print(abc)
 
         listWithState = []
@@ -626,12 +626,24 @@ class RamItem( RamObject ):
         """Returns the type of the item"""
         return self._itemType
 
-    def steps( self ): #TODO
+    def steps( self ): #TODO : à vérifier
         """Returns the steps used by this asset"""
 
-        # si online
-        # demander au démon avec getCurrentStatuses
-        # renvoyer une liste de ramstep
+        stepsList = []
+
+        # If we're online, ask the client (return a dict)
+        if Ramses.instance().online():
+            replyDict = daemon.getCurrentStatuses( self._shortName, self._name, self._itemType )
+            # check if successful
+            if daemon.checkReply( replyDict ):
+                content = replyDict['content']
+                statusList = content['status']
+                for status in statusList:
+                    stepsList.append( status['step'] )
+
+        return stepsList
+
+        # Else check in the folders
 
         # sinon aller voir les sous-dossiers dans folderPath()
         # PROJECTID_A_TRISTAN_DESIGN
