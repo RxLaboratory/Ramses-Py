@@ -29,6 +29,7 @@ defaultOnline = True # Wether to always try to (re)connect to the Daemon if offl
 defaultRamsesClientPath = "" # Location of the Ramses Client executable file (.exe on Windows, .app on MacOS, .appimage or binary on Linux)
 defaultRamsesClientPort = 18185 # Listening port of the Ramses Daemon
 defaultLogLevel = LogLevel.Info
+defaultAutoIncrementTimeout = 120 # Timeout before auto incrementing a file, in minutes
 # Not Documented: these are not settings to be customized (yet)
 folderNames = FolderNames()
 defaultStates = [
@@ -71,11 +72,13 @@ class RamSettings( object ):
             cls.ramsesClientPath = defaultRamsesClientPath 
             cls.ramsesClientPort = defaultRamsesClientPort 
             cls.logLevel = defaultLogLevel
+            cls.autoIncrementTimeout = defaultAutoIncrementTimeout
 
             cls.defaultOnline = defaultOnline
             cls.defaultRamsesClientPath = defaultRamsesClientPath
             cls.defaultRamsesClientPort = defaultRamsesClientPort
             cls.defaultLogLevel = defaultLogLevel
+            cls.defaultAutoIncrementTimeout = defaultAutoIncrementTimeout
 
             # Not Documented: these are not settings to be customized (yet)
             cls.folderNames = folderNames
@@ -112,7 +115,9 @@ class RamSettings( object ):
                     if 'clientPort' in settingsDict:
                         cls.ramsesClientPort = settingsDict['clientPort']
                     if 'logLevel' in settingsDict:
-                        cls.logLevel = settingsDict['logLevel'] 
+                        cls.logLevel = settingsDict['logLevel']
+                    if 'autoIncrementTimeout' in settingsDict:
+                        cls.autoIncrementTimeout = settingsDict['autoIncrementTimeout'] 
 
         return cls._instance
 
@@ -131,7 +136,8 @@ class RamSettings( object ):
             'online': self.online,
             'clientPath': self.ramsesClientPath,
             'clientPort': self.ramsesClientPort,
-            'logLevel': self.logLevel
+            'logLevel': self.logLevel,
+            'autoIncrementTimeout': self.autoIncrementTimeout,
         }
 
         if self._filePath == '':
