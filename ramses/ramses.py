@@ -273,7 +273,7 @@ class Ramses( object ):
                 statesDict = contentDict['states']
 
                 for state in statesDict:
-                    newState = RamState.fromDict( stateDict )
+                    newState = RamState.fromDict( state )
                     newStateList.append(newState)
 
                 return newStateList
