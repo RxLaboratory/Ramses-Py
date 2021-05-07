@@ -22,7 +22,7 @@ class RamStatus:
             statusDict['date'],
         )
 
-    def __init__( self, state, comment="", completionRatio=None, version=0, user=None, stateDate=None ):
+    def __init__( self, state, comment="", completionRatio=-1, version=0, user=None, stateDate=None ):
         """
         Args:
             state (RamState): The corresponding state.
@@ -34,17 +34,22 @@ class RamStatus:
         """
 
         self.state = state
-        self.completionRatio = completionRatio
+        if completionRatio >= 0:
+            self.completionRatio = completionRatio
+        else:
+            self.completionRatio = state.completionRatio()
         self.comment = comment
         self.version = version
 
-        # Get J. Doe
-        if not user:
+        # Get User
+        if user is None:
             user = Ramses.instance().currentUser()
         self.user = user
 
-        if not stateDate:
+        if stateDate is None:
             stateDate = datetime(year = 2020, month = 1, day = 1)
+        if isinstance(stateDate, str):
+            stateDate = datetime.strptime(stateDate, '%Y-%m-%d %H:%M:%S')
         self.date = stateDate
 
     @staticmethod
