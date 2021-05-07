@@ -513,6 +513,8 @@ class RamItem( RamObject ):
         highestVersion = 0
         highestVersionFileName = ''
 
+        baseName = os.path.basename( self.folderPath() )
+
         for foundFile in foundFiles:
             # In case the user has created folders in ramses_versions
             if not os.path.isfile( versionFolderPath + foundFile ): 
