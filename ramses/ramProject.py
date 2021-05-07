@@ -17,6 +17,20 @@ daemon = RamDaemonInterface.instance()
 class RamProject( RamObject ):
     """A project handled by Ramses. Projects contains general items, assets and shots."""
 
+    @staticmethod
+    def fromDict( projectDict ):
+        """Builds a RamProject from dict like the ones returned by the RamDaemonInterface"""
+
+        p = RamProject(
+            projectDict['name'],
+            projectDict['shortName'],
+            projectDict['folder'],
+            projectDict['width'],
+            projectDict['height'],
+            projectDict['framerate']
+        )
+        return p
+
     def __init__( self, projectName, projectShortName, projectPath='', width=1920, height=1080, framerate=24.0 ):
         """
         Args:

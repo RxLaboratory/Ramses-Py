@@ -7,7 +7,7 @@ class RamPipe:
 
     @staticmethod
     def fromDict( pipeDict ):
-        """Builds a RamState from dict like the ones returned by the RamDaemonInterface"""
+        """Builds a RamPipe from dict like the ones returned by the RamDaemonInterface"""
 
         p = RamPipe(
             pipeDict['inputStepShortName'],
