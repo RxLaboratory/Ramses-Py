@@ -22,9 +22,36 @@ class RamFileManager():
         name = os.path.basename( path )
         splitName = name.split('_')
         if len(splitName) < 2:
+            # Move up the tree until we've found the project folder
+            while name != '':
+                path = os.path.dirname(path)
+                name = os.path.basename(path)
+                if RamFileManager.isProjectFolder( path ):
+                    return name
             return ''
 
         return splitName[0]
+
+    @staticmethod
+    def isProjectFolder( folderPath ):
+        """Checks if the given folder is the project root"""
+        foundFiles = os.listdir( folderPath )
+        for foundFile in foundFiles:
+            if os.path.isfile(foundFile):
+                continue
+            folderName = os.path.basename( foundFile )
+            if folderName in (
+                    '00-ADMIN',
+                    '01-PRE-PROD',
+                    '02-PROD',
+                    '03-POST-PROD',
+                    '04-ASSETS',
+                    '05-SHOTS',
+                    '06-EXPORT'
+                ):
+                return True
+
+        return False
 
     @staticmethod
     def getSaveFilePath( filePath ):
@@ -38,7 +65,7 @@ class RamFileManager():
 
         if not decomposedFileName:
             log( Log.MalformedName, LogLevel.Critical )
-            return None
+            return ""
 
         saveFolder = os.path.dirname( filePath )
 
