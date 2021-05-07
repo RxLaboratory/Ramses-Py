@@ -2,9 +2,24 @@ import os
 from datetime import datetime
 
 from .ramses import Ramses
+from .file_manager import RamFileManager
 
 class RamStatus:
     """A state associated to a comment, the user who changed the state, etc."""
+
+    @staticmethod
+    def fromDict( statusDict ):
+        """Builds a RamStatus from dict like the ones returned by the RamDaemonInterface"""
+
+        s = RamStatus(
+            statusDict['state'],
+            statusDict['user'],
+            statusDict['comment'],
+            statusDict['version'],
+            statusDict['date'],
+            statusDict['completionRatio']
+        )
+        return s
 
     def __init__( self, state, user=None, comment="", version=0, stateDate=None, completionRatio=None ):
         """
