@@ -323,7 +323,6 @@ class RamProject( RamObject ):
 
         # Else, check in the folders
 
-
     def shots( self, nameFilter = "*" ):  #TODO
         """Available shots in this project
 
