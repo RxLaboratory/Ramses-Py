@@ -50,7 +50,7 @@ class RamItem( RamObject ):
         #TODO Test from (step) folders and not only files
 
         saveFilePath = RamFileManager.getSaveFilePath( fileOrFolderPath )
-        if saveFilePath is None:
+        if saveFilePath == "":
             log( Log.PathNotFound, LogLevel.Critical )
             return None
 
@@ -68,41 +68,43 @@ class RamItem( RamObject ):
                     log (Log.MalformedName, LogLevel.Debug)
                     return None
                 return RamItem(
-                    itemName=decomposedFileName['resourceStr'],
-                    itemShortName=decomposedFileName['objectShortName'],
-                    itemFolder=saveFolder
+                    decomposedFileName['resourceStr'],
+                    decomposedFileName['objectShortName'],
+                    saveFolder,
+                    ItemType.GENERAL,
+                    decomposedFileName['projectID']
                 )
-
-        
 
         folderBlocks = itemFolderName.split( '_' )
         typeBlock = folderBlocks[ 1 ]
         shortName = folderBlocks[ 2 ]
+        projectShortName = folderBlocks[ 0 ]
 
         if typeBlock == ItemType.ASSET: 
             # Get the group name
             assetGroupFolder = os.path.dirname( itemFolder )
             assetGroup = os.path.basename( assetGroupFolder )
             return RamAsset(
-                assetName=shortName,
-                assetShortName=shortName,
-                assetFolder=itemFolder,
-                assetGroupName=assetGroup
+                shortName,
+                shortName,
+                itemFolder,
+                assetGroup,
+                projectShortName
             )
 
         if typeBlock == ItemType.SHOT:
             return RamShot(
-                shotName=shortName,
-                shotShortName=shortName,
-                shotFolder=itemFolder
+                shortName,
+                shortName,
+                itemFolder,
+                0.0,
+                projectShortName
             )
-
-        
 
         log( "The given path does not belong to a shot nor an asset", LogLevel.Debug )
         return None
 
-    def __init__( self, itemName, itemShortName, itemFolder="", itemType=ItemType.GENERAL ):
+    def __init__( self, itemName, itemShortName, itemFolder="", itemType=ItemType.GENERAL, projectShortName = '' ):
         """
         Args:
             itemName (str)
@@ -112,8 +114,12 @@ class RamItem( RamObject ):
         super().__init__( itemName, itemShortName )
         self._folderPath = itemFolder
         self._itemType = itemType
+        if projectShortName == '':
+            self._projectShortName = RamFileManager.getProjectShortName( itemFolder )
+        else:
+            self._projectShortName = projectShortName
 
-    def currentStatus( self, step, resource="" ):
+    def currentStatus( self, step="", resource="" ):
         """The current status for the given step
 
         Args:
@@ -145,7 +151,8 @@ class RamItem( RamObject ):
 
         # If offline
         currentVersionPath = self.versionFilePath( step, resource )
-        if currentVersionPath == None:
+
+        if currentVersionPath == "":
             log( "There was an error getting the latest version or none was found." )
             return None
 
@@ -185,6 +192,8 @@ class RamItem( RamObject ):
 
         # Project
         project = Ramses.instance().currentProject()
+        if project is None:
+            return ""
         # Project path
         folderPath = project.folderPath()
 
@@ -349,8 +358,13 @@ class RamItem( RamObject ):
         # Check step, return shortName (str) or "" or raise TypeError:
         step = getObjectShortName( step )
 
-        folderPath = self.folderPath( step )
-        if folderPath != None:
+        folderPath = ""
+        if self._itemType == ItemType.GENERAL:
+            folderPath = self.folderPath()
+        else:
+            folderPath = self.stepPath( step )
+
+        if folderPath != "":
             return RamFileManager.buildPath( ( folderPath, RamSettings.instance().folderNames.preview ) )
         else:
             return ""
@@ -409,8 +423,13 @@ class RamItem( RamObject ):
         # Check step, return shortName (str) or "" or raise TypeError:
         step = getObjectShortName( step )
 
-        folderPath = self.folderPath( step )
-        if folderPath != None:
+        folderPath = ""
+        if self._itemType == ItemType.GENERAL:
+            folderPath = self.folderPath()
+        else:
+            folderPath = self.stepPath( step )
+
+        if folderPath != "":
             return RamFileManager.buildPath( ( folderPath, RamSettings.instance().folderNames.publish ) )
         else:
             return ""
@@ -513,19 +532,22 @@ class RamItem( RamObject ):
         highestVersion = 0
         highestVersionFileName = ''
 
-        baseName = os.path.basename( self.folderPath() )
-
         for foundFile in foundFiles:
             # In case the user has created folders in ramses_versions
-            if not os.path.isfile( versionFolderPath + foundFile ): 
-                continue
-            # In case other assets have been misplaced here
-            if not foundFile.startswith( baseName ):
+            if not os.path.isfile( versionFolderPath + '/' + foundFile ): 
                 continue
 
             decomposedFoundFile = RamFileManager.decomposeRamsesFileName( foundFile )
 
             if decomposedFoundFile is None:
+                continue
+            if decomposedFoundFile[ "projectID" ] != self.projectShortName():
+                continue
+            if decomposedFoundFile[ "ramType"] != self.itemType():
+                continue
+            if decomposedFoundFile[ "objectShortName"] != self.shortName():
+                continue
+            if decomposedFoundFile[ "ramStep"] != step:
                 continue
             if decomposedFoundFile[ "resourceStr" ] != resource:
                 continue
@@ -656,3 +678,15 @@ class RamItem( RamObject ):
         # -> split('_'), si 4 éléments, le dernier est le shortname
         # -> RamStep depuis le shortName
         # -> renvoyer la liste des ramsteps
+
+    def projectShortName( self ): # immutable
+        """Gets the short name of the project this item belongs to"""
+        if self._projectShortName != '':
+            return self._projectShortName
+
+        folderPath = self.folderPath()
+        if folderPath != '':
+            self._projectShortName = RamFileManager.getProjectShortName( folderPath )
+            return self._projectShortName
+
+        return ''

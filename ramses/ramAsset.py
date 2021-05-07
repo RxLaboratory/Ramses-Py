@@ -46,7 +46,7 @@ class RamAsset( RamItem ):
 
         return asset
 
-    def __init__(self, assetName, assetShortName, assetFolder="", assetGroupName="", tags=()):
+    def __init__(self, assetName, assetShortName, assetFolder="", assetGroupName="", tags=(), projectShortName=''):
         """
         Args:
             assetName (str)
@@ -55,7 +55,7 @@ class RamAsset( RamItem ):
             assetGroupName (str)
             tags (list of str)
         """
-        super().__init__( assetName, assetShortName, assetFolder, ItemType.ASSET )
+        super().__init__( assetName, assetShortName, assetFolder, ItemType.ASSET, projectShortName )
         if tags is None:
             tags = []
         self._group = assetGroupName

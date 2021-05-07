@@ -43,13 +43,13 @@ class RamShot( RamItem ):
 
         return shot
 
-    def __init__( self, shotName, shotShortName, shotFolder="", duration=0.0 ):
+    def __init__( self, shotName, shotShortName, shotFolder="", duration=0.0, projectShortName="" ):
         """
         Args:
             shotName (str)
             shotShortName (str)
         """
-        super().__init__( shotName, shotShortName, shotFolder, ItemType.SHOT )
+        super().__init__( shotName, shotShortName, shotFolder, ItemType.SHOT, projectShortName )
         self._duration = duration
 
     def duration( self ): # Mutable
