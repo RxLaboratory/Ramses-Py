@@ -251,8 +251,7 @@ class Ramses( object ):
                 return state
         
         # Not found
-        log( Log.StateNotFound, LogLevel.Critical )
-        return None
+        return self._settings.defaultState
 
     def states(self):
         """The list of available states.

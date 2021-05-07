@@ -3,6 +3,8 @@ from datetime import datetime
 
 from .ramses import Ramses
 from .file_manager import RamFileManager
+from .ramSettings import RamSettings
+from .logger import log, Log, LogLevel
 
 class RamStatus:
     """A state associated to a comment, the user who changed the state, etc."""
@@ -60,52 +62,38 @@ class RamStatus:
             RamStatus
         """
 
-        if not isinstance( filePath, str ):
-            raise TypeError( "File path needs to be a str" )
-        if not os.path.isfile( filePath ):
-            filePath = Ramses.instance().currentProject().absolutePath( filePath )
-            if not os.path.isfile( filePath ):
-                print( "The given file could not be found" )
-                return None
-
         baseName = os.path.basename( filePath )
         blocks = RamFileManager.decomposeRamsesFileName( baseName )
     
-        if blocks == None:
-            print( "The given file does not respect Ramses' naming convention" )
+        if blocks is None:
+            log( Log.MalformedName, LogLevel.Critical )
             return None
 
         version = 0
         stateId = 'WIP'
 
-        if blocks[ "version" ] != '': # The file is already a version: gets the version info directly from it
-            version = int( blocks[ "version" ] )
+        if blocks[ "version" ] >= 0: # The file is already a version: gets the version info directly from it
+            version =blocks[ "version" ]
             if blocks[ "state" ] != '':
                 stateId = blocks[ "state" ]
                 stateId = stateId.upper()
 
-        elif blocks[ "ramType" ] in ( 'A', 'S' ): # Builds a RamItem out of the given file, to then try to get its latest version info
-            if blocks[ "ramType" ] == 'A':
-                item = RamAsset.fromPath( filePath )
-            else:
-                item = RamShot.fromPath( filePath )
-
-            latestVersionFilePath = item.versionFilePath( step = blocks[ "ramStep" ], resource = blocks[ "resourceStr" ] )
-
-            if not latestVersionFilePath in (None, 0): # If it has at least one version
-                latestVersionFileName = os.path.basename( latestVersionFilePath )
-                latestVersionBlocks = RamFileManager.decomposeRamsesFileName( latestVersionFileName )
-
-                version = int( latestVersionBlocks[ "version" ] )
-                if latestVersionBlocks[ "state" ] != '':
-                    stateId = latestVersionBlocks[ "state" ]
-                    stateId = stateId.upper()
+        else:
+            latestStatus = getLatestVersion( filePath )
+            version = latestStatus[0]
+            stateId = latestStatus[1]
 
         state = Ramses.instance().state( stateId )
 
         dateTimeStamp = os.path.getmtime( filePath )
         dateTime = datetime.fromtimestamp( dateTimeStamp )
 
-        status = RamStatus(state, None, "", version, dateTime)
+        status = RamStatus( state,
+            "",
+            state.completionRatio(),
+            version,
+            None,
+            dateTime
+            )
 
         return status
