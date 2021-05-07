@@ -124,8 +124,7 @@ class RamItem( RamObject ):
             RamStatus
         """
         # Check args, return shortName (str) or "" or raise TypeError:
-        getObjectShortName( step )
-        getObjectShortName( resource )
+        step = getObjectShortName( step )
 
         # If we're online, ask the client (return a dict)
         if Ramses.instance().online():
@@ -150,13 +149,13 @@ class RamItem( RamObject ):
             log( "There was an error getting the latest version or none was found." )
             return None
 
-        currentStatus = RamStatus.getFromPath( currentVersionPath )
+        currentStatus = RamStatus.fromPath( currentVersionPath )
 
         return currentStatus
 
     # Do not document "type" and "assetGroup" arguments, they should stay hidden
     # (not needed in derived classes RamShot.folderPath() and RamAsset.folderPath())
-    def folderPath( self, step="", assetGroup="" ): #ToDo : à vérifier
+    def folderPath( self, assetGroup="" ): #TODO : à vérifier
         """The absolute path to the folder containing the item, or to the step subfolder if provided
 
         Args:
@@ -166,10 +165,9 @@ class RamItem( RamObject ):
             str
         """
         # Check args, return shortName (str) or "" or raise TypeError:
-        getObjectShortName( step )
-        getObjectShortName( assetGroup )
+        step = getObjectShortName( step )
 
-        if self._folderPath != "":
+         if self._folderPath != "":
             return self._folderPath
 
         # If we're online, ask the client (return a dict)
@@ -184,8 +182,8 @@ class RamItem( RamObject ):
                 # check if successful
                 if daemon.checkReply( replyDict ):
                     return replyDict['content']['folder']
-            # else:
-            #     return ""
+            else:
+                return ""
 
         # Project
         project = Ramses.instance().currentProject()
@@ -199,11 +197,8 @@ class RamItem( RamObject ):
             shotFolderName = project.shortName() + '_S_' + self._shortName
             self._folderPath = folderPath + '/' + shotFolderName
             
-            if step == "": # Return the base shot folder
-                return self._folderPath
+            return self._folderPath
             
-            return self._folderPath + '/' + shotFolderName + '_' + step # add the step subfolder
-
         if self._itemType == ItemType.ASSET:
             # Go to assets
             folderPath = folderPath + '04-ASSETS'
@@ -218,12 +213,24 @@ class RamItem( RamObject ):
             folderPath = folderPath + '/' + assetGroup
             self._folderPath = folderPath + '/' + assetFolderName
 
-            if step == "": # Return the base asset folder
-                return self._folderPath
+            return self._folderPath
             
-            return self._folderPath + '/' + assetFolderName + '_' + step # add the step subfolder
+        return ""
 
-        # return ""
+    def stepPath(self, step, assetGroup=""):
+        # Check args, return shortName (str) or "" or raise TypeError:
+        step = getObjectShortName( step )
+
+        folderPath = self.folderPath(assetGroup)
+        if folderPath == "":
+            return ""
+
+        proj = RamFileManager.getProjectShortName( folderPath )
+
+        return RamFileManager.buildPath((
+            folderPath,
+            proj + '_' + self._itemType + '_' + self.shortName + '_' + step
+        ))
 
     def latestVersion( self, step, resource="", stateId="WIP"):
         """Returns the highest version number for the given state (wip, pub…).
@@ -507,7 +514,7 @@ class RamItem( RamObject ):
 
         for foundFile in foundFiles:
             # In case the user has created folders in ramses_versions
-            if not os.path.isfile( stepFolderPath + '/_versions/' + foundFile ): 
+            if not os.path.isfile( versionFolderPath + foundFile ): 
                 continue
             # In case other assets have been misplaced here
             if not foundFile.startswith( baseName ):

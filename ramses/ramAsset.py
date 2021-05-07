@@ -115,5 +115,10 @@ class RamAsset( RamItem ):
     # Hidden and not documented: documented in RamItem.folderPath()
     def folderPath( self, step="" ): # Immutable
         """Re-implemented from RamItem to pass it the type and group name"""
-        return super().folderPath( step, self.group())
+        return super().folderPath( self.group())
+
+    # Hidden and not documented: documented in RamItem.stepPath()
+    def stepPath( self, step="" ): # Immutable
+        """Re-implemented from RamItem to pass it the type and group name"""
+        return super().stepPath( step, self.group())
 

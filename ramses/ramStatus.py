@@ -4,6 +4,7 @@ from datetime import datetime
 from .ramses import Ramses
 from .file_manager import RamFileManager
 from .ramSettings import RamSettings
+from .logger import log, Log, LogLevel
 
 class RamStatus:
     """A state associated to a comment, the user who changed the state, etc."""
@@ -61,19 +62,11 @@ class RamStatus:
             RamStatus
         """
 
-        if not isinstance( filePath, str ):
-            raise TypeError( "File path needs to be a str" )
-        if not os.path.isfile( filePath ):
-            filePath = Ramses.instance().currentProject().absolutePath( filePath )
-            if not os.path.isfile( filePath ):
-                print( "The given file could not be found" )
-                return None
-
         baseName = os.path.basename( filePath )
         blocks = RamFileManager.decomposeRamsesFileName( baseName )
     
-        if blocks == None:
-            print( "The given file does not respect Ramses' naming convention" )
+        if blocks is None:
+            log( Log.MalformedName, LogLevel.Critical )
             return None
 
         version = 0

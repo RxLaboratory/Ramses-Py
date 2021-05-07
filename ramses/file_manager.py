@@ -16,6 +16,17 @@ class RamFileManager():
     """A Class to help managing file versions"""
 
     @staticmethod
+    def getProjectShortName( path ):
+        """Gets the short name of the project from any path"""
+
+        name = os.path.basename( path )
+        splitName = name.split('_')
+        if len(splitName) < 2:
+            return ''
+
+        return splitName[0]
+
+    @staticmethod
     def getSaveFilePath( filePath ):
         """Gets the save path for an existing file.
         This path is not the same as the file path if the file path is located in the versions/preview/publish subfolder"""
