@@ -42,6 +42,7 @@ class Ramses( object ):
             cls._settings = RamSettings.instance()
             cls._offline = True
             cls.publishScripts = []
+            cls.statusScripts = []
 
             if cls._settings.online:
                 log("I'm trying to contact the Ramses Client.", LogLevel.Info)
@@ -333,4 +334,8 @@ class Ramses( object ):
 
     def publish(self):
         for script in self.publishScripts:
+            script()
+
+    def updateStatus(self):
+        for script in self.statusScripts:
             script()
