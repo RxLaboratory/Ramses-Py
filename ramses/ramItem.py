@@ -125,7 +125,6 @@ class RamItem( RamObject ):
         """
         # Check args, return shortName (str) or "" or raise TypeError:
         getObjectShortName( step )
-        getObjectShortName( resource )
 
         # If we're online, ask the client (return a dict)
         if Ramses.instance().online():
@@ -163,9 +162,8 @@ class RamItem( RamObject ):
         Returns:
             str
         """
-        # Check args, return shortName (str) or "" or raise TypeError:
+        # Check step, return shortName (str) or "" or raise TypeError:
         getObjectShortName( step )
-        getObjectShortName( assetGroup )
 
         if self._folderPath != "":
             return self._folderPath
@@ -234,10 +232,8 @@ class RamItem( RamObject ):
         Returns:
             int
         """
-        # Check args, return shortName (str) or "" or raise TypeError:
+        # Check step, return shortName (str) or "" or raise TypeError:
         getObjectShortName( step )
-        getObjectShortName( resource )
-        getObjectShortName( stateId )
 
         # Uniquement pour test
         # abc = Ramses.instance.daemonInterface().getCurrentStatus("SEA", "Sea", "ASSET")
@@ -343,7 +339,7 @@ class RamItem( RamObject ):
         Returns:
             str
         """
-        # Check args, return shortName (str) or "" or raise TypeError:
+        # Check step, return shortName (str) or "" or raise TypeError:
         getObjectShortName( step )
 
         folderPath = self.folderPath( step )
@@ -363,9 +359,8 @@ class RamItem( RamObject ):
         Returns:
             list of str
         """
-        # Check args, return shortName (str) or "" or raise TypeError:
+        # Check step, return shortName (str) or "" or raise TypeError:
         getObjectShortName( step )
-        getObjectShortName( resource )
 
         if self.folderPath == '':
             log( "The given item has no folderPath." )
@@ -404,7 +399,7 @@ class RamItem( RamObject ):
         Returns:
             str
         """
-        # Check args, return shortName (str) or "" or raise TypeError:
+        # Check step, return shortName (str) or "" or raise TypeError:
         getObjectShortName( step )
 
         folderPath = self.folderPath( step )
@@ -424,9 +419,8 @@ class RamItem( RamObject ):
         Returns:
             list of str
         """
-        # Check args, return shortName (str) or "" or raise TypeError:
+        # Check step, return shortName (str) or "" or raise TypeError:
         getObjectShortName( step )
-        getObjectShortName( resource )
 
         if self.folderPath == '':
             print( "The given item has no folderPath." )
@@ -476,7 +470,7 @@ class RamItem( RamObject ):
         Returns:
             str
         """
-        # Check args, return shortName (str) or "" or raise TypeError:
+        # Check step, return shortName (str) or "" or raise TypeError:
         getObjectShortName( step )
 
         folderPath = self.folderPath( step )
@@ -495,9 +489,8 @@ class RamItem( RamObject ):
         Returns:
             str
         """
-        # Check args, return shortName (str) or "" or raise TypeError:
+        # Check step, return shortName (str) or "" or raise TypeError:
         getObjectShortName( step )
-        getObjectShortName( resource )
 
         # If we're online, ask the client
         if Ramses.instance().online():
@@ -568,7 +561,7 @@ class RamItem( RamObject ):
         Returns:
             str
         """
-        # Check args, return shortName (str) or "" or raise TypeError:
+        # Check step, return shortName (str) or "" or raise TypeError:
         getObjectShortName( step )
 
         if self.folderPath == '':
@@ -587,9 +580,8 @@ class RamItem( RamObject ):
         Returns:
             str
         """
-        # Check args, return shortName (str) or "" or raise TypeError:
+        # Check step, return shortName (str) or "" or raise TypeError:
         getObjectShortName( step )
-        getObjectShortName( resource )
 
         if self.folderPath == '':
             print( "The given item has no folderPath." )
@@ -615,9 +607,8 @@ class RamItem( RamObject ):
         Returns:
             bool
         """
-        # Check args, return shortName (str) or "" or raise TypeError:
+        # Check step, return shortName (str) or "" or raise TypeError:
         getObjectShortName( step )
-        getObjectShortName( resource )
 
         result = self.publishedFilePaths( step, resource )
         if result == None:
@@ -631,8 +622,7 @@ class RamItem( RamObject ):
             status (RamStatus)
             step (RamStep)
         """
-        # Check args, return shortName (str) or "" or raise TypeError:
-        getObjectShortName( status )
+        # Check step, return shortName (str) or "" or raise TypeError:
         getObjectShortName( step )
         pass
 
