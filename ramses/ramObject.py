@@ -1,6 +1,16 @@
 class RamObject:
     """The base class for most of Ramses objects."""
 
+    @staticmethod
+    def fromDict( objectDict ):
+        """Builds a RamObject from dict like the ones returned by the RamDaemonInterface"""
+
+        o = RamObject(
+            objectDict['name'],
+            objectDict['shortName']
+        )
+        return o
+
     def __init__( self, objectName, objectShortName ):
         """
         Args:
