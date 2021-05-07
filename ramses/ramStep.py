@@ -17,8 +17,19 @@ class StepType():
     PRODUCTION = 'PRODUCTION' # asset et shot
 
 class RamStep( RamObject ):
-    """A step in the production of the shots or assets of the project.
-    """
+    """A step in the production of the shots or assets of the project."""
+
+    @staticmethod
+    def fromDict( stepDict ):
+        """Builds a RamStep from dict like the ones returned by the RamDaemonInterface"""
+
+        s = RamStep(
+            stepDict['name'],
+            stepDict['shortName'],
+            stepDict['folder'],
+            stepDict['type']
+        )
+        return s
 
     def __init__( self, stepName, stepShortName, stepFolder='', stepType='' ):
         """     
