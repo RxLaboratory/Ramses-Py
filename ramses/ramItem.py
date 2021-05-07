@@ -598,13 +598,13 @@ class RamItem( RamObject ):
         # Check step, return shortName (str) or "" or raise TypeError:
         step = getObjectShortName( step )
 
-        if not amses.instance().online():
+        if not Ramses.instance().online():
             return
 
-        if self.itemType == ItemType.GENERAL:
+        if self.itemType() == ItemType.GENERAL:
             return
 
-        daemon.setAssetStatus(
+        daemon.setStatus(
             self.shortName(),
             self.name(),
             step,

@@ -242,8 +242,7 @@ class RamDaemonInterface( object ):
             ('type', itemType)
             ), 1024 )
 
-    def setStatus(self, itemShortName, itemName, step, itemType=ItemType.SHOT, state="", comment="", completionRatio=-1, version=0, user=None, stateDate=None)
-    {
+    def setStatus(self, itemShortName, itemName, step, itemType=ItemType.SHOT, state="", comment="", completionRatio=-1, version=0, user=None, stateDate=None):
         """Sets the current status of an item for a specific step
 
         Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
@@ -275,7 +274,6 @@ class RamDaemonInterface( object ):
 
 
         return self.__post( args, 0 )
-    }
 
     def __buildQuery(self, query):
         """Builds a query from a list of args
