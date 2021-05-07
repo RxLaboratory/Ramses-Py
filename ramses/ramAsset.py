@@ -3,7 +3,6 @@ import os
 from . import Ramses
 from .logger import log, Log, LogLevel
 from .ramItem import RamItem
-from .file_manager import RamFileManager
 from .ramSettings import ItemType
 from .daemon_interface import RamDaemonInterface
 
@@ -14,14 +13,21 @@ class RamAsset( RamItem ):
     """A class representing an asset."""
 
     @staticmethod
+    def fromDict( assetDict ):
+        """Builds a RamAsset from dict like the ones returned by the RamDaemonInterface"""
+
+        a = RamAsset( assetDict['name'], assetDict['shortName'], assetDict['folder'], assetDict['group'], assetDict['tags'] )
+        return a
+
+    @staticmethod
     # documented in RamItem.getFromPath()
-    def getFromPath( fileOrFolderPath ):
+    def fromPath( fileOrFolderPath ):
         """Returns a RamAsset instance built using the given path.
             The path can be any file or folder path from the asset
             (a version file, a preview file, etc)
 
         Args:
-            path (str)
+            fileOrFolderPath (str)
 
         Returns:
             RamAsset
@@ -36,7 +42,7 @@ class RamAsset( RamItem ):
 
         return asset
 
-    def __init__(self, assetName, assetShortName, assetFolder="", assetGroupName="", tags=[]):
+    def __init__(self, assetName, assetShortName, assetFolder="", assetGroupName="", tags=()):
         """
         Args:
             assetName (str)
@@ -46,6 +52,8 @@ class RamAsset( RamItem ):
             tags (list of str)
         """
         super().__init__( assetName, assetShortName, assetFolder, ItemType.ASSET )
+        if tags is None:
+            tags = []
         self._group = assetGroupName
         self._tags = tags
 
