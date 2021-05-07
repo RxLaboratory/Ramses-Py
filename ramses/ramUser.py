@@ -10,6 +10,18 @@ class UserRole():
 class RamUser( RamObject ):
     """The class representing users."""
 
+    @staticmethod
+    def fromDict( userDict ):
+        """Builds a RamUser from dict like the ones returned by the RamDaemonInterface"""
+
+        u = RamUser(
+            userDict['name'],
+            userDict['shortName'],
+            userDict['folderPath'],
+            userDict['role']
+        )
+        return u
+
     def __init__( self, userName, userShortName, userFolderPath="", role=UserRole.STANDARD ):
         """
         Args:
