@@ -13,17 +13,16 @@ class RamStatus:
     def fromDict( statusDict ):
         """Builds a RamStatus from dict like the ones returned by the RamDaemonInterface"""
 
-        s = RamStatus(
+        return RamStatus(
             statusDict['state'],
-            statusDict['user'],
             statusDict['comment'],
+            statusDict['completionRatio'],
             statusDict['version'],
+            statusDict['user'],
             statusDict['date'],
-            statusDict['completionRatio']
         )
-        return s
 
-    def __init__( self, state, user=None, comment="", version=0, stateDate=None, completionRatio=None ):
+    def __init__( self, state, comment="", completionRatio=None, version=0, user=None, stateDate=None ):
         """
         Args:
             state (RamState): The corresponding state.
