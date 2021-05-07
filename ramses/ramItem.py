@@ -224,7 +224,7 @@ class RamItem( RamObject ):
             
         return ""
 
-    def stepPath(self, step, assetGroup=""):
+    def stepFolderPath(self, step, assetGroup=""):
         # Check step, return shortName (str) or "" or raise TypeError:
         step = getObjectShortName( step )
 
@@ -362,7 +362,7 @@ class RamItem( RamObject ):
         if self._itemType == ItemType.GENERAL:
             folderPath = self.folderPath()
         else:
-            folderPath = self.stepPath( step )
+            folderPath = self.stepFolderPath( step )
 
         if folderPath != "":
             return RamFileManager.buildPath( ( folderPath, RamSettings.instance().folderNames.preview ) )
@@ -427,7 +427,7 @@ class RamItem( RamObject ):
         if self._itemType == ItemType.GENERAL:
             folderPath = self.folderPath()
         else:
-            folderPath = self.stepPath( step )
+            folderPath = self.stepFolderPath( step )
 
         if folderPath != "":
             return RamFileManager.buildPath( ( folderPath, RamSettings.instance().folderNames.publish ) )
@@ -503,7 +503,7 @@ class RamItem( RamObject ):
         if self._itemType == ItemType.GENERAL:
             folderPath = self.folderPath()
         else:
-            folderPath = self.stepPath( step )
+            folderPath = self.stepFolderPath( step )
 
         if folderPath != "":
             return RamFileManager.buildPath( ( folderPath, RamSettings.instance().folderNames.versions ) )
@@ -568,50 +568,6 @@ class RamItem( RamObject ):
         ))
 
         return highestVersionFilePath
-
-    def wipFolderPath( self, step ): #TODO
-        """Path to the WIP folder relative to the item root folder
-
-        Args:
-            step (RamStep or str)
-
-        Returns:
-            str
-        """
-        # Check step, return shortName (str) or "" or raise TypeError:
-        step = getObjectShortName( step )
-
-        if self.folderPath == '':
-            print( "The given item has no folderPath." )
-            return None
-
-        pass
-
-    def wipFilePath( self, step, resource="" ): 
-        """Current wip file path relative to the item root folder
-
-        Args:
-            step (RamStep or str)
-            resource (str, optional): Defaults to "".
-
-        Returns:
-            str
-        """
-        # Check step, return shortName (str) or "" or raise TypeError:
-        step = getObjectShortName( step )
-
-        if self.folderPath == '':
-            print( "The given item has no folderPath." )
-            return None
-
-        baseName = os.path.basename( self.folderPath() ) + '_' + step._shortName
-
-        if step.fileType == None:
-            raise Exception( "The given step has no fileType; cannot build the path towards the working file (missing extension)." )
-
-        filePath = baseName + '/' + baseName + '.' + step.fileType.extension
-
-        return filePath
 
     def isPublished( self, step, resource="" ):
         """Convenience function to check if there are published files in the publish folder.
