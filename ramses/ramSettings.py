@@ -133,7 +133,7 @@ class RamSettings( object ):
         }
 
         if self._filePath == '':
-            raise "Invalid path for the settings, I can't save them, sorry."
+            raise ("Invalid path for the settings, I can't save them, sorry.")
         
         with open(self._filePath, 'w') as settingsFile:
             settingsFile.write( json.dumps( settingsDict, indent=4 ) )

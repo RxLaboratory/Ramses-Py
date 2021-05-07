@@ -10,6 +10,18 @@ class RamShot( RamItem ):
     """A shot"""
 
     @staticmethod
+    def fromDict( shotDict ):
+        """Builds a RamShot from dict like the ones returned by the RamDaemonInterface"""
+
+        s = RamShot(
+            shotDict['name'],
+            shotDict['shortName'],
+            shotDict['folder'],
+            shotDict['duration']
+        )
+        return s
+
+    @staticmethod
     def getFromPath( path ):
         """Returns a RamShot instance built using the given path.
             The path can be any file or folder path from the asset
