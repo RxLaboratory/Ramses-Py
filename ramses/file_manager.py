@@ -87,6 +87,40 @@ class RamFileManager():
         return saveFolder + '/' + saveFileName
         
     @staticmethod
+    def copyToPublish( filePath ):
+        """Copies the given file to its corresponding publish folder"""
+
+        if not os.path.isfile( filePath ):
+            raise Exception( "Missing File: Cannot publish a file which does not exists: " + filePath )
+
+        log("Publishing file: " + filePath, LogLevel.Debug)
+
+        # Check File Name
+        fileName = os.path.basename( filePath )
+        decomposedFileName = RamFileManager.decomposeRamsesFileName( fileName )
+        if not decomposedFileName:
+            log( Log.MalformedName, LogLevel.Critical )
+            return
+
+        newFileName = RamFileManager.buildRamsesFileName(
+            decomposedFileName['projectID'],
+            decomposedFileName['ramStep'],
+            decomposedFileName['extension'],
+            decomposedFileName['ramType'],
+            decomposedFileName['objectShortName'],
+            decomposedFileName['resourceStr']
+        )
+
+        publishFolder = RamFileManager.getPublishFolder( filePath )
+
+        newFilePath = RamFileManager.buildPath ((
+            publishFolder,
+            newFileName
+        ))
+        shutil.copy2( filePath, newFilePath )
+        return newFilePath
+
+    @staticmethod
     def copyToVersion( filePath, increment = False, stateShortName="" ):
         """Copies and increments a file into the version folder
         
@@ -205,6 +239,28 @@ class RamFileManager():
             os.makedirs( versionsFolder )
 
         return versionsFolder
+
+    @staticmethod
+    def getPublishFolder( filePath ):
+        """Gets the published folder for this file"""
+
+        fileFolder = os.path.dirname( filePath )
+        publishFolderName = settings.folderNames.publish
+
+        if RamFileManager.inPublishFolder( filePath ):
+            publishFolder = fileFolder
+
+        elif RamFileManager.inVersionsFolder( filePath ) or RamFileManager.inPreviewFolder( filePath ):
+            wipFolder = os.path.dirname( fileFolder )
+            publishFolder = wipFolder + '/' + publishFolderName
+
+        else:
+            publishFolder = fileFolder + '/' + publishFolderName
+
+        if not os.path.isdir( publishFolder ):
+            os.makedirs( publishFolder )
+
+        return publishFolder
 
     @staticmethod
     def inPreviewFolder( path ):
