@@ -1,4 +1,5 @@
 import os, re, shutil
+from datetime import datetime
 
 from .ramses import Ramses
 from .ramSettings import RamSettings, ItemType
@@ -170,13 +171,35 @@ class RamFileManager():
         return newFilePath
 
     @staticmethod
-    def getLatestVersion( filePath, defaultStateShortName="v" ):
+    def getLatestVersion( filePath, defaultStateShortName="v", previous = False ):
         """Gets the latest version number and state of a file
         
         Returns a tuple (version, state)
         """
 
-        # Check File Name
+        latestVersionFilePath = RamFileManager.getLatestVersionFilePath( filePath, previous )
+        if latestVersionFilePath == "":
+            return ( 0, defaultStateShortName, datetime.now() )
+
+        version = 0
+        state = defaultStateShortName
+
+        latestVersionFile = os.path.basename( latestVersionFilePath )
+        decomposedVersionFile = RamFileManager.decomposeRamsesFileName(latestVersionFile)
+        if decomposedVersionFile is None:
+            return ( 0, defaultStateShortName, datetime.now() )
+
+        version = decomposedVersionFile['version']
+        state = decomposedVersionFile["state"]
+        date = datetime.fromtimestamp(
+            os.path.getmtime( latestVersionFilePath )
+        )
+
+        return (version, state, date)
+
+    @staticmethod
+    def getLatestVersionFilePath( filePath, previous=False ):
+         # Check File Name
         fileName = os.path.basename( filePath )
         decomposedFileName = RamFileManager.decomposeRamsesFileName( fileName )
         if not decomposedFileName:
@@ -187,8 +210,10 @@ class RamFileManager():
 
         foundFiles = os.listdir( versionsFolder )
         highestVersion = 0
-        state = defaultStateShortName
 
+        versionFilePath = ''
+        prevVersionFilePath = ''
+        
         for foundFile in foundFiles:
             if not os.path.isfile( versionsFolder + '/' + foundFile ): # This is in case the user has created folders in _versions
                 continue
@@ -213,10 +238,13 @@ class RamFileManager():
             version = decomposedFoundFile["version"]
             if version > highestVersion:
                 highestVersion = version
-                if decomposedFoundFile["state"] != '':
-                    state = decomposedFoundFile["state"]
+                prevVersionFilePath = versionFilePath
+                versionFilePath = versionsFolder + '/' + foundFile
 
-        return (highestVersion, state)
+        if previous:
+            return prevVersionFilePath
+
+        return versionFilePath
 
     @staticmethod
     def getVersionFolder( filePath ):
