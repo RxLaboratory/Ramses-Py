@@ -641,9 +641,12 @@ class RamItem( RamObject ):
                 for status in statusList:
                     stepsList.append( status['step'] )
 
-        return stepsList
+            return stepsList
 
         # Else check in the folders
+        project = Ramses.instance().currentProject()
+
+        print(project)
 
         # sinon aller voir les sous-dossiers dans folderPath()
         # PROJECTID_A_TRISTAN_DESIGN
