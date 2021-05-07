@@ -6,6 +6,17 @@ class RamPipe:
         to the input step (which imports that data)."""
 
     @staticmethod
+    def fromDict( pipeDict ):
+        """Builds a RamState from dict like the ones returned by the RamDaemonInterface"""
+
+        p = RamPipe(
+            pipeDict['inputStepShortName'],
+            pipeDict['outputStepShortName'],
+            pipeDict['fileType']
+        )
+        return p
+
+    @staticmethod
     def createFromDaemonObj( daemonReplyObj ): #TODO
         """Use this method to construct a RamPipe with an object got from the Daemon
 

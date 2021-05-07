@@ -16,7 +16,11 @@ class RamAsset( RamItem ):
     def fromDict( assetDict ):
         """Builds a RamAsset from dict like the ones returned by the RamDaemonInterface"""
 
-        a = RamAsset( assetDict['name'], assetDict['shortName'], assetDict['folder'], assetDict['group'], assetDict['tags'] )
+        a = RamAsset( assetDict['name'],
+                      assetDict['shortName'],
+                      assetDict['folder'],
+                      assetDict['group'],
+                      assetDict['tags'] )
         return a
 
     @staticmethod
