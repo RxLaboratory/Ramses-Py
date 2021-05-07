@@ -484,7 +484,12 @@ class RamItem( RamObject ):
         # Check args, return shortName (str) or "" or raise TypeError:
         step = getObjectShortName( step )
 
-        folderPath = self.folderPath( step )
+        folderPath = ""
+        if self._itemType == ItemType.GENERAL:
+            folderPath = self.folderPath()
+        else:
+            folderPath = self.stepPath( step )
+
         if folderPath != "":
             return RamFileManager.buildPath( ( folderPath, RamSettings.instance().folderNames.versions ) )
         else:
