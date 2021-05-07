@@ -242,8 +242,7 @@ class Ramses( object ):
             # Check if successful
             if RamDaemonInterface.checkReply(replyDict):
                 stateDict = replyDict['content']
-                print( stateDict['completionRatio'] )
-                newState = RamState(stateDict['name'], stateDict['shortName'], stateDict['completionRatio'], stateDict['color'])
+                newState = RamState.fromDict( stateDict )
                 return newState
 
         # Else get in the default list
@@ -274,7 +273,7 @@ class Ramses( object ):
                 statesDict = contentDict['states']
 
                 for state in statesDict:
-                    newState = RamState(state['name'], state['shortName'], state['completionRatio'], state['color'])
+                    newState = RamState.fromDict( stateDict )
                     newStateList.append(newState)
 
                 return newStateList
