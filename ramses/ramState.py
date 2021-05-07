@@ -8,7 +8,12 @@ class RamState( RamObject ):
     def fromDict( stateDict ):
         """Builds a RamState from dict like the ones returned by the RamDaemonInterface"""
 
-        s = RamState( stateDict['name'], stateDict['shortName'], stateDict['completionRatio'], stateDict['color'] )
+        s = RamState(
+            stateDict['name'],
+            stateDict['shortName'],
+            stateDict['completionRatio'],
+            stateDict['color']
+            )
         return s
 
     def __init__(self, stateName, stateShortName, completionRatio=0.0, color=[67, 67, 67]):

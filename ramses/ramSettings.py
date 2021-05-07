@@ -32,10 +32,10 @@ defaultLogLevel = LogLevel.Info
 # Not Documented: these are not settings to be customized (yet)
 folderNames = FolderNames()
 defaultStates = [
-    RamState("No", "NO", 1.0, [25,25,25]), # Very dark gray
-    RamState("To Do", "TODO", 0.0, [85, 170, 255]), # Blue
-    RamState("Work in progress", "WIP", 0.5,  [255,255,127]), # Light Yellow
-    RamState("OK", "OK", 1.0, [0, 170, 0]), # Green
+    RamState("No", "NO", 0, [25,25,25]), # Very dark gray
+    RamState("To Do", "TODO", 0, [85, 170, 255]), # Blue
+    RamState("Work in progress", "WIP", 50,  [255,255,127]), # Light Yellow
+    RamState("OK", "OK", 100, [0, 170, 0]), # Green
 ]
 versionPrefixes = ['v','pub'] # The prefixes used in version files which are not states
 
