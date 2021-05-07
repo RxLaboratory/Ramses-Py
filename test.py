@@ -52,6 +52,11 @@ def testItemClass():
     # print( item.status( 'SHOT_PRODUCTION' ) )
     print( item.steps() )
 
+    general = RamItem.fromPath( 'D:/SWAP/TEMP/testfile_G_bis.mb' )
+    print (general.projectShortName())
+    currentStatus = general.currentStatus( "bis" )
+    print (currentStatus.state)
+
 def testProjectClass():
     proj = RamProject("", "", "")
 
