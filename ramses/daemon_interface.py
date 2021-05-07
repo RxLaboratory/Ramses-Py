@@ -1,5 +1,6 @@
 import socket
 import json
+from datetime import datetime
 from .logger import log, LogLevel, Log
 from .ramSettings import RamSettings, ItemType
 
@@ -240,6 +241,41 @@ class RamDaemonInterface( object ):
             ('step', step),
             ('type', itemType)
             ), 1024 )
+
+    def setStatus(self, itemShortName, itemName, step, itemType=ItemType.SHOT, state="", comment="", completionRatio=-1, version=0, user=None, stateDate=None)
+    {
+        """Sets the current status of an item for a specific step
+
+        Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
+        
+        Returns: list
+        """
+
+        args = [
+            "setStatus",
+            ('shortName', itemShortName),
+            ('name', itemName),
+            ('step', step),
+            ('type', itemType),
+            ('state', state),
+            ('comment', comment),
+        ]
+
+        if completionRatio >= 0:
+            args.append( ('completionRatio', completionRatio ) )
+        
+        if version > 0:
+            args.append(( 'version', version ) )
+        
+        if user is not None:
+            args.append(('user', user.shortName()))
+
+        if stateDate is not None:
+            args.append(('date', stateDate.strftime('%Y-%m-%d %H:%M:%S')))
+
+
+        return self.__post( args, 0 )
+    }
 
     def __buildQuery(self, query):
         """Builds a query from a list of args
