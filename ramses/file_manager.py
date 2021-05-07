@@ -49,7 +49,7 @@ class RamFileManager():
         return saveFolder + '/' + saveFileName
         
     @staticmethod
-    def copyToVersion( filePath, increment = False, dafaultStateShortName="v" ):
+    def copyToVersion( filePath, increment = False, stateShortName="" ):
         """Copies and increments a file into the version folder
         
         Returns the filePath of the new file version"""
@@ -67,9 +67,12 @@ class RamFileManager():
             return
                
         # Look for the latest version to increment and save
-        version = RamFileManager.getLatestVersion( filePath, dafaultStateShortName )
+        version = RamFileManager.getLatestVersion( filePath, stateShortName )
         versionNumber = version[0]
-        versionState = version[1]
+        if stateShortName == "":
+            versionState = version[1]
+        else:
+            versionState = stateShortName
 
         if increment:
             versionNumber = versionNumber + 1
@@ -95,7 +98,7 @@ class RamFileManager():
         return newFilePath
 
     @staticmethod
-    def getLatestVersion( filePath, dafaultStateShortName="v" ):
+    def getLatestVersion( filePath, defaultStateShortName="v" ):
         """Gets the latest version number and state of a file
         
         Returns a tuple (version, state)
@@ -112,7 +115,7 @@ class RamFileManager():
 
         foundFiles = os.listdir( versionsFolder )
         highestVersion = 0
-        state = dafaultStateShortName
+        state = defaultStateShortName
 
         for foundFile in foundFiles:
             if not os.path.isfile( versionsFolder + '/' + foundFile ): # This is in case the user has created folders in _versions
