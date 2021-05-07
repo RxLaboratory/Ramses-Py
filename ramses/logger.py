@@ -5,6 +5,7 @@ class Log():
     NoUser = "There's no current user. You may need to log in."
     PathNotFound = "The file or folder path could not be found."
     NoProject = "There's no current project. Select a project first."
+    StateNotFound = "State not found."
 
 class LogLevel():
     DataReceived = -2

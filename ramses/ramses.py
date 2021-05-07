@@ -235,9 +235,24 @@ class Ramses( object ):
         Returns:
             RamState
         """
-        for state in self.states():
-            if state.shortName() == stateShortName():
+
+        # If online, ask the daemon
+        if not self._offline:
+            replyDict = self._daemon.getState( stateShortName )
+            # Check if successful
+            if RamDaemonInterface.checkReply(replyDict):
+                stateDict = replyDict['content']
+                print( stateDict['completionRatio'] )
+                newState = RamState(stateDict['name'], stateDict['shortName'], stateDict['completionRatio'], stateDict['color'])
+                return newState
+
+        # Else get in the default list
+        for state in self._settings.defaultStates:
+            if state.shortName() == stateShortName:
                 return state
+        
+        # Not found
+        log( Log.StateNotFound, LogLevel.Critical )
         return None
 
     def states(self):
