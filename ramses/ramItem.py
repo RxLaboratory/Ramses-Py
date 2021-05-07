@@ -588,7 +588,7 @@ class RamItem( RamObject ):
             return False
         return len( result ) > 0
 
-    def setStatus( self, status, step ): #TODO
+    def setStatus( self, status, step ):
         """Sets the current status for the given step
 
         Args:
@@ -598,7 +598,24 @@ class RamItem( RamObject ):
         # Check step, return shortName (str) or "" or raise TypeError:
         step = getObjectShortName( step )
 
-        pass
+        if not amses.instance().online():
+            return
+
+        if self.itemType == ItemType.GENERAL:
+            return
+
+        daemon.setAssetStatus(
+            self.shortName(),
+            self.name(),
+            step,
+            self.itemType(),
+            status.state.shortName(),
+            status.comment,
+            status.completionRatio,
+            status.version,
+            status.user,
+            status.stateDate
+        )    
 
     def itemType( self ):
         """Returns the type of the item"""
