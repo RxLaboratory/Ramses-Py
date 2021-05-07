@@ -88,6 +88,35 @@ class RamFileManager():
         return saveFolder + '/' + saveFileName
         
     @staticmethod
+    def restoreVersionFile( filePath ):
+        if not RamFileManager.inVersionsFolder( filePath ):
+            log( "This version can't be restored, it is not in a Ramses versions subfolder.", LogLevel.Critical )
+            return
+
+        fileName = os.path.basename( filePath )
+        decomposedVersionFile = RamFileManager.decomposeRamsesFileName( fileName )
+        if decomposedVersionFile is None:
+            log( Log.MalformedName, LogLevel.Critical )
+            return
+
+        restoredFileName = RamFileManager.buildRamsesFileName(
+            decomposedVersionFile['projectID'],
+            decomposedVersionFile['ramStep'],
+            decomposedVersionFile['extension'],
+            decomposedVersionFile['ramType'],
+            decomposedVersionFile['objectShortName'],
+            decomposedVersionFile['resourceStr'] + "+restored-v" + str(decomposedVersionFile['version']) + "+",
+        )
+
+        versionFolder = os.path.dirname( filePath )
+        saveFolder = os.path.dirname( versionFolder )
+
+        restoredFilePath = saveFolder + '/' + restoredFileName
+        shutil.copy2( filePath, restoredFilePath )
+        return restoredFilePath
+
+
+    @staticmethod
     def copyToPublish( filePath ):
         """Copies the given file to its corresponding publish folder"""
 
@@ -199,7 +228,7 @@ class RamFileManager():
 
     @staticmethod
     def getLatestVersionFilePath( filePath, previous=False ):
-         # Check File Name
+        # Check File Name
         fileName = os.path.basename( filePath )
         decomposedFileName = RamFileManager.decomposeRamsesFileName( fileName )
         if not decomposedFileName:
@@ -245,6 +274,44 @@ class RamFileManager():
             return prevVersionFilePath
 
         return versionFilePath
+
+    @staticmethod
+    def getVersionFilePaths( filePath ):
+        # Check File Name
+        fileName = os.path.basename( filePath )
+        decomposedFileName = RamFileManager.decomposeRamsesFileName( fileName )
+        if not decomposedFileName:
+            log( Log.MalformedName, LogLevel.Critical )
+
+        # Get versions
+        versionsFolder = RamFileManager.getVersionFolder( filePath )
+
+        foundFiles = os.listdir( versionsFolder )
+        versionFiles = []
+
+        for foundFile in foundFiles:
+            foundFilePath = versionsFolder + '/' + foundFile
+            if not os.path.isfile( foundFilePath ): # This is in case the user has created folders in _versions
+                continue
+            
+            decomposedFoundFile = RamFileManager.decomposeRamsesFileName(foundFile)
+            if decomposedFoundFile == None:
+                continue
+            if decomposedFoundFile['projectID'] != decomposedFileName['projectID']:
+                continue
+            if decomposedFoundFile['ramType'] != decomposedFileName['ramType']:
+                continue
+            if decomposedFoundFile['objectShortName'] != decomposedFileName['objectShortName']:
+                continue
+            if decomposedFoundFile['ramStep'] != decomposedFileName['ramStep']:
+                continue
+            if decomposedFoundFile["resourceStr"] != decomposedFileName['resourceStr']:
+                continue
+
+            versionFiles.append( foundFilePath )
+
+        versionFiles.sort( key = RamFileManager._versionFilesSorter )
+        return versionFiles
 
     @staticmethod
     def getVersionFolder( filePath ):
@@ -561,3 +628,9 @@ class RamFileManager():
             else:
                 fixedResourceStr = fixedResourceStr + char
         return fixedResourceStr
+
+    @staticmethod
+    def _versionFilesSorter( f ):
+        fileName = os.path.basename(f)
+        d = RamFileManager.decomposeRamsesFileName(fileName)
+        return d['version']
