@@ -1,8 +1,7 @@
-import socket
-import json
-from datetime import datetime
-from .logger import log, LogLevel, Log
-from .ramSettings import RamSettings, ItemType
+import socket, json
+
+from .logger import log
+from .constants import ItemType
 
 class RamDaemonInterface( object ):
     """The Class used to communicate with the Ramses Daemon
@@ -22,6 +21,8 @@ class RamDaemonInterface( object ):
 
     @classmethod
     def instance( cls ):
+        from .ram_settings import RamSettings
+        
         if cls._instance is None:
             cls._instance = cls.__new__(cls)
             cls._port = RamSettings.instance().ramsesClientPort
