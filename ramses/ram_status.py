@@ -3,7 +3,8 @@ from datetime import datetime
 
 from .ramses import Ramses
 from .file_manager import RamFileManager
-from .logger import log, Log, LogLevel
+from .logger import log
+from .constants import Log, LogLevel
 
 class RamStatus:
     """A state associated to a comment, the user who changed the state, etc."""
