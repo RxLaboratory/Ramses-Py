@@ -14,7 +14,7 @@ class RamFileType( RamObject ):
             fileTypeDict['extensions']
         )
 
-    def __init__(self, name, shortname, extensions = [] ):
+    def __init__(self, name, shortname, extensions = () ):
         """
         Args:
             name (str)

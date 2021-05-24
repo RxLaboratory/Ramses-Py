@@ -4,6 +4,7 @@ from ramses import (
     RamSettings,
     RamObject,
     RamState,
+    RamFileType,
     )
 
 settings = RamSettings.instance()
@@ -28,7 +29,12 @@ def ramStates():
     s = RamState( "Test", "T", 50, [255,0,0] )
     log (s, LogLevel.Debug)
 
+def ramFileTypes():
+    ft = RamFileType("Jpeg", "jpg", ('.jpg', '.jpeg'))
+    log( ft )
+
 # TESTS
 
 # ramObjects()
-ramStates()
+# ramStates()
+# ramFileTypes()
