@@ -1,13 +1,14 @@
 import re
 from subprocess import Popen, PIPE
 from time import sleep
-from sys import platform
 
-from .logger import log, Log, LogLevel
+from .logger import log
+from .constants import LogLevel, Log
 from .daemon_interface import RamDaemonInterface
-from .ramState import RamState
-from .ramSettings import RamSettings
-from .ramUser import RamUser, UserRole
+from .ram_settings import RamSettings
+
+settings = RamSettings.instance()
+daemon = RamDaemonInterface.instance()
 
 class Ramses( object ):
     """The main class. One (and only one) instance globally available, instantiated during init time.
@@ -18,10 +19,10 @@ class Ramses( object ):
     """
 
     # API Settings
-    _version = RamSettings.instance().version
-    apiReferenceUrl = RamSettings.instance().apiReferenceUrl
-    addonsHelpUrl = RamSettings.instance().addonsHelpUrl
-    generalHelpUrl = RamSettings.instance().generalHelpUrl
+    _version = settings.version
+    apiReferenceUrl = settings.apiReferenceUrl
+    addonsHelpUrl = settings.addonsHelpUrl
+    generalHelpUrl = settings.generalHelpUrl
 
     _instance = None
 
@@ -36,69 +37,51 @@ class Ramses( object ):
 
     @classmethod
     def instance( cls ):
+        from .ram_state import RamState
+
         if cls._instance is None:
             cls._instance = cls.__new__(cls)
-            cls._daemon = RamDaemonInterface.instance()
-            cls._settings = RamSettings.instance()
             cls._offline = True
             cls._folderPath = ""
+            cls._states = ()
             cls.publishScripts = []
             cls.statusScripts = []
 
-            if cls._settings.online:
+            if settings.online:
                 log("I'm trying to contact the Ramses Client.", LogLevel.Info)
                 cls._instance.connect()
 
+            # Not documented: the states to use offline
+            cls.defaultStates = [
+                RamState("No", "NO", 0, [25,25,25]), # Very dark gray
+                RamState("To Do", "TODO", 0, [85, 170, 255]), # Blue
+                RamState("Work in progress", "WIP", 50,  [255,255,127]), # Light Yellow
+                RamState("OK", "OK", 100, [0, 170, 0]), # Green
+            ]
+            cls.defaultState = cls.defaultStates[2]
+
         return cls._instance
 
-    def currentProject(self):
-        from .ramProject import RamProject
+    def currentProject(self, path = ''):
+        from .ram_project import RamProject
         """The current project.
 
         Returns:
             RamProject or None
         """
-
         # If online, ask the daemon
         if not self._offline:
             # Ask (the daemon returns a dict)
-            projDict = self._daemon.getCurrentProject()
+            reply = daemon.getCurrentProject()
             # Check if successful
-            if RamDaemonInterface.checkReply(projDict):
-                content = projDict['content']
-
-                proj = RamProject(content['name'], content['shortName'], content['folder'], content['width'],
-                                  content['height'], content['framerate'])
-                return proj
+            if RamDaemonInterface.checkReply(reply):
+                
+                return RamProject.fromDict( reply['content'] )
 
         return None
-
-    def currentStep(self):  # A revoir
-        from .ramStep import RamStep
-        """The current project.
-
-        Returns:
-          RamStep or None
-        """
-
-        # If online, ask the daemon
-        if not self._offline:
-            # Ask (the daemon returns a dict)
-            stepDict = self._daemon.getSteps()
-            # Check if successful
-            if RamDaemonInterface.checkReply(stepDict):
-                content = stepDict['content']
-                steps = content['steps']
-
-                step = RamStep(steps['name'], steps['shortName'], steps['folder'], steps['type'])
-                return step
-
-        return None
-
-        # TODO if offline
 
     def currentUser(self):
-        from .ramUser import RamUser
+        from .ram_user import RamUser
         """The current user.
 
         Returns:
@@ -108,27 +91,13 @@ class Ramses( object ):
         # If online, ask the daemon
         if not self._offline:
             # Ask (the daemon returns a dict)
-            userDict = self._daemon.getCurrentUser()
+            reply = self._daemon.getCurrentUser()
 
             # Check if successful
-            if RamDaemonInterface.checkReply(userDict):
-                content = userDict['content']
-
-                # check role
-                role = UserRole.STANDARD
-                if content['role'] == 'LEAD':
-                    role = UserRole.LEAD
-                elif content['role'] == 'PROJECT_ADMIN':
-                    role = UserRole.PROJECT_ADMIN
-                elif content['role'] == 'ADMIN':
-                    role = UserRole.ADMIN
-
-                user = RamUser(content['name'], content['shortName'], content['folderPath'], role)
-                return user
+            if RamDaemonInterface.checkReply(reply):
+                return RamUser.fromDict( reply['content'] )
 
         return None
-
-        # TODO if offline
 
     def online(self):
         """True if connected to the Daemon and the Daemon is responding.
@@ -174,13 +143,13 @@ class Ramses( object ):
             # Check if successful
             if RamDaemonInterface.checkReply(replyDict):
                 self._folderPath = replyDict['content']['folder']
-                self._settings.ramsesFolderPath = self._folderPath
-                self._settings.save()
+                settings.ramsesFolderPath = self._folderPath
+                settings.save()
 
             return self._folderPath
 
         # if offline, get from settings
-        self._folderPath = self._settings.ramsesFolderPath
+        self._folderPath = settings.ramsesFolderPath
         return self._folderPath
 
     def connect(self):
@@ -191,7 +160,6 @@ class Ramses( object ):
         """
 
         # Check if already online
-        daemon = self._daemon
         self._offline = False
         if daemon.online():
             user = self.currentUser()
@@ -221,9 +189,9 @@ class Ramses( object ):
         Returns:
             RamDaemonInterface
         """
-        return self._daemon
+        return daemon
 
-    def project(self, projectShortName):  # TODO
+    def project(self, projectShortName):
         """Gets a specific project.
 
         Args:
@@ -233,7 +201,7 @@ class Ramses( object ):
             RamProject
         """
         for project in self.projects():
-            if project.shortName == projectShortName:
+            if project.shortName() == projectShortName:
                 return project
         return None
 
@@ -255,22 +223,22 @@ class Ramses( object ):
             RamState
         """
 
+        from .ram_state import RamState
+
         # If online, ask the daemon
         if not self._offline:
-            replyDict = self._daemon.getState( stateShortName )
+            replyDict = daemon.getState( stateShortName )
             # Check if successful
             if RamDaemonInterface.checkReply(replyDict):
-                stateDict = replyDict['content']
-                newState = RamState.fromDict( stateDict )
-                return newState
+                return RamState.fromDict( replyDict['content'] )
 
         # Else get in the default list
-        for state in self._settings.defaultStates:
+        for state in self.defaultStates:
             if state.shortName() == stateShortName:
                 return state
         
         # Not found
-        return self._settings.defaultState
+        return self.defaultState
 
     def states(self):
         """The list of available states.
@@ -278,12 +246,15 @@ class Ramses( object ):
         Returns:
             list of RamState
         """
-        newStateList = []
+        from .ram_state import RamState
+
+        if len(self._states) > 0:
+            return self.states
 
         # If online, ask the daemon
         if not self._offline:
             # Ask (the daemon returns a dict)
-            replyDict = self._daemon.getStates()
+            replyDict = daemon.getStates()
 
             # Check if successful
             if RamDaemonInterface.checkReply(replyDict):
@@ -292,24 +263,24 @@ class Ramses( object ):
 
                 for state in statesDict:
                     newState = RamState.fromDict( state )
-                    newStateList.append(newState)
+                    self._states.append(newState)
 
-                return newStateList
+                return self._states
 
-        return self._settings.defaultStates
+        return self.defaultStates
 
     def showClient(self):
         """Raises the Ramses Client window, launches the client if it is not already running.
         """
 
-        if self._settings.ramsesClientPath == "":
+        if settings.ramsesClientPath == "":
             self._offline = True
             return False
 
         try:
-            p = Popen(self._settings.ramsesClientPath, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+            p = Popen(settings.ramsesClientPath, stdin=PIPE, stdout=PIPE, stderr=PIPE)
         except:
-            log("The Client is not available at " + self._settings.ramsesClientPath, LogLevel.Critical)
+            log("The Client is not available at " + settings.ramsesClientPath, LogLevel.Critical)
             return False
 
         if not p.poll(): del p
@@ -321,13 +292,13 @@ class Ramses( object ):
         numTries = 0
         self._offline = True
         while( self._offline and numTries < 3 ):
-            self._offline = not self._daemon.online()
+            self._offline = not daemon.online()
             sleep(1)
             numTries = numTries + 1
         
         # If the client opened
         if not self._offline:
-            self._daemon.raiseWindow()
+            daemon.raiseWindow()
             return True
         
         return False
@@ -338,7 +309,7 @@ class Ramses( object ):
         Args:
             (RamSettings): settings
         """
-        return self._settings
+        return settings
 
     @staticmethod
     def version(self):
