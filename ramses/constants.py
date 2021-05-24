@@ -4,6 +4,7 @@ class FolderNames():
     publish = "_published"
     userConfig = "Config"
     stepTemplates = "Templates"
+    admin = "00-ADMIN"
     preProd = "01-PRE-PROD"
     prod = "02-PROD"
     postProd = "03-POST-PROD"
