@@ -1,13 +1,15 @@
 from ramses import (
     log,
     LogLevel,
-    RamObject
+    RamSettings,
+    RamObject,
+    RamState,
     )
 
-# RamSettings.instance().logLevel = LogLevel.DataReceived
+settings = RamSettings.instance()
+settings.logLevel = LogLevel.Debug
 
 # daemon = RamDaemonInterface.instance()
-# settings = RamSettings.instance()
 
 testPaths = (
     'C:/Users/Duduf/Ramses/Projects/FPE/02-PROD/FPE_G_MOD',
@@ -15,11 +17,18 @@ testPaths = (
 
 def ramObjects():
     o = RamObject("Object Name", "OSN")
-    log( o )
-    log( RamObject.getObjectShortName(o) )
-    log( RamObject.getObjectShortName("SN"))
+    log( o, LogLevel.Debug )
+    log( RamObject.getObjectShortName(o), LogLevel.Debug )
+    log( RamObject.getObjectShortName("SN"), LogLevel.Debug )
     d = { 'name': "Dict Object", 'shortName': "DO" }
     o = RamObject.fromDict( d )
-    log( o )
+    log( o, LogLevel.Debug )
 
-ramObjects()
+def ramStates():
+    s = RamState( "Test", "T", 50, [255,0,0] )
+    log (s, LogLevel.Debug)
+
+# TESTS
+
+# ramObjects()
+ramStates()

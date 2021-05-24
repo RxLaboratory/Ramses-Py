@@ -1,5 +1,4 @@
-from .ramObject import RamObject
-
+from .ram_object import RamObject
 
 class RamState( RamObject ):
     """Represents a state used in a status, like “CHK” (To be checked), “OK” (ok), “TO_DO”, etc."""
@@ -8,22 +7,21 @@ class RamState( RamObject ):
     def fromDict( stateDict ):
         """Builds a RamState from dict like the ones returned by the RamDaemonInterface"""
 
-        s = RamState(
+        return RamState(
             stateDict['name'],
             stateDict['shortName'],
             stateDict['completionRatio'],
             stateDict['color']
             )
-        return s
 
-    def __init__(self, stateName, stateShortName, completionRatio=0.0, color=[67, 67, 67]):
+    def __init__(self, stateName, stateShortName, completionRatio=0, color=[67, 67, 67]):
         """
         Args:
             stateName (str)
             stateShortName (str)
             completionRatio (float, optional): The ratio of completion of this status
         """
-        super().__init__( stateName, stateShortName )
+        super(RamState, self).__init__( stateName, stateShortName )
         self._completionRatio = completionRatio
         self._color = color
 
