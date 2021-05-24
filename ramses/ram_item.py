@@ -84,7 +84,7 @@ class RamItem( RamObject ):
         log( "The given path does not belong to a shot nor an asset", LogLevel.Debug )
         return None
 
-    def __init__( self, itemName, itemShortName, itemFolder="", itemType=ItemType.GENERAL, projectShortName = '' ):
+    def __init__( self, itemName, itemShortName, itemFolder="", itemType=ItemType.GENERAL ):
         """
         Args:
             itemName (str)
@@ -94,12 +94,6 @@ class RamItem( RamObject ):
         super().__init__( itemName, itemShortName )
         self._folderPath = itemFolder
         self._itemType = itemType
-        if projectShortName == '':
-            pathInfo = RamFileManager.decomposeRamsesFilePath( itemFolder )
-            if pathInfo:
-                self._projectShortName = pathInfo['project']
-        else:
-            self._projectShortName = projectShortName
 
     def currentStatus( self, step="", resource="" ):
         """The current status for the given step

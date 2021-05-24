@@ -7,3 +7,5 @@ from .ram_filetype import RamFileType
 from .ram_user import RamUser
 from .ram_status import RamStatus
 from .ramses import Ramses
+from .ram_item import RamItem
+from .ram_shot import RamShot

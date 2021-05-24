@@ -1,7 +1,7 @@
-from .ramItem import RamItem
-from .ramSettings import ItemType
+from .ram_item import RamItem
 from .daemon_interface import RamDaemonInterface
-from . import Ramses
+from .constants import ItemType
+from .ramses import Ramses
 
 # Keep the daemon at hand
 daemon = RamDaemonInterface.instance()
@@ -13,13 +13,12 @@ class RamShot( RamItem ):
     def fromDict( shotDict ):
         """Builds a RamShot from dict like the ones returned by the RamDaemonInterface"""
 
-        s = RamShot(
+        return RamShot(
             shotDict['name'],
             shotDict['shortName'],
             shotDict['folder'],
             shotDict['duration']
         )
-        return s
 
     @staticmethod
     def fromPath( path ):
@@ -43,13 +42,13 @@ class RamShot( RamItem ):
 
         return shot
 
-    def __init__( self, shotName, shotShortName, shotFolder="", duration=0.0, projectShortName="" ):
+    def __init__( self, shotName, shotShortName, shotFolder="", duration=0.0 ):
         """
         Args:
             shotName (str)
             shotShortName (str)
         """
-        super().__init__( shotName, shotShortName, shotFolder, ItemType.SHOT, projectShortName )
+        super(RamShot, self).__init__( shotName, shotShortName, shotFolder, ItemType.SHOT )
         self._duration = duration
 
     def duration( self ): # Mutable
@@ -60,15 +59,9 @@ class RamShot( RamItem ):
         """
 
         if Ramses.instance().online():
-            shotDict = daemon.getShot( self._shortName )
+            reply = daemon.getShot( self._shortName )
             # check if successful
-            if RamDaemonInterface.checkReply( shotDict ):
-                content = shotDict['content']
-                self._duration = content['duration']
+            if RamDaemonInterface.checkReply( reply ):
+                self._duration = reply['content']['duration']
                 
         return self._duration
-
-    # Hidden and not documented: documented in RamItem.folderPath()
-    def folderPath( self, step="" ): # Immutable 
-        """Re-implemented from RamItem to pass it the type"""
-        return super().folderPath(  )
