@@ -203,7 +203,7 @@ daemon = RamDaemonInterface.instance()
 # print (daemon.getStep( "RIG" ))
 
 # testUserClass()
-testItemClass()
+# testItemClass()
 # testProjectClass()
 # testShotClass()
 # testAssetClass()
@@ -217,3 +217,4 @@ testItemClass()
 # "folder": "C:/Users/Megaport/Ramses/Projects/FPE/02-PROD/FPE_SD",
 # "folder": "C:/Users/Megaport/Ramses/Projects/FPE/04-ASSETS/Characters",
 
+print( daemon.getRamsesFolderPath() )

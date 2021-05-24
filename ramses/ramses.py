@@ -173,7 +173,7 @@ class Ramses( object ):
 
             # Check if successful
             if RamDaemonInterface.checkReply(replyDict):
-                self._folderPath = replyDict['content']
+                self._folderPath = replyDict['content']['folder']
                 self._settings.ramsesFolderPath = self._folderPath
                 self._settings.save()
 
