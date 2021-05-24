@@ -30,6 +30,10 @@ defaultRamsesClientPath = "" # Location of the Ramses Client executable file (.e
 defaultRamsesClientPort = 18185 # Listening port of the Ramses Daemon
 defaultLogLevel = LogLevel.Info
 defaultAutoIncrementTimeout = 120 # Timeout before auto incrementing a file, in minutes
+defaultRamsesFolderPath = os.path.expanduser("~/Ramses") # The folder containing all ramses files
+# The default folder may be in Documents (in Maya....), adjust
+if defaultRamsesFolderPath.endswith("Documents/Ramses"):
+    defaultRamsesFolderPath = defaultRamsesFolderPath.replace("Documents/Ramses", "Ramses")
 # Not Documented: these are not settings to be customized (yet)
 folderNames = FolderNames()
 defaultStates = [
@@ -73,6 +77,7 @@ class RamSettings( object ):
             cls.ramsesClientPort = defaultRamsesClientPort 
             cls.logLevel = defaultLogLevel
             cls.autoIncrementTimeout = defaultAutoIncrementTimeout
+            cls.ramsesFolderPath = defaultRamsesFolderPath
 
             cls.defaultOnline = defaultOnline
             cls.defaultRamsesClientPath = defaultRamsesClientPath
@@ -117,7 +122,9 @@ class RamSettings( object ):
                     if 'logLevel' in settingsDict:
                         cls.logLevel = settingsDict['logLevel']
                     if 'autoIncrementTimeout' in settingsDict:
-                        cls.autoIncrementTimeout = settingsDict['autoIncrementTimeout'] 
+                        cls.autoIncrementTimeout = settingsDict['autoIncrementTimeout']
+                    if 'ramsesFolderPath' in settingsDict:
+                        cls.ramsesFolderPath = settingsDict['ramsesFolderPath']
 
         return cls._instance
 
@@ -138,6 +145,7 @@ class RamSettings( object ):
             'clientPort': self.ramsesClientPort,
             'logLevel': self.logLevel,
             'autoIncrementTimeout': self.autoIncrementTimeout,
+            'ramsesFolderPath': self.ramsesFolderPath,
         }
 
         if self._filePath == '':
