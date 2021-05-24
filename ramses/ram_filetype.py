@@ -1,4 +1,4 @@
-from .ramObject import RamObject
+from .ram_object import RamObject
 
 class RamFileType( RamObject ):
     """A File type.
@@ -8,21 +8,20 @@ class RamFileType( RamObject ):
     def fromDict( fileTypeDict ):
         """Builds a RamFileType from dict like the ones returned by the RamDaemonInterface"""
 
-        f = RamFileType(
+        return RamFileType(
             fileTypeDict['name'],
             fileTypeDict['shortName'],
             fileTypeDict['extensions']
         )
-        return f
 
-    def __init__(self, name, shortname, extensions ):
+    def __init__(self, name, shortname, extensions = [] ):
         """
         Args:
             name (str)
             shortName (str)
             extensions (list of str)
         """
-        super().__init__( name, shortname )
+        super(RamFileType, self).__init__( name, shortname )
         self._extensions = extensions
 
     def extensions( self ):
