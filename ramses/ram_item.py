@@ -84,7 +84,8 @@ class RamItem( RamObject ):
         log( "The given path does not belong to a shot nor an asset", LogLevel.Debug )
         return None
 
-    def __init__( self, itemName, itemShortName, itemFolder="", itemType=ItemType.GENERAL ):
+    # Do not document Asset Group nor Type as its used by derived classes
+    def __init__( self, itemName, itemShortName, itemFolder="", itemType=ItemType.GENERAL, assetGroup="" ):
         """
         Args:
             itemName (str)
@@ -94,6 +95,7 @@ class RamItem( RamObject ):
         super().__init__( itemName, itemShortName )
         self._folderPath = itemFolder
         self._itemType = itemType
+        self._group = assetGroup
 
     def currentStatus( self, step="", resource="" ):
         """The current status for the given step
@@ -128,8 +130,8 @@ class RamItem( RamObject ):
         return RamStatus.fromPath( currentVersionPath )
 
     # Do not document "assetGroup" argument, it should stay hidden
-    # (not needed in derived classes RamShot.folderPath() and RamAsset.folderPath())
-    def folderPath( self, assetGroup="" ):
+    # (just automatically passed by RamAsset.folderPath())
+    def folderPath( self ):
         """The absolute path to the folder containing the item, or to the step subfolder if provided
 
         Args:
@@ -180,7 +182,7 @@ class RamItem( RamObject ):
             # add the group
             self._folderPath = RamFileManager.buildPath((
                     project.assetsPath(),
-                    assetGroup,
+                    self.group(),
                     itemFolderName
                 ))
 
@@ -188,11 +190,11 @@ class RamItem( RamObject ):
             
         return ""
 
-    def stepFolderPath(self, step="", assetGroup=""):
+    def stepFolderPath(self, step=""):
         # Check step, return shortName (str) or "" or raise TypeError:
         step = RamObject.getObjectShortName( step )
 
-        folderPath = self.folderPath(assetGroup)
+        folderPath = self.folderPath()
         if folderPath == "":
             return ""
 
@@ -217,7 +219,7 @@ class RamItem( RamObject ):
             stepFolderName
         ))
 
-    def latestVersion( self, resource="", state="", step="", assetGroup=""):
+    def latestVersion( self, resource="", state="", step=""):
         """Returns the highest version number for the given state (wip, pub…) (or all states if empty string).
 
         Args:
@@ -233,7 +235,7 @@ class RamItem( RamObject ):
 
         highestVersion = -1
        
-        versionFolder = self.versionFolderPath( step, assetGroup )
+        versionFolder = self.versionFolderPath( step )
         if versionFolder == '':
             return highestVersion
 
@@ -246,7 +248,7 @@ class RamItem( RamObject ):
 
         return highestVersion
         
-    def previewFolderPath( self, step="", assetGroup="" ):
+    def previewFolderPath( self, step="" ):
         """Gets the path to the preview folder.
             Paths are relative to the root of the item folder.
 
@@ -257,7 +259,7 @@ class RamItem( RamObject ):
             str
         """
         # Check step, return shortName (str) or "" or raise TypeError:
-        stepFolder = self.stepFolderPath(step, assetGroup )
+        stepFolder = self.stepFolderPath(step )
 
         if stepFolder == '':
             return ''
@@ -267,7 +269,7 @@ class RamItem( RamObject ):
             FolderNames.preview
             ))
 
-    def previewFilePaths( self, resource="", step="", assetGroup="" ):
+    def previewFilePaths( self, resource="", step=""):
         """Gets the list of file paths in the preview folder.
             Paths are relative to the root of the item folder.
 
@@ -279,11 +281,11 @@ class RamItem( RamObject ):
             list of str
         """
 
-        previewFolderPath = self.previewFolderPath(step, assetGroup)
+        previewFolderPath = self.previewFolderPath(step)
 
         return RamFileManager.getFileWithResource( previewFolderPath, resource)
 
-    def publishFolderPath( self, step="", assetGroup="" ): 
+    def publishFolderPath( self, step=""): 
         """Gets the path to the publish folder.
         Paths are relative to the root of the item folder.
 
@@ -294,7 +296,7 @@ class RamItem( RamObject ):
             str
         """
         # Check step, return shortName (str) or "" or raise TypeError:
-        stepFolder = self.stepFolderPath(step, assetGroup )
+        stepFolder = self.stepFolderPath(step )
 
         if stepFolder == '':
             return ''
@@ -304,7 +306,7 @@ class RamItem( RamObject ):
             FolderNames.publish
             ))
 
-    def publishFilePaths( self, resource="", step="", assetGroup = '' ):
+    def publishFilePaths( self, resource="", step="" ):
         """Gets the list of file paths in the publish folder.
             Paths are relative to the root of the item folder.
 
@@ -316,10 +318,10 @@ class RamItem( RamObject ):
             list of str
         """
 
-        publishFolderPath = self.publishFolderPath(step, assetGroup)
+        publishFolderPath = self.publishFolderPath(step)
         return RamFileManager.getFileWithResource( publishFolderPath, resource)
 
-    def versionFolderPath( self, step="", assetGroup="" ): 
+    def versionFolderPath( self, step="" ): 
         """Path to the version folder relative to the item root folder
 
         Args:
@@ -329,7 +331,7 @@ class RamItem( RamObject ):
             str
         """
         # Check step, return shortName (str) or "" or raise TypeError:
-        stepFolder = self.stepFolderPath(step, assetGroup )
+        stepFolder = self.stepFolderPath(step )
 
         if stepFolder == '':
             return ''
@@ -339,7 +341,7 @@ class RamItem( RamObject ):
             FolderNames.versions
             ))
 
-    def latestVersionFilePath( self, resource="", state="", step="", assetGroup="" ):
+    def latestVersionFilePath( self, resource="", state="", step="" ):
         """Latest version file path
 
         Args:
@@ -349,7 +351,7 @@ class RamItem( RamObject ):
         Returns:
             str
         """
-        versionFolderPath = self.versionFolderPath(step, assetGroup )
+        versionFolderPath = self.versionFolderPath(step )
 
         if versionFolderPath == '':
             return ''
@@ -370,7 +372,7 @@ class RamItem( RamObject ):
 
         return versionFile
 
-    def isPublished( self, resource="", step="", assetGroup="" ):
+    def isPublished( self, resource="", step="" ):
         """Convenience function to check if there are published files in the publish folder.
             Equivalent to len(self.publishedFilePaths(step, resource)) > 0
 
@@ -381,8 +383,7 @@ class RamItem( RamObject ):
         Returns:
             bool
         """
-
-        result = self.publishFilePaths( step, resource, step, assetGroup )
+        result = self.publishFilePaths( step, resource, step )
         return len( result ) > 0
 
     def setStatus( self, status, step ):
@@ -418,10 +419,12 @@ class RamItem( RamObject ):
         """Returns the type of the item"""
         return self._itemType
 
-    def steps( self, assetGroup="" ):
+    def steps( self ):
         """Returns the steps used by this asset"""
 
         from .ram_project import RamProject
+
+        assetGroup = self.group()
 
         project = Ramses.instance().currentProject()
         if project is None:
@@ -459,3 +462,43 @@ class RamItem( RamObject ):
                     stepsList.append( step )
 
         return stepsList
+
+    # Documented in RamAsset only
+    def group( self ): # Immutable
+        """The name of group containing this asset. (e.g. Props)
+
+        Returns:
+            str
+        """
+
+        if not self.itemType() == ItemType.ASSET:
+            return ""
+
+        if self._group != "":
+            return self._group
+
+        # If we're online, ask the client (return a dict)
+        if Ramses.instance().online():
+            reply = daemon.getAsset( self._shortName )
+            # check if successful
+            if RamDaemonInterface.checkReply( reply ):
+                self._group = reply['content']['group']
+                if self._group != "":
+                    return self._group
+
+        # Else, check in the folders
+        folderPath = self.folderPath()
+
+        if not os.path.isdir( folderPath ):
+            log( Log.PathNotFound + " " + folderPath, LogLevel.Critical )
+            return self._group
+
+        parentFolder = os.path.dirname( folderPath )
+        parentFolderName = os.path.basename( parentFolder )
+
+        if parentFolderName != FolderNames.assets:
+            self._group = parentFolderName
+        else:
+            self._group = ''
+            
+        return self._group
