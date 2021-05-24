@@ -1,49 +1,8 @@
 import os
 import platform
 import json
-from .ramState import RamState
-from .logger import (
-    log,
-    LogLevel
-)
-
-class ItemType():
-    GENERAL='G'
-    ASSET='A'
-    SHOT='S'
-
-class FolderNames():
-    preview = "_preview"
-    versions = "_versions"
-    publish = "_published"
-    userConfig = "Config"
-    stepTemplates = "Templates"
-
-# API Settings
-version = "0.0.1-dev"
-apiReferenceUrl = "https://ramses-docs.rainboxlab.org/dev/add-ons-reference/"
-addonsHelpUrl = "https://ramses-docs.rainboxlab.org/addons/"
-generalHelpUrl = "https://ramses-docs.rainboxlab.org/"
-# Default values
-defaultOnline = True # Wether to always try to (re)connect to the Daemon if offline.
-defaultRamsesClientPath = "" # Location of the Ramses Client executable file (.exe on Windows, .app on MacOS, .appimage or binary on Linux)
-defaultRamsesClientPort = 18185 # Listening port of the Ramses Daemon
-defaultLogLevel = LogLevel.Info
-defaultAutoIncrementTimeout = 120 # Timeout before auto incrementing a file, in minutes
-defaultRamsesFolderPath = os.path.expanduser("~/Ramses") # The folder containing all ramses files
-# The default folder may be in Documents (in Maya....), adjust
-if defaultRamsesFolderPath.endswith("Documents/Ramses"):
-    defaultRamsesFolderPath = defaultRamsesFolderPath.replace("Documents/Ramses", "Ramses")
-# Not Documented: these are not settings to be customized (yet)
-folderNames = FolderNames()
-defaultStates = [
-    RamState("No", "NO", 0, [25,25,25]), # Very dark gray
-    RamState("To Do", "TODO", 0, [85, 170, 255]), # Blue
-    RamState("Work in progress", "WIP", 50,  [255,255,127]), # Light Yellow
-    RamState("OK", "OK", 100, [0, 170, 0]), # Green
-]
-defaultState = defaultStates[2]
-versionPrefixes = ['v','pub'] # The prefixes used in version files which are not states
+from .constants import FolderNames, LogLevel
+from .logger import log
 
 class RamSettings( object ):
     """Gets and saves settings used by Ramses.
@@ -72,30 +31,35 @@ class RamSettings( object ):
             cls._instance = cls.__new__(cls)
 
             # Default Values
-            cls.online = defaultOnline 
-            cls.ramsesClientPath = defaultRamsesClientPath 
-            cls.ramsesClientPort = defaultRamsesClientPort 
-            cls.logLevel = defaultLogLevel
-            cls.autoIncrementTimeout = defaultAutoIncrementTimeout
-            cls.ramsesFolderPath = defaultRamsesFolderPath
 
-            cls.defaultOnline = defaultOnline
-            cls.defaultRamsesClientPath = defaultRamsesClientPath
-            cls.defaultRamsesClientPort = defaultRamsesClientPort
-            cls.defaultLogLevel = defaultLogLevel
-            cls.defaultAutoIncrementTimeout = defaultAutoIncrementTimeout
+            # Wether to always try to (re)connect to the Daemon if offline.
+            cls.online = cls.defaultOnline = True 
+            # Location of the Ramses Client executable file (.exe on Windows, .app on MacOS, .appimage or binary on Linux)
+            cls.ramsesClientPath =  cls.defaultRamsesClientPath = ""
+            # Listening port of the Ramses Daemon
+            cls.ramsesClientPort = cls.defaultRamsesClientPort = 18185
+            # Minimum Log level printed when logging information
+            cls.logLevel = cls.defaultLogLevel = LogLevel.Info
+            # Timeout before auto incrementing a file, in minutes
+            cls.autoIncrementTimeout = cls.defaultAutoIncrementTimeout = 120
+            # The folder containing all ramses files
+            cls.defaultRamsesFolderPath = os.path.expanduser("~/Ramses")
+
+            # The default ramses folder may be in Documents (in Maya....), adjust
+            if cls.defaultRamsesFolderPath.endswith("Documents/Ramses"):
+                cls.defaultRamsesFolderPath = cls.defaultRamsesFolderPath.replace("Documents/Ramses", "Ramses")           
+            cls.ramsesFolderPath = cls.defaultRamsesFolderPath
 
             # Not Documented: these are not settings to be customized (yet)
-            cls.folderNames = folderNames
-            cls.defaultStates = defaultStates
-            cls.versionPrefixes = versionPrefixes
-            cls.defaultState = defaultState
+
+            cls.folderNames = FolderNames()
+            cls.versionPrefixes = ['v','pub'] # The prefixes used in version files which are not states
 
             # API Settings
-            cls.version = version
-            cls.apiReferenceUrl = apiReferenceUrl
-            cls.addonsHelpUrl = addonsHelpUrl
-            cls.generalHelpUrl = generalHelpUrl
+            cls.version = version = "0.0.1-dev"
+            cls.apiReferenceUrl = "https://ramses-docs.rainboxlab.org/dev/add-ons-reference/"
+            cls.addonsHelpUrl = "https://ramses-docs.rainboxlab.org/addons/"
+            cls.generalHelpUrl = "https://ramses-docs.rainboxlab.org/"
 
             # Set the path to the settings file and temporary folder (os-specific)
             system = platform.system()
@@ -137,6 +101,7 @@ class RamSettings( object ):
     def save( self ):
         """Saves the current settings to the disk.
         """
+
         log("I'm saving your settings...")
 
         settingsDict = {

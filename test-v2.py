@@ -217,4 +217,4 @@ daemon = RamDaemonInterface.instance()
 # "folder": "C:/Users/Megaport/Ramses/Projects/FPE/02-PROD/FPE_SD",
 # "folder": "C:/Users/Megaport/Ramses/Projects/FPE/04-ASSETS/Characters",
 
-print( daemon.getRamsesFolderPath() )
+print( RamStep.fromPath('C:/Users/Duduf/Ramses/Projects/FPE/02-PROD/FPE_G_MOD') )

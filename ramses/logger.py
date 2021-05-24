@@ -1,22 +1,10 @@
 from datetime import datetime
-
-class Log():
-    MalformedName = "Cannot work on this file as it does not respect the Ramses' naming scheme, sorry."
-    NoUser = "There's no current user. You may need to log in."
-    PathNotFound = "The file or folder path could not be found."
-    NoProject = "There's no current project. Select a project first."
-    StateNotFound = "State not found."
-
-class LogLevel():
-    DataReceived = -2
-    DataSent = -1
-    Debug = 0
-    Info = 1
-    Critical = 2
-    Fatal = 3
+from .constants import LogLevel
 
 def log( message, level = LogLevel.Info ):
-    from .ramSettings import RamSettings
+    from .ram_settings import RamSettings
+
+    message = str(message)
 
     minLevel = RamSettings.instance().logLevel
     if (level < minLevel ): return
