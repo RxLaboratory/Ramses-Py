@@ -3,7 +3,6 @@ from datetime import datetime
 
 from .ramses import Ramses
 from .file_manager import RamFileManager
-from .ramSettings import RamSettings
 from .logger import log, Log, LogLevel
 
 class RamStatus:
@@ -13,8 +12,10 @@ class RamStatus:
     def fromDict( statusDict ):
         """Builds a RamStatus from dict like the ones returned by the RamDaemonInterface"""
 
+        state = Ramses.instance().state( statusDict['state'] )
+
         return RamStatus(
-            statusDict['state'],
+            state,
             statusDict['comment'],
             statusDict['completionRatio'],
             statusDict['version'],
@@ -44,6 +45,8 @@ class RamStatus:
         # Get User
         if user is None:
             user = Ramses.instance().currentUser()
+            if user is not None:
+                user = user.shortName()
         self.user = user
 
         if stateDate is None:
@@ -54,8 +57,8 @@ class RamStatus:
 
     @staticmethod
     def fromPath( filePath ):
-        from .ramAsset import RamAsset
-        from .ramShot import RamShot
+        from .ram_asset import RamAsset
+        from .ram_shot import RamShot
 
         """Returns a RamStatus instance built using the given file path.
 
@@ -80,10 +83,8 @@ class RamStatus:
             version =blocks[ "version" ]
             if blocks[ "state" ] != '':
                 stateId = blocks[ "state" ]
-                stateId = stateId.upper()
-
         else:
-            latestStatus = getLatestVersion( filePath )
+            latestStatus = RamFileManager.getLatestVersion( filePath )
             version = latestStatus[0]
             stateId = latestStatus[1]
 
@@ -92,12 +93,11 @@ class RamStatus:
         dateTimeStamp = os.path.getmtime( filePath )
         dateTime = datetime.fromtimestamp( dateTimeStamp )
 
-        status = RamStatus( state,
+        return RamStatus(
+            state,
             "",
             state.completionRatio(),
             version,
             None,
             dateTime
             )
-
-        return status
