@@ -275,6 +275,10 @@ class RamDaemonInterface( object ):
 
         return self.__post( args, 0 )
 
+    def getRamsesFolderPath(self):
+        if not self.__checkUser(): return self.__noUserReply('getRamsesFolderPath')
+        return self.__post( "getRamsesFolderPath", 1024 )
+
     def __buildQuery(self, query):
         """Builds a query from a list of args
 

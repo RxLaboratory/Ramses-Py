@@ -41,6 +41,7 @@ class Ramses( object ):
             cls._daemon = RamDaemonInterface.instance()
             cls._settings = RamSettings.instance()
             cls._offline = True
+            cls._folderPath = ""
             cls.publishScripts = []
             cls.statusScripts = []
 
@@ -71,8 +72,6 @@ class Ramses( object ):
                 return proj
 
         return None
-
-        # TODO if offline
 
     def currentStep(self):  # A revoir
         from .ramStep import RamStep
@@ -157,14 +156,32 @@ class Ramses( object ):
         """
         pass
 
-    def folderPath(self):  # TODO
+    def folderPath(self):
         """The absolute path to main Ramses folder, containing projects by default,
         config files, user folders, admin files…
 
         Returns:
             str
         """
-        pass
+
+        if self._folderPath != "":
+            return self._folderPath
+
+        if not self._offline:
+            # Ask (the daemon returns a dict)
+            replyDict = self._daemon.getRamsesFolderPath()
+
+            # Check if successful
+            if RamDaemonInterface.checkReply(replyDict):
+                self._folderPath = replyDict['content']
+                self._settings.ramsesFolderPath = self._folderPath
+                self._settings.save()
+
+            return self._folderPath
+
+        # if offline, get from settings
+        self._folderPath = self._settings.ramsesFolderPath
+        return self._folderPath
 
     def connect(self):
         """Checks Daemon availability and initiates the connection. Returns success.
