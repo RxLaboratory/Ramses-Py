@@ -1,11 +1,5 @@
-from .ramObject import RamObject
-from .ramSettings import RamSettings
-
-class UserRole():
-    STANDARD = 0
-    LEAD = 1
-    PROJECT_ADMIN = 2
-    ADMIN = 3
+from .ram_object import RamObject
+from .constants import UserRole, FolderNames
 
 class RamUser( RamObject ):
     """The class representing users."""
@@ -14,13 +8,20 @@ class RamUser( RamObject ):
     def fromDict( userDict ):
         """Builds a RamUser from dict like the ones returned by the RamDaemonInterface"""
 
-        u = RamUser(
+        role = UserRole.STANDARD
+        if userDict['role'] == 'LEAD':
+            role = UserRole.LEAD
+        elif userDict['role'] == 'PROJECT_AMIN':
+            role = UserRole.PROJECT_ADMIN
+        elif userDict['role'] == 'ADMIN':
+            role = UserRole.ADMIN
+
+        return RamUser(
             userDict['name'],
             userDict['shortName'],
             userDict['folderPath'],
-            userDict['role']
+            role
         )
-        return u
 
     def __init__( self, userName, userShortName, userFolderPath="", role=UserRole.STANDARD ):
         """
@@ -52,7 +53,7 @@ class RamUser( RamObject ):
             str
         """
 
-        path = RamSettings.instance().folderNames.userConfig
+        path = FolderNames.userConfig
         return self.folderPath() + "/" + path
 
     def folderPath( self ):

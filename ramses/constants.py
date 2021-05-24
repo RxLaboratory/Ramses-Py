@@ -38,3 +38,9 @@ class StepType():
     POST_PRODUCTION = 'POST_PRODUCTION'
     ALL = 'ALL' # tous
     PRODUCTION = 'PRODUCTION' # asset and shot
+
+class UserRole():
+    STANDARD = 0
+    LEAD = 1
+    PROJECT_ADMIN = 2
+    ADMIN = 3

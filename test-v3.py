@@ -5,6 +5,7 @@ from ramses import (
     RamObject,
     RamState,
     RamFileType,
+    RamUser,
     )
 
 settings = RamSettings.instance()
@@ -33,8 +34,19 @@ def ramFileTypes():
     ft = RamFileType("Jpeg", "jpg", ('.jpg', '.jpeg'))
     log( ft )
 
-# TESTS
+def ramUsers():
+    u = RamUser.fromDict( {
+        'name': "Nico Duf",
+        'shortName': "Duduf",
+        'folderPath': 'C:/Users/Duduf/Ramses/Users/Duduf',
+        'role': 'ADMIN'
+    })
+    log( u )
+    log( u.configPath() )
+
+# === TESTS ===
 
 # ramObjects()
 # ramStates()
 # ramFileTypes()
+# ramUsers()
