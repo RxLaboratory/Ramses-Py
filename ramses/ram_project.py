@@ -558,7 +558,6 @@ class RamProject( RamObject ):
         # Check StepType: Prod (assets + shots)
         if stepType == StepType.PRODUCTION or stepType == StepType.ALL or stepType == StepType.SHOT_PRODUCTION or stepType == StepType.ASSET_PRODUCTION:
             stepsFolderPath = self.prodPath()
-            print(stepsFolderPath)
             if stepsFolderPath != '':
                 for prodFile in os.listdir( stepsFolderPath ):
                     # we keep only the folders
