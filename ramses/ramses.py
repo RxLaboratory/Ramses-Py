@@ -62,7 +62,7 @@ class Ramses( object ):
 
         return cls._instance
 
-    def currentProject(self, path = ''):
+    def currentProject(self):
         from .ram_project import RamProject
         """The current project.
 
@@ -74,8 +74,7 @@ class Ramses( object ):
             # Ask (the daemon returns a dict)
             reply = daemon.getCurrentProject()
             # Check if successful
-            if RamDaemonInterface.checkReply(reply):
-                
+            if RamDaemonInterface.checkReply(reply):     
                 return RamProject.fromDict( reply['content'] )
 
         return None

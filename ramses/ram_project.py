@@ -1,5 +1,4 @@
 import os, re
-from ramses.constants import FolderNames, ItemType
 
 from .daemon_interface import RamDaemonInterface
 from .file_manager import RamFileManager
@@ -11,7 +10,7 @@ from .ram_object import RamObject
 from .ram_asset import RamAsset
 from .ram_shot import RamShot
 from .ram_step import RamStep
-from .constants import StepType
+from .constants import StepType, FolderNames, ItemType
 
 daemon = RamDaemonInterface.instance()
 settings = RamSettings.instance()

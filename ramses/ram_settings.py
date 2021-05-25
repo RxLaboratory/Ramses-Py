@@ -56,7 +56,7 @@ class RamSettings( object ):
             cls.versionPrefixes = ['v','pub'] # The prefixes used in version files which are not states
 
             # API Settings
-            cls.version = version = "0.0.1-dev"
+            cls.version = "0.0.1-dev"
             cls.apiReferenceUrl = "https://ramses-docs.rainboxlab.org/dev/add-ons-reference/"
             cls.addonsHelpUrl = "https://ramses-docs.rainboxlab.org/addons/"
             cls.generalHelpUrl = "https://ramses-docs.rainboxlab.org/"

@@ -68,8 +68,7 @@ class RamItem( RamObject ):
                 '',
                 pathInfo['object'],
                 itemFolder,
-                assetGroup,
-                pathInfo['project']
+                assetGroup
             )
 
         if pathInfo['type'] == ItemType.SHOT:
@@ -77,8 +76,7 @@ class RamItem( RamObject ):
                 '',
                 pathInfo['object'],
                 itemFolder,
-                0.0,
-                pathInfo['project']
+                0.0
             )
 
         log( "The given path does not belong to a shot nor an asset", LogLevel.Debug )
@@ -414,6 +412,10 @@ class RamItem( RamObject ):
             status.user,
             status.stateDate
         )    
+
+    def status(self, step): #TODO
+        """Gets the current status for the given step"""
+        pass
 
     def itemType( self ):
         """Returns the type of the item"""
