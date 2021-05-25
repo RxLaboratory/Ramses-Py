@@ -1,7 +1,7 @@
 import socket, json
 
 from .logger import log
-from .constants import ItemType
+from .constants import ItemType, LogLevel
 
 class RamDaemonInterface( object ):
     """The Class used to communicate with the Ramses Daemon

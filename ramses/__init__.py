@@ -11,3 +11,4 @@ from .ram_item import RamItem
 from .ram_shot import RamShot
 from .ram_asset import RamAsset
 from .ram_project import RamProject
+from .ram_step import RamStep
