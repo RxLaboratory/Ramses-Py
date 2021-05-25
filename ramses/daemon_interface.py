@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import socket, json
 
 from .logger import log

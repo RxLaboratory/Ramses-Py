@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from .ram_object import RamObject
 
 class RamFileType( RamObject ):

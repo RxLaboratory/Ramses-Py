@@ -1,9 +1,12 @@
-import re
+# -*- coding: utf-8 -*-
+
+import os
 from subprocess import Popen, PIPE
 from time import sleep
 
+from .file_manager import RamFileManager
 from .logger import log
-from .constants import LogLevel, Log
+from .constants import FolderNames, LogLevel, Log
 from .daemon_interface import RamDaemonInterface
 from .ram_settings import RamSettings
 
@@ -125,7 +128,7 @@ class Ramses( object ):
         pass
 
     def folderPath(self):
-        """The absolute path to main Ramses folder, containing projects by default,
+        """The absolute path to the main Ramses folder, containing projects by default,
         config files, user folders, admin files…
 
         Returns:
@@ -150,6 +153,30 @@ class Ramses( object ):
         # if offline, get from settings
         self._folderPath = settings.ramsesFolderPath
         return self._folderPath
+
+    def projectsPath(self):
+        """Returns the default path for projects"""
+
+        folderPath = self.folderPath()
+        if folderPath == "":
+            return ""
+
+        return RamFileManager.buildPath((
+            folderPath,
+            FolderNames.projects
+        ))
+
+    def usersPath(self):
+        """Returns the default path for users"""
+
+        folderPath = self.folderPath()
+        if folderPath == "":
+            return ""
+
+        return RamFileManager.buildPath((
+            folderPath,
+            FolderNames.users
+        ))
 
     def connect(self):
         """Checks Daemon availability and initiates the connection. Returns success.
@@ -204,13 +231,39 @@ class Ramses( object ):
                 return project
         return None
 
-    def projects(self):  # TODO
+    def projects(self):
         """The list of available projects.
 
         Returns:
             list of RamProject
         """
-        pass
+        from .ram_project import RamProject
+
+        projects = []
+
+        if not self._offline:
+            reply = daemon.getProjects()
+            if RamDaemonInterface.checkReply(reply):
+                for projectDict in reply['content']['projects']:
+                    projects.append(
+                        RamProject.fromDict( projectDict )
+                    )
+                if len(projects) > 0:
+                    return projects
+
+        projectsPath = self.projectsPath()
+        if projectsPath == "":
+            return []
+
+        for projectName in os.listdir(projectsPath):
+            projectFolder = RamFileManager.buildPath((
+                    projectsPath,
+                    projectName
+                ))
+            print(projectFolder)
+            projects.append( RamProject.fromPath( projectFolder ))
+
+        return projects
 
     def state(self, stateShortName="WIP"):
         """Gets a specific state.

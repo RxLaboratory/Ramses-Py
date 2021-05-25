@@ -1,6 +1,8 @@
 import os
 from datetime import datetime
 
+# -*- coding: utf-8 -*-
+
 from .ramses import Ramses
 from .file_manager import RamFileManager
 from .logger import log

@@ -1,4 +1,6 @@
 class FolderNames():
+    projects = "Projects"
+    users = "Users"
     preview = "_preview"
     versions = "_versions"
     publish = "_published"

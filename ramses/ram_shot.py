@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from .ram_item import RamItem
 from .daemon_interface import RamDaemonInterface
 from .constants import ItemType

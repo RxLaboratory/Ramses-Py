@@ -1,7 +1,8 @@
+# -*- coding: utf-8 -*-
+
 import os, re, shutil
 from datetime import datetime
 
-from .ramses import Ramses
 from .ram_settings import RamSettings
 from .utils import intToStr
 from .logger import log
@@ -450,6 +451,11 @@ class RamFileManager():
     @staticmethod
     def validateName( name ):
         """Checks if the name is valid, respects the Ramses naming scheme"""
+
+        # Accept empty names
+        if name == "":
+            return True
+
         regex = re.compile('^[ a-zA-Z0-9+-]{1,256}$', re.IGNORECASE)
         if re.match(regex, name):
             return True
@@ -583,9 +589,14 @@ class RamFileManager():
 
         # First get information specific to files or innest folder, won't be found in parent folders:
         decomposedName = RamFileManager.decomposeRamsesFileName( name )
-        print(decomposedName)
+        
         if decomposedName is not None:
             blocks = decomposedName
+
+        # If this is a project path, let's just return the project short name
+        if RamFileManager.isProjectFolder(path):
+            blocks['project'] = os.path.basename(path)
+            return blocks
 
         # Move up to the parent folder
         path = os.path.dirname(path)
@@ -642,8 +653,6 @@ class RamFileManager():
             If the file does not match Ramses' naming convention, returns None.
             Else, returns a dictionary made of all the blocks: {"projectId", 'type', 'object', 'step', 'resource', "state", "version", "extension"}
         """
-        if type(ramsesFileName) != str:
-            raise TypeError( "ramsesFileName must be a string." )
 
         splitRamsesName = re.match(RamFileManager._getRamsesNameRegEx(), ramsesFileName)
 
@@ -741,6 +750,8 @@ class RamFileManager():
         'wip002', 'v10', '1002' are version blocks; '002wip', '10v', 'v-10' are not.\n
         Version prefixes consist of all the available states' shortnames ( see Ramses.getStates() ) and some additional prefixes ( see Ramses._versionPrefixes ).
         """
+
+        from .ramses import Ramses
         
         prefixes = settings.versionPrefixes
 

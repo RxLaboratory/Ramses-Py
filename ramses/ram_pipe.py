@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 class RamPipe:
     """A pipe which connects two steps together in the production pipeline.
         The pipe goes from the output step (which exports data into a specific file type)

@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
+
 import os
 
-from ramses.ram_filetype import RamFileType
 from .ram_object import RamObject
 from .ramses import Ramses
 from .logger import log

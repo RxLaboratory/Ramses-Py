@@ -6,6 +6,7 @@ from ramses import (
     RamState,
     RamFileType,
     RamUser,
+    Ramses
     )
 
 settings = RamSettings.instance()
@@ -16,6 +17,11 @@ settings.logLevel = LogLevel.Debug
 testPaths = (
     'C:/Users/Duduf/Ramses/Projects/FPE/02-PROD/FPE_G_MOD',
 )
+
+def ram():
+    projects = Ramses.instance().projects()
+    for p in projects:
+        print( p ) 
 
 def ramObjects():
     o = RamObject("Object Name", "OSN")
@@ -50,3 +56,4 @@ def ramUsers():
 # ramStates()
 # ramFileTypes()
 # ramUsers()
+ram()

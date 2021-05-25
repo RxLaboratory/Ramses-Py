@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 def getDate( e ):
     # Used in RamItem.getStepHistory to sort the list
     return e.date

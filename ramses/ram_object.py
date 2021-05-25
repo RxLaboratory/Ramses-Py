@@ -1,4 +1,6 @@
-class RamObject:
+# -*- coding: utf-8 -*-
+
+class RamObject(object):
     """The base class for most of Ramses objects."""
 
     @staticmethod
