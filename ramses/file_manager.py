@@ -56,7 +56,7 @@ class RamFileManager():
         return False
 
     @staticmethod
-    def isShotStep( stepShortName, shotsPath ):
+    def isShotStep( shotShortName, shotsPath ):
         """Checks the production type of the given step in the shots folder"""
         if os.path.isdir( shotsPath ):
             #  each folder is a shot
@@ -68,7 +68,7 @@ class RamFileManager():
                 for shotFolder in os.listdir( shotPath ):
                     shotInfo = RamFileManager.decomposeRamsesFileName( shotFolder )
                     if shotInfo is not None:
-                        if shotInfo['step'] == stepShortName:
+                        if shotInfo['step'] == shotShortName:
                             return True
         return False
 
