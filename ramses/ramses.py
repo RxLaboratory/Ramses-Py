@@ -245,9 +245,9 @@ class Ramses( object ):
             reply = daemon.getProjects()
             if RamDaemonInterface.checkReply(reply):
                 for projectDict in reply['content']['projects']:
-                    projects.append(
-                        RamProject.fromDict( projectDict )
-                    )
+                    p = RamProject.fromDict( projectDict )
+                    if p is not None:
+                        projects.append( p )
                 if len(projects) > 0:
                     return projects
 
@@ -260,8 +260,9 @@ class Ramses( object ):
                     projectsPath,
                     projectName
                 ))
-            print(projectFolder)
-            projects.append( RamProject.fromPath( projectFolder ))
+            p = RamProject.fromPath( projectFolder )
+            if p is not None:
+                projects.append( p )
 
         return projects
 
