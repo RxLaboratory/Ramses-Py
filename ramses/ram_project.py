@@ -430,9 +430,6 @@ class RamProject( RamObject ):
         Returns:
             RamStep
         """
-        if not isinstance( stepShortName, str ):
-            raise TypeError( "stepShortName must be a str" )
-
         # If we're online, ask the client (return a dict)
         if Ramses.instance().online():
             reply = daemon.getStep( stepShortName )
@@ -550,23 +547,28 @@ class RamProject( RamObject ):
                     preProdFolder = stepsFolderPath + "/" + preProdFile
                     if not os.path.isdir( preProdFolder ):
                         continue
-                    
-                    stepsList.append( RamStep.fromPath( preProdFolder ) )
+                    step = RamStep.fromPath( preProdFolder )
+                    if step is None:
+                        continue
+                    stepsList.append( step )
 
             if stepType == StepType.PRE_PRODUCTION:
                 return stepsList
-
+        
         # Check StepType: Prod (assets + shots)
-        elif stepType == StepType.PRODUCTION or stepType == StepType.ALL or stepType == StepType.SHOT_PRODUCTION or stepType == StepType.ASSET_PRODUCTION:
+        if stepType == StepType.PRODUCTION or stepType == StepType.ALL or stepType == StepType.SHOT_PRODUCTION or stepType == StepType.ASSET_PRODUCTION:
             stepsFolderPath = self.prodPath()
-
+            print(stepsFolderPath)
             if stepsFolderPath != '':
                 for prodFile in os.listdir( stepsFolderPath ):
                     # we keep only the folders
                     prodFolder = stepsFolderPath + "/" + prodFile
                     if not os.path.isdir( prodFolder ):
                         continue
+                    print(prodFolder)
                     step = RamStep.fromPath(prodFolder)
+                    if step is None:
+                        continue
                     foundType = step.stepType()
                     ok = False
                     if stepType == foundType:
@@ -583,6 +585,8 @@ class RamProject( RamObject ):
                         continue
 
                     step = RamStep.fromPath( prodFolder )
+                    if step is None:
+                        continue
                     if not step in stepsList:
                         stepsList.append( step )
             
@@ -604,6 +608,8 @@ class RamProject( RamObject ):
                                 if not os.path.isdir( stepFolder ):
                                     continue
                                 step = RamStep.fromPath( stepFolder )
+                                if step is None:
+                                    continue
                                 if not step in stepsList:
                                     stepsList.append( step )
 
@@ -619,11 +625,13 @@ class RamProject( RamObject ):
                             if not os.path.isdir( stepFolder ):
                                 continue
                             step = RamStep.fromPath( stepFolder )
+                            if step is None:
+                                continue
                             if not step in stepsList:
                                 stepsList.append( step )
 
         # Check StepType: Post-Prod
-        elif stepType == StepType.POST_PRODUCTION or stepType == StepType.ALL:
+        if stepType == StepType.POST_PRODUCTION or stepType == StepType.ALL:
             stepsFolderPath = self.postProdPath()
 
             if stepsFolderPath != '':
@@ -632,8 +640,10 @@ class RamProject( RamObject ):
                     postProdFolder = stepsFolderPath + "/" + postProdFile
                     if not os.path.isdir( postProdFolder ):
                         continue
-                    
-                    stepsList.append( RamStep.fromPath( postProdFolder ) )
+                    step = RamStep.fromPath( postProdFolder )
+                    if step is None:
+                        continue
+                    stepsList.append( step )
 
             if stepType == StepType.POST_PRODUCTION:
                 return stepsList

@@ -21,7 +21,9 @@ testPaths = (
 def ram():
     projects = Ramses.instance().projects()
     for p in projects:
-        print( p ) 
+        print( p )
+        for step in p.steps():
+            print( step )
 
 def ramObjects():
     o = RamObject("Object Name", "OSN")
