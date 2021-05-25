@@ -539,7 +539,8 @@ class RamFileManager():
 
         resource = RamFileManager._fixResourceStr( resource )
 
-        ramsesFileBlocks = (project)
+        ramsesFileBlocks = [ ]
+        ramsesFileBlocks.append(project)
 
         if ramType != '':
             ramsesFileBlocks.append( ramType )
