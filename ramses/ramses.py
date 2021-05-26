@@ -93,7 +93,7 @@ class Ramses( object ):
         # If online, ask the daemon
         if not self._offline:
             # Ask (the daemon returns a dict)
-            reply = self._daemon.getCurrentUser()
+            reply = daemon.getCurrentUser()
 
             # Check if successful
             if RamDaemonInterface.checkReply(reply):
@@ -140,7 +140,7 @@ class Ramses( object ):
 
         if not self._offline:
             # Ask (the daemon returns a dict)
-            replyDict = self._daemon.getRamsesFolderPath()
+            replyDict = daemon.getRamsesFolderPath()
 
             # Check if successful
             if RamDaemonInterface.checkReply(replyDict):
