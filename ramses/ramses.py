@@ -302,7 +302,7 @@ class Ramses( object ):
         from .ram_state import RamState
 
         if len(self._states) > 0:
-            return self.states
+            return self._states
 
         # If online, ask the daemon
         if not self._offline:
