@@ -46,7 +46,7 @@ class Ramses( object ):
             cls._instance = cls.__new__(cls)
             cls._offline = True
             cls._folderPath = ""
-            cls._states = ()
+            cls._states = []
             cls.publishScripts = []
             cls.statusScripts = []
 
