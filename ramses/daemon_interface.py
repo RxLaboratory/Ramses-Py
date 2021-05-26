@@ -14,7 +14,7 @@ class RamDaemonInterface( object ):
         online: bool (read-only).
             True if the Daemon is available
     """
-
+    
     _instance = None
 
     @staticmethod
@@ -328,9 +328,6 @@ class RamDaemonInterface( object ):
         log( query, LogLevel.DataSent)
 
         try: s.connect((self._address, self._port))
-        except ConnectionRefusedError:
-            log("Daemon can't be reached", LogLevel.Debug)
-            return
         except Exception as e:
             log("Daemon can't be reached", LogLevel.Debug)
             log(str(e), LogLevel.Critical)
