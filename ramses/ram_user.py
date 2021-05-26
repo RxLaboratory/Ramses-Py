@@ -34,7 +34,7 @@ class RamUser( RamObject ):
             role (str, optional): (Read-only) enumerated value. Defaults to 'STANDARD'.
                 'ADMIN', 'PROJECT_ADMIN', 'LEAD', or 'STANDARD'
         """
-        super().__init__( userName, userShortName )
+        super(RamUser,self).__init__( userName, userShortName )
         self._folderPath = userFolderPath
         self._role = role
 
