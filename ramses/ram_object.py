@@ -13,15 +13,13 @@ class RamObject(object):
         )
 
     @staticmethod
-    def getObjectShortName( object ):
+    def getObjectShortName( obj ):
         from .file_manager import RamFileManager
 
-        if isinstance( object, str ):
-            shortName = object
-        elif isinstance( object, RamObject ):
-            shortName = object.shortName()
+        if isinstance( obj, RamObject ):
+            shortName = obj.shortName()
         else:
-            raise TypeError( "Object must be a str or an instance of RamObject" )
+            shortName = obj
 
         if not RamFileManager.validateShortName( shortName ):
             raise ValueError("This short name does not respect the Ramses naming scheme: " + shortName)
