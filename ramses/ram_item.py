@@ -92,7 +92,7 @@ class RamItem( RamObject ):
             itemShortName (str)
             itemFolder (str, optional): Defaults to "".
         """
-        super().__init__( itemName, itemShortName )
+        super(RamItem, self).__init__( itemName, itemShortName )
         self._folderPath = itemFolder
         self._itemType = itemType
         self._group = assetGroup
