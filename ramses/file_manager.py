@@ -586,6 +586,7 @@ class RamFileManager():
             "extension": "",
         }
 
+        originalPath = path
         name = os.path.basename( path )
 
         # First get information specific to files or innest folder, won't be found in parent folders:
@@ -631,6 +632,18 @@ class RamFileManager():
             # Move up to the parent folder
             path = os.path.dirname(path)
             name = os.path.basename(path)
+
+        # We really need to find the project. If not found, try to decompose names in files inside the given path
+        if os.path.isdir(originalPath) and blocks['project'] == '':
+            for f in os.listdir(originalPath):
+                if not os.path.isfile(f):
+                    continue
+                fileInfo = RamFileManager.decomposeRamsesFileName( f )
+                if fileInfo['project'] == '':
+                    continue
+                
+                blocks['project'] = fileInfo['project']
+                break
         
         return blocks
 
