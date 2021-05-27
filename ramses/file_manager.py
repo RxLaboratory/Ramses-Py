@@ -738,8 +738,22 @@ class RamFileManager():
         """
         regexStr = RamFileManager._getVersionRegExStr()
 
-        regexStr = '^([a-z0-9+-]{1,10})_(?:([ASG])_([a-z0-9+-]{1,10}))(?:_([a-z0-9+-]{1,10}))?(?:_((?!(?:' + regexStr + ')?[0-9]+)[a-z0-9+\\s-]+))?(?:_(' + regexStr + ')?([0-9]+))?(?:\\.([a-z0-9.]+))?$'
+        regexStr = '^([a-z0-9+-]{1,10})_(?:([ASG])_((?!(?:' + regexStr + ')?[0-9]+)[a-z0-9+-]{1,10}))(?:_((?!(?:' + regexStr + ')?[0-9]+)[a-z0-9+-]{1,10}))?(?:_((?!(?:' + regexStr + ')?[0-9]+)[a-z0-9+\\s-]+))?(?:_(' + regexStr + ')?([0-9]+))?(?:\\.([a-z0-9.]+))?$'
 
+        regex = re.compile(regexStr, re.IGNORECASE)
+        return regex
+
+    @staticmethod
+    def _getVersionRegEx():
+        """Low-leve, undocumented. Builds a Regex to find the version and state in a given file name.
+        group #0 is the underscore + versionblock + extension _v12.abc
+        group #1 is the underscore + versionblock _v12
+        group #2 is the state v (or empty)
+        group #3 is version 12
+        """
+
+        states = RamFileManager._getVersionRegExStr()
+        regexStr = '(?:(_' + states + ')?([0-9]+)))(?:\\.[a-z0-9.]+)?$'
         regex = re.compile(regexStr, re.IGNORECASE)
         return regex
 
@@ -753,10 +767,13 @@ class RamFileManager():
         """
 
         from .ramses import Ramses
+        ramses = Ramses.instance()
         
         prefixes = settings.versionPrefixes
 
-        for state in Ramses.instance().states():
+        states = ramses.states()
+
+        for state in states:
             prefixes.append( state.shortName() )
 
         return '|'.join(prefixes)
