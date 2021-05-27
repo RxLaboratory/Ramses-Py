@@ -495,7 +495,7 @@ class RamProject( RamObject ):
 
         return None
         
-    def steps( self, stepType=StepType.ALL ): # Mutable
+    def steps( self, stepType=StepType.ALL, deepSearch=False ): # Mutable
         """Available steps in this project. Use type to filter the results.
             One of: RamStep.ALL, RamStep.ASSET_PODUCTION, RamStep.SHOT_PRODUCTION, RamStep.PRE_PRODUCTION, RamStep.PRODUCTION, RamStep.POST_PRODUCTION.
             RamStep.PRODUCTION represents a combination of SHOT and ASSET
@@ -590,20 +590,39 @@ class RamProject( RamObject ):
                         stepsList.append( step )
             
             # Check in Assets and Shots
-            if stepType == StepType.ALL or stepType == StepType.PRODUCTION or stepType == StepType.ASSET_PRODUCTION:
-                assetsPath = self.assetsPath()
-                if assetsPath !='':
-                    for groupName in os.listdir( assetsPath ):
-                        groupFolder = assetsPath + "/" + groupName
-                        if not os.path.isdir( groupFolder ):
-                            continue
-
-                        for assetFolderName in os.listdir(groupFolder):
-                            assetFolder = groupFolder + "/" + assetFolderName
-                            if not os.path.isdir( assetFolder ):
+            # If deepSearch only, because this can take a lot of time!
+            if deepSearch:
+                if stepType == StepType.ALL or stepType == StepType.PRODUCTION or stepType == StepType.ASSET_PRODUCTION:
+                    assetsPath = self.assetsPath()
+                    if assetsPath !='':
+                        for groupName in os.listdir( assetsPath ):
+                            groupFolder = assetsPath + "/" + groupName
+                            if not os.path.isdir( groupFolder ):
                                 continue
-                            for stepFolderName in os.listdir(assetFolder):
-                                stepFolder = assetFolder + "/" + stepFolderName
+
+                            for assetFolderName in os.listdir(groupFolder):
+                                assetFolder = groupFolder + "/" + assetFolderName
+                                if not os.path.isdir( assetFolder ):
+                                    continue
+                                for stepFolderName in os.listdir(assetFolder):
+                                    stepFolder = assetFolder + "/" + stepFolderName
+                                    if not os.path.isdir( stepFolder ):
+                                        continue
+                                    step = RamStep.fromPath( stepFolder )
+                                    if step is None:
+                                        continue
+                                    if not step in stepsList:
+                                        stepsList.append( step )
+
+                if stepType == StepType.ALL or stepType == StepType.PRODUCTION or stepType == StepType.SHOT_PRODUCTION:
+                    shotsPath = self.shotsPath()
+                    if shotsPath != '':
+                        for shotName in os.listdir( shotsPath ):
+                            shotFolder = shotsPath + "/" + shotName
+                            if not os.path.isdir( shotFolder ):
+                                continue
+                            for stepFolderName in os.listdir( shotFolder ):
+                                stepFolder = shotFolder + "/" + stepFolderName
                                 if not os.path.isdir( stepFolder ):
                                     continue
                                 step = RamStep.fromPath( stepFolder )
@@ -611,23 +630,6 @@ class RamProject( RamObject ):
                                     continue
                                 if not step in stepsList:
                                     stepsList.append( step )
-
-            if stepType == StepType.ALL or stepType == StepType.PRODUCTION or stepType == StepType.SHOT_PRODUCTION:
-                shotsPath = self.shotsPath()
-                if shotsPath != '':
-                    for shotName in os.listdir( shotsPath ):
-                        shotFolder = shotsPath + "/" + shotName
-                        if not os.path.isdir( shotFolder ):
-                            continue
-                        for stepFolderName in os.listdir( shotFolder ):
-                            stepFolder = shotFolder + "/" + stepFolderName
-                            if not os.path.isdir( stepFolder ):
-                                continue
-                            step = RamStep.fromPath( stepFolder )
-                            if step is None:
-                                continue
-                            if not step in stepsList:
-                                stepsList.append( step )
 
         # Check StepType: Post-Prod
         if stepType == StepType.POST_PRODUCTION or stepType == StepType.ALL:
