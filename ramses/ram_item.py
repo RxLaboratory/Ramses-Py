@@ -121,8 +121,7 @@ class RamItem( RamObject ):
                 return RamStatus.fromDict( replyDict['content'] )
                 
         # If offline
-        currentVersionPath = self.versionFilePath( step, resource )
-
+        currentVersionPath = self.latestVersionFilePath( resource, '', step )
         if currentVersionPath == "":
             log( "There was an error getting the latest version or none was found." )
             return None
@@ -209,9 +208,10 @@ class RamItem( RamObject ):
 
         stepFolderName = RamFileManager.buildRamsesFileName(
             project,
+            step,
+            '',
             self.itemType(),
-            self.shortName,
-            step
+            self.shortName()
         )
 
         return RamFileManager.buildPath((
@@ -331,15 +331,20 @@ class RamItem( RamObject ):
             str
         """
         # Check step, return shortName (str) or "" or raise TypeError:
-        stepFolder = self.stepFolderPath(step )
+        stepFolder = self.stepFolderPath( step )
 
         if stepFolder == '':
             return ''
 
-        return RamFileManager.buildPath(( 
+        versionFolder = RamFileManager.buildPath(( 
             stepFolder,
             FolderNames.versions
             ))
+
+        if not os.path.isdir(versionFolder):
+            os.makedirs( versionFolder )
+        
+        return versionFolder
 
     def latestVersionFilePath( self, resource="", state="", step="" ):
         """Latest version file path
