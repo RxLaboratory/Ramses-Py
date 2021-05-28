@@ -13,3 +13,4 @@ from .ram_asset import RamAsset
 from .ram_project import RamProject
 from .ram_step import RamStep
 from .file_manager import RamFileManager
+from .metadata_manager import RamMetaDataManager

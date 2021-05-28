@@ -7,6 +7,7 @@ from ramses import (
     RamFileType,
     RamUser,
     RamItem,
+    RamMetaDataManager,
     Ramses
     )
 
@@ -64,6 +65,10 @@ def ramItem():
     print(item.latestVersionFilePath())
     print(item.versionFolderPath("Tests"))
 
+def metadata():
+    RamMetaDataManager.setComment(testPaths[1], "Test comment")
+    print( RamMetaDataManager.getComment( testPaths[1] ) )
+
 # === TESTS ===
 
 # ramObjects()
@@ -71,4 +76,5 @@ def ramItem():
 # ramFileTypes()
 # ramUsers()
 # ram()
-ramItem()
+# ramItem()
+metadata()

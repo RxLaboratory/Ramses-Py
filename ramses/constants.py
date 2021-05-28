@@ -14,6 +14,12 @@ class FolderNames():
     shots = "05-SHOTS"
     export = "06-EXPORT"
 
+class FileNames():
+    META_DATA = "_ramses_data.json"
+
+class MetaDataKeys():
+    COMMENT = 'comment'
+
 class ItemType():
     GENERAL='G'
     ASSET='A'
