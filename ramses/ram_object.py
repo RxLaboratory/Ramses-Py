@@ -21,9 +21,6 @@ class RamObject(object):
         else:
             shortName = obj
 
-        if not RamFileManager.validateShortName( shortName ):
-            raise ValueError("This short name does not respect the Ramses naming scheme: " + shortName)
-
         return shortName
 
     def __init__( self, objectName, objectShortName ):
