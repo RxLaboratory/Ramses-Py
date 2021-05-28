@@ -55,11 +55,10 @@ class RamItem( RamObject ):
             itemFolderName = os.path.basename( itemFolder )
             if not RamFileManager._isRamsesItemFoldername( itemFolderName ): # Still wrong: consider it's a general item 
                 return RamItem(
-                    pathInfo['resource'],
                     pathInfo['object'],
+                    pathInfo['step'],
                     saveFolder,
-                    ItemType.GENERAL,
-                    pathInfo['project']
+                    ItemType.GENERAL
                 )
 
         if pathInfo['type'] == ItemType.ASSET: 
@@ -194,10 +193,7 @@ class RamItem( RamObject ):
         step = RamObject.getObjectShortName( step )
 
         folderPath = self.folderPath()
-        if folderPath == "":
-            return ""
-
-        if step == "":
+        if folderPath == "" or step == "" or self.itemType() == ItemType.GENERAL:
             return folderPath
 
         pathInfo = RamFileManager.decomposeRamsesFilePath( folderPath )
