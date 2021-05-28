@@ -126,6 +126,9 @@ class RamFileManager():
         else:
             saveFolder = path
 
+        if saveFolder == "":
+            return ""
+
         if RamFileManager.inReservedFolder( path ):
             saveFolder = os.path.dirname( saveFolder )
 
