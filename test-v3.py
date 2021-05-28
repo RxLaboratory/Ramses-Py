@@ -6,6 +6,7 @@ from ramses import (
     RamState,
     RamFileType,
     RamUser,
+    RamItem,
     Ramses
     )
 
@@ -16,6 +17,7 @@ settings.logLevel = LogLevel.Debug
 
 testPaths = (
     'C:/Users/Duduf/Ramses/Projects/FPE/02-PROD/FPE_G_MOD',
+    'C:/TEMP/MAYA/MAYA_G_Tests.mb'
 )
 
 def ram():
@@ -52,10 +54,21 @@ def ramUsers():
     log( u )
     log( u.configPath() )
 
+def ramItem():
+    item = RamItem.fromPath(testPaths[1])
+    print(item)
+    print(item.currentStatus("Tests"))
+    print(item.itemType())
+    print(item.stepFolderPath("Tests"))
+    print(item.currentStatus())
+    print(item.latestVersionFilePath())
+    print(item.versionFolderPath("Tests"))
+
 # === TESTS ===
 
 # ramObjects()
 # ramStates()
 # ramFileTypes()
 # ramUsers()
-ram()
+# ram()
+ramItem()
