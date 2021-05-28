@@ -362,6 +362,8 @@ class RamItem( RamObject ):
 
         for file in os.listdir( versionFolderPath ):
             fileInfo = RamFileManager.decomposeRamsesFileName( file )
+            if fileInfo is None:
+                continue
             if fileInfo['resource'] == resource:
                 if fileInfo['state'] == state or state == '':
                     if fileInfo['version'] > highestVersion:
