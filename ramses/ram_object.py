@@ -18,6 +18,8 @@ class RamObject(object):
 
         if isinstance( obj, RamObject ):
             shortName = obj.shortName()
+        elif obj is None:
+            return ''
         else:
             shortName = obj
 
