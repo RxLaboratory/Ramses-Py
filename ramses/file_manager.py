@@ -829,4 +829,6 @@ class RamFileManager():
     def _versionFilesSorter( f ):
         fileName = os.path.basename(f)
         d = RamFileManager.decomposeRamsesFileName(fileName)
+        if d is None:
+            return -1
         return d['version']
