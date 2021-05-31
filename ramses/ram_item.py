@@ -80,6 +80,14 @@ class RamItem( RamObject ):
                 0.0
             )
 
+        if pathInfo['type'] == ItemType.GENERAL:
+            return RamItem(
+                pathInfo['object'],
+                pathInfo['step'],
+                saveFolder,
+                ItemType.GENERAL
+            )
+
         log( "The given path does not belong to a shot nor an asset", LogLevel.Debug )
         return None
 
@@ -449,8 +457,17 @@ class RamItem( RamObject ):
             fileInfo = RamFileManager.decomposeRamsesFileName( file )
             if fileInfo is None:
                 continue
-            if fileInfo['project'] != pShortName or fileInfo['step'] != step or fileInfo['object'] != self.shortName() or fileInfo['type'] != self.itemType():
+            if fileInfo['project'] != pShortName:
                 continue
+            itemType = self.itemType()
+            if fileInfo['type'] != itemType:
+                continue
+            if itemType == ItemType.GENERAL:
+                if fileInfo['step'] != self.shortName():
+                    continue
+            else:
+                if fileInfo['step'] != step or fileInfo['object'] != self.shortName():
+                    continue
             if fileInfo['resource'] == resource:
                 files.append(RamFileManager.buildPath((
                     versionFolderPath,
