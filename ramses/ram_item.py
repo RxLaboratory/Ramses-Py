@@ -196,11 +196,7 @@ class RamItem( RamObject ):
         if folderPath == "" or step == "" or self.itemType() == ItemType.GENERAL:
             return folderPath
 
-        pathInfo = RamFileManager.decomposeRamsesFilePath( folderPath )
-        if pathInfo is None:
-            return ""
-
-        project = pathInfo['project']
+        project = self.projectShortName()
 
         stepFolderName = RamFileManager.buildRamsesFileName(
             project,
@@ -217,18 +213,15 @@ class RamItem( RamObject ):
 
     def stepFilePaths( self, step="" ):
         """Returns the step files"""
-        from .ram_project import RamProject
-
         step = RamObject.getObjectShortName( step )
 
         stepFolder = self.stepFolderPath(step)
         if stepFolder == '':
             return []
         
-        project = RamProject.fromPath( stepFolder )
-        if project is None:
+        pShortName = self.projectShortName()
+        if pShortName == '':
             return []
-        pShortName = project.shortName()
 
         files = []
 
@@ -247,18 +240,15 @@ class RamItem( RamObject ):
 
     def stepFilePath(self, resource="", extension="", step="", ):
         """Returns a specific step file"""
-        from .ram_project import RamProject
-
         step = RamObject.getObjectShortName( step )
 
         stepFolder = self.stepFolderPath(step)
         if stepFolder == '':
             return ''
 
-        project = RamProject.fromPath( stepFolder )
-        if project is None:
+        pShortName = self.projectShortName()
+        if pShortName == '':
             return ''
-        pShortName = project.shortName()
 
         fileName = RamFileManager.buildRamsesFileName(
             pShortName,
@@ -269,6 +259,13 @@ class RamItem( RamObject ):
             resource
         )
 
+        filePath = RamFileManager.buildPath((
+            stepFolder,
+            fileName
+        ))
+        if os.path.isfile(filePath):
+            return filePath
+        return ""
 
     def latestVersion( self, resource="", state="", step=""):
         """Returns the highest version number for the given state (wip, pub…) (or all states if empty string).
@@ -434,7 +431,6 @@ class RamItem( RamObject ):
 
     def versionFilePaths( self, resource="", step="" ):
         """Gets all version files for the given resource"""
-        from .ram_project import RamProject
 
         step = RamObject.getObjectShortName( step )
 
@@ -443,10 +439,9 @@ class RamItem( RamObject ):
         if versionFolderPath == '':
             return ''
 
-        project = RamProject.fromPath( versionFolderPath )
-        if project is None:
+        pShortName = self.projectShortName()
+        if pShortName == '':
             return []
-        pShortName = project.shortName()
 
         files = []
 
@@ -518,14 +513,9 @@ class RamItem( RamObject ):
 
     def steps( self ):
         """Returns the steps used by this asset"""
-
-        from .ram_project import RamProject
-
         assetGroup = self.group()
 
-        project = Ramses.instance().currentProject()
-        if project is None:
-            project = RamProject.fromPath( self.folderPath() )
+        project = self.project()
         if project is None:
             return []
 
@@ -559,6 +549,25 @@ class RamItem( RamObject ):
                     stepsList.append( step )
 
         return stepsList
+
+    def project(self):
+        """Returns the project this item belongs to"""
+        from .ram_project import RamProject
+        folderPath = self.folderPath()
+        if folderPath == '':
+            return None
+        return RamProject.fromPath( folderPath )
+
+    def projectShortName(self):
+        """Returns the short name of the project this item belongs to"""
+        folderPath = self.folderPath()
+        if folderPath == '':
+            return ''
+
+        folderInfo = RamFileManager.decomposeRamsesFilePath(folderPath)
+        if folderInfo is None:
+            return ''
+        return folderInfo['project']
 
     # Documented in RamAsset only
     def group( self ): # Immutable
