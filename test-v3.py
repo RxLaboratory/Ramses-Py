@@ -73,6 +73,7 @@ def ramItem():
     print(item)
     if item:
         print(item.stepFilePaths("ANIM"))
+        print(item.versionFilePaths("", "ANIM"))
 
 def metadata():
     RamMetaDataManager.setComment(testPaths[1], "Test comment")

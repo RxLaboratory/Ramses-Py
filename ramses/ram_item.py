@@ -245,6 +245,31 @@ class RamItem( RamObject ):
             )))
         return files
 
+    def stepFilePath(self, resource="", extension="", step="", ):
+        """Returns a specific step file"""
+        from .ram_project import RamProject
+
+        step = RamObject.getObjectShortName( step )
+
+        stepFolder = self.stepFolderPath(step)
+        if stepFolder == '':
+            return ''
+
+        project = RamProject.fromPath( stepFolder )
+        if project is None:
+            return ''
+        pShortName = project.shortName()
+
+        fileName = RamFileManager.buildRamsesFileName(
+            pShortName,
+            step,
+            extension,
+            self.itemType(),
+            self.shortName(),
+            resource
+        )
+
+
     def latestVersion( self, resource="", state="", step=""):
         """Returns the highest version number for the given state (wip, pub…) (or all states if empty string).
 
