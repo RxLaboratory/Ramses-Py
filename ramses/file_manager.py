@@ -588,7 +588,7 @@ class RamFileManager():
             "version": -1,
             "extension": "",
         }
-
+        
         originalPath = path
         name = os.path.basename( path )
 

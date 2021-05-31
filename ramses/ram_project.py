@@ -60,6 +60,14 @@ class RamProject( RamObject ):
         self._width = width
         self._height = height
         self._framerate = framerate
+        # Cache
+        self._adminPath = ''
+        self._preProdPath = ''
+        self._prodPath = ''
+        self._postProdPath = ''
+        self._assetsPath = ''
+        self._shotsPath = ''
+        self._exportPath = ''
 
     def width( self ): #Mutable
         """
@@ -117,8 +125,12 @@ class RamProject( RamObject ):
             relativePath
         ))
 
-    def adminPath( self ):
+    def adminPath( self ): #Immutable
         """Returns the path of the Admin folder (creates it if it does not exist yet)"""
+
+        if self._adminPath != '':
+            return self._adminPath
+
         projectFolder = self.folderPath()
         if not os.path.isdir( projectFolder ):
             return ''
@@ -133,8 +145,12 @@ class RamProject( RamObject ):
         
         return thePath
 
-    def preProdPath( self ):
+    def preProdPath( self ): #Immutable
         """Returns the path of the PreProd folder (creates it if it does not exist yet)"""
+
+        if self._preProdPath != '':
+            return self._preProdPath
+
         projectFolder = self.folderPath()
         if not os.path.isdir( projectFolder ):
             return ''
@@ -149,8 +165,12 @@ class RamProject( RamObject ):
 
         return thePath
 
-    def prodPath( self ):
+    def prodPath( self ): #Immutable
         """Returns the path of the Prod folder (creates it if it does not exist yet)"""
+
+        if self._prodPath != '':
+            return self._prodPath
+
         projectFolder = self.folderPath()
         if not os.path.isdir( projectFolder ):
             return ''
@@ -165,8 +185,12 @@ class RamProject( RamObject ):
 
         return thePath
 
-    def postProdPath( self ):
+    def postProdPath( self ): #Immutable
         """Returns the path of the PostProd folder (creates it if it does not exist yet)"""
+
+        if self._postProdPath != '':
+            return self._postProdPath
+
         projectFolder = self.folderPath()
         if not os.path.isdir( projectFolder ):
             return ''
@@ -181,8 +205,12 @@ class RamProject( RamObject ):
 
         return thePath
 
-    def assetsPath( self ):
+    def assetsPath( self ): #Immutable
         """Returns the path of the Assets folder (creates it if it does not exist yet)"""
+
+        if self._assetsPath != '':
+            return self._assetsPath
+
         projectFolder = self.folderPath()
         if not os.path.isdir( projectFolder ):
             return ''
@@ -197,8 +225,12 @@ class RamProject( RamObject ):
         
         return thePath
 
-    def shotsPath( self ):
+    def shotsPath( self ): #Immutable
         """Returns the path of the Shots folder (creates it if it does not exist yet)"""
+
+        if self._shotsPath != '':
+            return self._shotsPath
+
         projectFolder = self.folderPath()
         if not os.path.isdir( projectFolder ):
             return ''
@@ -213,8 +245,12 @@ class RamProject( RamObject ):
         
         return thePath
 
-    def exportPath( self ):
+    def exportPath( self ): #Immutable
         """Returns the path of the Export folder (creates it if it does not exist yet)"""
+
+        if self._exportPath != '':
+            return self._exportPath
+
         projectFolder = self.folderPath()
         if not os.path.isdir( projectFolder ):
             return ''
@@ -425,7 +461,8 @@ class RamProject( RamObject ):
 
         return foundShots
 
-    def step( self, stepShortName ):
+    # itemType is undocumented: used internally by RamStep.fromPath to improve performance
+    def step( self, stepShortName, itemType='' ):
         """Gets a step with its short name.
 
         Args:
@@ -444,6 +481,7 @@ class RamProject( RamObject ):
         # Build the step folder name to find it
         stepFolderName = RamFileManager.buildRamsesFileName( self.shortName(), stepShortName )
 
+        # Check in Pre Prod
         stepFolderPath = RamFileManager.buildPath((
             self.preProdPath(),
             stepFolderName
@@ -456,6 +494,7 @@ class RamProject( RamObject ):
                     StepType.PRE_PRODUCTION
                 )
 
+        # Check in Post Prod
         stepFolderPath = RamFileManager.buildPath((
             self.postProdPath(),
             stepFolderName
@@ -468,11 +507,30 @@ class RamProject( RamObject ):
                     StepType.POST_PRODUCTION
                 )
 
+        # Check in prod
         stepFolderPath = RamFileManager.buildPath((
             self.prodPath(),
             stepFolderName
             ))
 
+        # If we've got the folder and we already know the type, return
+        if os.path.isdir( stepFolderPath ) and itemType != '' and itemType != 'G':
+            if itemType == ItemType.ASSET:
+                return RamStep(
+                    "",
+                    stepShortName,
+                    stepFolderPath,
+                    StepType.ASSET_PRODUCTION
+                )
+            elif itemType == ItemType.SHOT:
+                return RamStep(
+                    "",
+                    stepShortName,
+                    stepFolderPath,
+                    StepType.SHOT_PRODUCTION
+                )
+
+        # Try to find the type in the assets
         if RamFileManager.isAssetStep( stepShortName, self.assetsPath() ):
             return RamStep(
                 "",
@@ -481,6 +539,7 @@ class RamProject( RamObject ):
                 StepType.ASSET_PRODUCTION
             )
 
+        # Try to find it in the shots
         if RamFileManager.isShotStep( stepShortName, self.shotsPath() ):
             return RamStep(
                 "",
@@ -489,6 +548,7 @@ class RamProject( RamObject ):
                 StepType.SHOT_PRODUCTION
             )
 
+        # Not found, just return as a general production step
         if os.path.isdir( stepFolderPath ):
             return RamStep(
                 "",
@@ -568,7 +628,9 @@ class RamProject( RamObject ):
                     prodFolder = stepsFolderPath + "/" + prodFile
                     if not os.path.isdir( prodFolder ):
                         continue
-                    step = RamStep.fromPath(prodFolder)
+
+                    step = RamStep.fromPath(prodFolder, self)
+
                     if step is None:
                         continue
                     foundType = step.stepType()
@@ -586,9 +648,6 @@ class RamProject( RamObject ):
                     if not ok:
                         continue
 
-                    step = RamStep.fromPath( prodFolder )
-                    if step is None:
-                        continue
                     if not step in stepsList:
                         stepsList.append( step )
             

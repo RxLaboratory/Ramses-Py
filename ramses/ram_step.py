@@ -27,18 +27,21 @@ class RamStep( RamObject ):
         )
         return s
 
+    # project is undocumented and used to improve performance, when called from a RamProject
     @staticmethod
-    def fromPath( path ):
+    def fromPath( path, project=None ):
         """Creates a step from any path, if possible
         by extracting step info from the path"""
         from .ram_project import RamProject
 
-        project = RamProject.fromPath( path )
         if project is None:
-            return None
-        
+            project = RamProject.fromPath( path )
+            if project is None:
+                return None
+
         pathInfo = RamFileManager.decomposeRamsesFilePath( path )
-        return project.step( pathInfo['step'] )
+        # To improve perf, pass other information than just step short name to the method
+        return project.step( pathInfo['step'], pathInfo['type'] )
 
     def __init__( self, stepName, stepShortName, stepFolder='', stepType=StepType.ALL ):
         """     

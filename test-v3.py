@@ -1,3 +1,4 @@
+from time import perf_counter
 from ramses import (
     log,
     LogLevel,
@@ -93,6 +94,19 @@ def project():
     for shot in shots:
         print( shot )
 
+def perfTests():
+    project = ramses.project("FPE")
+
+    for i in range (0,20):
+        tic = perf_counter()
+        steps = project.steps()
+        print(steps)
+        toc = perf_counter()
+
+        print('Iteration ' + str(i) + ' took ' + str(int(toc-tic)) + ' s.')
+
+
+
 # === TESTS ===
 
 # ramObjects()
@@ -100,6 +114,7 @@ def project():
 # ramFileTypes()
 # ramUsers()
 # ram()
-ramItem()
+# ramItem()
 # metadata()
 # project()
+perfTests()
