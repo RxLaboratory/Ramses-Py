@@ -568,7 +568,6 @@ class RamProject( RamObject ):
                     prodFolder = stepsFolderPath + "/" + prodFile
                     if not os.path.isdir( prodFolder ):
                         continue
-                    print(prodFolder)
                     step = RamStep.fromPath(prodFolder)
                     if step is None:
                         continue
