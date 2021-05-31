@@ -215,6 +215,36 @@ class RamItem( RamObject ):
             stepFolderName
         ))
 
+    def stepFilePaths( self, step="" ):
+        """Returns the step files"""
+        from .ram_project import RamProject
+
+        step = RamObject.getObjectShortName( step )
+
+        stepFolder = self.stepFolderPath(step)
+        if stepFolder == '':
+            return []
+        
+        project = RamProject.fromPath( stepFolder )
+        if project is None:
+            return []
+        pShortName = project.shortName()
+
+        files = []
+
+        for file in os.listdir(stepFolder):
+            # check file
+            fileInfo = RamFileManager.decomposeRamsesFileName(file)
+            if fileInfo is None:
+                continue
+            if fileInfo['project'] != pShortName or fileInfo['step'] != step or fileInfo['object'] != self.shortName() or fileInfo['type'] != self.itemType():
+                continue
+            files.append(RamFileManager.buildPath((
+                stepFolder,
+                file
+            )))
+        return files
+
     def latestVersion( self, resource="", state="", step=""):
         """Returns the highest version number for the given state (wip, pub…) (or all states if empty string).
 
@@ -237,6 +267,8 @@ class RamItem( RamObject ):
 
         for file in os.listdir( versionFolder ):
             fileInfo = RamFileManager.decomposeRamsesFileName(file)
+            if fileInfo is None:
+                continue
             if fileInfo['resource'] == resource:
                 if fileInfo['state'] == state or state == "":
                     if fileInfo['version'] > highestVersion:
@@ -374,6 +406,39 @@ class RamItem( RamObject ):
                         ))
 
         return versionFile
+
+    def versionFilePaths( self, resource="", step="" ):
+        """Gets all version files for the given resource"""
+        from .ram_project import RamProject
+
+        step = RamObject.getObjectShortName( step )
+
+        versionFolderPath = self.versionFolderPath(step )
+
+        if versionFolderPath == '':
+            return ''
+
+        project = RamProject.fromPath( versionFolderPath )
+        if project is None:
+            return []
+        pShortName = project.shortName()
+
+        files = []
+
+        for file in os.listdir( versionFolderPath ):
+            fileInfo = RamFileManager.decomposeRamsesFileName( file )
+            if fileInfo is None:
+                continue
+            if fileInfo['project'] != pShortName or fileInfo['step'] != step or fileInfo['object'] != self.shortName() or fileInfo['type'] != self.itemType():
+                continue
+            if fileInfo['resource'] == resource:
+                files.append(RamFileManager.buildPath((
+                    versionFolderPath,
+                    file
+                )))
+
+        files.sort( key = RamFileManager._versionFilesSorter )
+        return files
 
     def isPublished( self, resource="", step="" ):
         """Convenience function to check if there are published files in the publish folder.

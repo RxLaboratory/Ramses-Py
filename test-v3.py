@@ -20,7 +20,8 @@ ramses = Ramses.instance()
 
 testPaths = (
     'C:/Users/Duduf/Ramses/Projects/FPE/02-PROD/FPE_G_MOD',
-    'C:/TEMP/MAYA/MAYA_G_Tests.mb'
+    'C:/TEMP/MAYA/MAYA_G_Tests.mb',
+    'C:/Users/Duduf/Ramses/Projects/FPE/05-SHOTS/FPE_S_001',
 )
 
 def ram():
@@ -60,12 +61,18 @@ def ramUsers():
 def ramItem():
     item = RamItem.fromPath(testPaths[1])
     print(item)
-    print(item.currentStatus("Tests"))
-    print(item.itemType())
-    print(item.stepFolderPath("Tests"))
-    print(item.currentStatus())
-    print(item.latestVersionFilePath())
-    print(item.versionFolderPath("Tests"))
+    if item:
+        print(item.stepFolderPath("Tests"))
+        print(item.currentStatus("Tests"))
+        print(item.itemType())
+        print(item.stepFolderPath("Tests"))
+        print(item.currentStatus())
+        print(item.latestVersionFilePath())
+        print(item.versionFolderPath("Tests"))
+    item = RamItem.fromPath(testPaths[2])
+    print(item)
+    if item:
+        print(item.stepFilePaths("ANIM"))
 
 def metadata():
     RamMetaDataManager.setComment(testPaths[1], "Test comment")
@@ -85,6 +92,6 @@ def project():
 # ramFileTypes()
 # ramUsers()
 # ram()
-# ramItem()
+ramItem()
 # metadata()
-project()
+# project()
