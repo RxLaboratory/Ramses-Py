@@ -14,6 +14,8 @@ from ramses import (
 settings = RamSettings.instance()
 settings.logLevel = LogLevel.Debug
 
+ramses = Ramses.instance()
+
 # daemon = RamDaemonInterface.instance()
 
 testPaths = (
@@ -69,6 +71,13 @@ def metadata():
     RamMetaDataManager.setComment(testPaths[1], "Test comment")
     print( RamMetaDataManager.getComment( testPaths[1] ) )
 
+def project():
+    project = ramses.project("FPE")
+    print(project)
+    shots = project.shots()
+    for shot in shots:
+        print( shot )
+
 # === TESTS ===
 
 # ramObjects()
@@ -77,4 +86,5 @@ def metadata():
 # ramUsers()
 # ram()
 # ramItem()
-metadata()
+# metadata()
+project()

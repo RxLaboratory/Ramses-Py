@@ -382,6 +382,6 @@ class Ramses( object ):
         for script in self.statusScripts:
             script( item, status)
 
-    def import(self, item, step, filePath):
+    def importItem(self, item, step, filePath):
         for script in self.importScripts:
-            script(item, step, filePath)
+            script( item, step, filePath )

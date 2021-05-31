@@ -391,7 +391,9 @@ class RamProject( RamObject ):
                     if useFilter:
                         if not re.match(regex, shotDict['shortName']):
                             continue
-                    shotsList.append( RamShot.fromDict( shotDict ) )
+                    shot = RamShot.fromDict( shotDict )
+                    if shot is not None:
+                        shotsList.append( shot )
 
                 if len(shotsList) > 0:
                     return shotsList
@@ -417,7 +419,9 @@ class RamProject( RamObject ):
             if useFilter:
                 if not re.match( regex, foundShotName ):
                     continue
-            foundShots.append( RamShot.fromPath( foundShotPath ) )
+            shot = RamShot.fromPath( foundShotPath )
+            if shot is not None:
+                foundShots.append( shot )
 
         return foundShots
 
