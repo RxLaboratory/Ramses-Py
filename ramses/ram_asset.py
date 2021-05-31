@@ -39,7 +39,7 @@ class RamAsset( RamItem ):
         Returns:
             RamAsset
         """
-        asset = RamItem.getFromPath( fileOrFolderPath )
+        asset = RamItem.fromPath( fileOrFolderPath )
 
         if not asset:
             return None
