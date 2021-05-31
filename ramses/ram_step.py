@@ -118,8 +118,9 @@ class RamStep( RamObject ):
         if stepFolder == '':
             return ''
 
-        pathInfo = RamFileManager.decomposeRamsesFilePath( stepFolder )
-        projectShortName = pathInfo['project']
+        projectShortName = self.projectShortName()
+        if projectShortName == '':
+            return ''
 
         self._templatesFolder = RamFileManager.buildPath((
             stepFolder,
@@ -135,8 +136,6 @@ class RamStep( RamObject ):
         Returns:
             enumerated value
         """
-
-        from .ram_project import RamProject
 
         if self._type != "":
             return self._type
@@ -166,7 +165,9 @@ class RamStep( RamObject ):
             return self._type
 
         # Get info from the project
-        project = RamProject.fromPath( stepFolder )
+        project = self.project()
+        if project is None:
+            return ''
         
         if RamFileManager.isAssetStep( self.shortName(), project.assetsPath() ):
             self._type = StepType.ASSET_PRODUCTION
@@ -179,3 +180,21 @@ class RamStep( RamObject ):
 
         return ""
 
+    def project(self):
+        """Returns the project this step belongs to"""
+        from .ram_project import RamProject
+        folderPath = self.folderPath()
+        if folderPath == '':
+            return None
+        return RamProject.fromPath( folderPath )
+
+    def projectShortName(self):
+        """Returns the short name of the step this item belongs to"""
+        folderPath = self.folderPath()
+        if folderPath == '':
+            return ''
+
+        folderInfo = RamFileManager.decomposeRamsesFilePath(folderPath)
+        if folderInfo is None:
+            return ''
+        return folderInfo['project']
