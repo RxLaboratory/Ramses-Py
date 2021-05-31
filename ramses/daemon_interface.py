@@ -321,6 +321,8 @@ class RamDaemonInterface( object ):
             None if there is an error or the Daemon is unavailable.
         """
 
+        from .ramses import Ramses
+
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         query = self.__buildQuery( query )
@@ -331,6 +333,8 @@ class RamDaemonInterface( object ):
         except Exception as e:
             log("Daemon can't be reached", LogLevel.Debug)
             log(str(e), LogLevel.Critical)
+            ramses = Ramses.instance()
+            ramses.disconnect()
             return
 
         s.sendall(query.encode('utf-8'))
