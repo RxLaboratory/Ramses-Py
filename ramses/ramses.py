@@ -374,14 +374,14 @@ class Ramses( object ):
         """
         return Ramses._version
 
-    def publish(self, item, filePath, publishFolderPath):
+    def publish(self, item, filePath, step=None):
         for script in self.publishScripts:
-            script(item, filePath, publishFolderPath)
+            script(item, filePath, step)
 
-    def updateStatus(self, item, status):
+    def updateStatus(self, item, status, step=None):
         for script in self.statusScripts:
-            script( item, status)
+            script( item, status, step)
 
-    def importItem(self, item, step, filePath):
+    def importItem(self, item, filePath, step=None):
         for script in self.importScripts:
-            script( item, step, filePath )
+            script( item, filePath, step )

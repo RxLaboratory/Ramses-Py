@@ -23,7 +23,8 @@ testPaths = (
     'C:/Users/Duduf/Ramses/Projects/FPE/02-PROD/FPE_G_MOD',
     'C:/TEMP/MAYA/MAYA_G_Tests.mb',
     'C:/Users/Duduf/Ramses/Projects/FPE/05-SHOTS/FPE_S_001',
-    'C:/Users/Duduf/Ramses/Projects/FPE/04-ASSETS/Characters/FPE_A_TRISTAN/FPE_A_TRISTAN_MOD'
+    'C:/Users/Duduf/Ramses/Projects/FPE/04-ASSETS/Characters/FPE_A_TRISTAN/FPE_A_TRISTAN_MOD',
+    'C:/Users/Duduf/Ramses/Projects/FPE/02-PROD/FPE_G_ANIM/FPE_G_ANIM_Templates/FPE_G_ANIM_Template.mb'
 )
 
 def ram():
@@ -82,6 +83,14 @@ def ramItem():
         print(item.stepFolderPath("RIG"))
         print(item.stepFilePaths("RIG"))
         print(item.versionFilePaths("", "RIG"))
+    item = RamItem.fromPath(testPaths[4])
+    print(item)
+    if item:
+        print(item.itemType())
+        print(item.currentStatus())
+        print(item.latestVersionFilePath())
+        print(item.versionFolderPath())
+        print(item.versionFilePaths())
 
 def metadata():
     RamMetaDataManager.setComment(testPaths[1], "Test comment")
@@ -114,7 +123,7 @@ def perfTests():
 # ramFileTypes()
 # ramUsers()
 # ram()
-# ramItem()
+ramItem()
 # metadata()
 # project()
-perfTests()
+# perfTests()
