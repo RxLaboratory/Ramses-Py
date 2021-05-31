@@ -1,6 +1,6 @@
 from .logger import log
 from .ram_settings import RamSettings
-from .constants import ItemType, Log, LogLevel, StepType
+from .constants import ItemType, Log, LogLevel, StepType, UserRole
 from .ram_object import RamObject
 from .ram_state import RamState
 from .ram_filetype import RamFileType
