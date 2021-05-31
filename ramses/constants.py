@@ -31,6 +31,7 @@ class Log():
     PathNotFound = "The file or folder path could not be found."
     NoProject = "There's no current project. Select a project first."
     StateNotFound = "State not found."
+    NotAnItem = "This file does not seem to be a valid Ramses Item, sorry."
 
 class LogLevel():
     DataReceived = -2
