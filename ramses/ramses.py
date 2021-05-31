@@ -49,6 +49,7 @@ class Ramses( object ):
             cls._states = []
             cls.publishScripts = []
             cls.statusScripts = []
+            cls.importScripts = []
 
             if settings.online:
                 log("I'm trying to contact the Ramses Client.", LogLevel.Info)
@@ -373,10 +374,14 @@ class Ramses( object ):
         """
         return Ramses._version
 
-    def publish(self):
+    def publish(self, item, filePath, publishFolderPath):
         for script in self.publishScripts:
-            script()
+            script(item, filePath, publishFolderPath)
 
-    def updateStatus(self):
+    def updateStatus(self, item, status):
         for script in self.statusScripts:
-            script()
+            script( item, status)
+
+    def import(self, item, filePath):
+        for script in self.importScripts:
+            script(item, filePath)
