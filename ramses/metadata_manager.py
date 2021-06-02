@@ -120,6 +120,7 @@ class RamMetaDataManager():
         
         return data
 
+    @staticmethod
     def setFileMetaData(filePath, fileData):
         """Sets the metadata for the given file using the given dict"""
         folderPath = os.path.dirname(filePath)
