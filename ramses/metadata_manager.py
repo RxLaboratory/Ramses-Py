@@ -11,28 +11,61 @@ class RamMetaDataManager():
     it does not make sens for Ramses to have the same metadata when a file is moved."""
 
     @staticmethod
+    def getValue(filePath, key):
+        """Gets the value of a specific key for the file"""
+        data = RamMetaDataManager.getFileMetaData( filePath )
+        if key in data:
+            return data[key]
+        return None
+
+    @staticmethod
+    def setValue(filePath, key, value):
+        """Sets a value for a specific key for the file"""
+        # file data
+        fileData = RamMetaDataManager.getFileMetaData(filePath)
+        # update comment
+        fileData[key] = value
+        # re-set file data
+        RamMetaDataManager.setFileMetaData( filePath, fileData )
+
+    @staticmethod
+    def getVersionFilePath( filePath ):
+        """Gets the version file for the file"""
+        version = RamMetaDataManager.getValue(filePath, MetaDataKeys.VERSION_FILE)
+        if version is None:
+            return -1
+        return version
+
+    @staticmethod
+    def setVersionFilePath( filePath, versionfilePath ):
+        """Sets a version file for the file"""
+        RamMetaDataManager.setValue(filePath, MetaDataKeys.VERSION_FILE, versionfilePath)
+
+    @staticmethod
+    def getVersion( filePath ):
+        """Gets the version for the file"""
+        version = RamMetaDataManager.getValue(filePath, MetaDataKeys.VERSION)
+        if version is None:
+            return -1
+        return version
+
+    @staticmethod
+    def setVersion( filePath, version ):
+        """Sets a version for the file"""
+        RamMetaDataManager.setValue(filePath, MetaDataKeys.VERSION, version)
+
+    @staticmethod
     def getComment( filePath ):
         """Gets the comment for the file"""
-        data = RamMetaDataManager.getFileMetaData( filePath )
-        if MetaDataKeys.COMMENT in data:
-            return data[MetaDataKeys.COMMENT]
-        return ''
+        comment = RamMetaDataManager.getValue(filePath, MetaDataKeys.COMMENT)
+        if comment is None:
+            return ''
+        return comment
 
     @staticmethod
     def setComment( filePath, comment):
         """Sets a comment for the file"""
-        # folder data
-        data = RamMetaDataManager.getMetaData( filePath )
-        fileName = os.path.basename(filePath)
-        # file data
-        fileData = {}
-        if fileName in data:
-            fileData = data[fileName]
-        # update comment
-        fileData[MetaDataKeys.COMMENT] = comment
-        # set folder data
-        data[fileName] = fileData
-        RamMetaDataManager.setMetaData( filePath, data )
+        RamMetaDataManager.setValue(filePath, MetaDataKeys.COMMENT, comment)
 
     @staticmethod
     def getMetaDataFile( path ):
@@ -58,9 +91,9 @@ class RamMetaDataManager():
         return {}
 
     @staticmethod
-    def getMetaData( path ):
+    def getMetaData( folderPath ):
         """removes metadata for files which don't exist anymore and returns the data"""
-        file = RamMetaDataManager.getMetaDataFile( path )
+        file = RamMetaDataManager.getMetaDataFile( folderPath )
         if not os.path.exists( file ):
             return {}
 
@@ -72,9 +105,9 @@ class RamMetaDataManager():
             except:
                 return {}
 
-        folder = path
-        if os.path.isfile(path):
-            folder = os.path.dirname(path)
+        folder = folderPath
+        if os.path.isfile(folderPath):
+            folder = os.path.dirname(folderPath)
         
         for fileName in dict(data):
             test = RamFileManager.buildPath((
@@ -86,6 +119,14 @@ class RamMetaDataManager():
         
         
         return data
+
+    def setFileMetaData(filePath, fileData):
+        """Sets the metadata for the given file using the given dict"""
+        folderPath = os.path.dirname(filePath)
+        fileName = os.path.basename(filePath)
+        data = RamMetaDataManager.getMetaData( folderPath )
+        data[fileName] = fileData
+        RamMetaDataManager.setMetaData( folderPath, data )
 
     @staticmethod
     def setMetaData( path, data ):

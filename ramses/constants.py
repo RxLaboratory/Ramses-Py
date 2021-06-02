@@ -19,6 +19,8 @@ class FileNames():
 
 class MetaDataKeys():
     COMMENT = 'comment'
+    VERSION = 'version'
+    VERSION_FILE = 'versionFilePath'
 
 class ItemType():
     GENERAL='G'

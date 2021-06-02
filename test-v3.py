@@ -1,3 +1,4 @@
+from ramses.file_manager import RamFileManager
 from time import perf_counter
 from ramses import (
     log,
@@ -24,7 +25,8 @@ testPaths = (
     'C:/TEMP/MAYA/MAYA_G_Tests.mb',
     'C:/Users/Duduf/Ramses/Projects/FPE/05-SHOTS/FPE_S_001',
     'C:/Users/Duduf/Ramses/Projects/FPE/04-ASSETS/Characters/FPE_A_TRISTAN/FPE_A_TRISTAN_MOD',
-    'C:/Users/Duduf/Ramses/Projects/FPE/02-PROD/FPE_G_ANIM/FPE_G_ANIM_Templates/FPE_G_ANIM_Template.mb'
+    'C:/Users/Duduf/Ramses/Projects/FPE/02-PROD/FPE_G_ANIM/FPE_G_ANIM_Templates/FPE_G_ANIM_Template.mb',
+    'D:/SWAP/TEMP/testfile_G_bis.mb',
 )
 
 def ram():
@@ -61,36 +63,20 @@ def ramUsers():
     log( u )
     log( u.configPath() )
 
-def ramItem():
-    item = RamItem.fromPath(testPaths[1])
+def ramItem(pathIndex, step=''):
+    item = RamItem.fromPath(testPaths[pathIndex])
     print(item)
     if item:
-        print(item.stepFolderPath("Tests"))
-        print(item.currentStatus("Tests"))
+        print(item.stepFolderPath(step))
+        print(item.stepFilePaths(step))
+        print(item.currentStatus(step))
         print(item.itemType())
-        print(item.stepFolderPath("Tests"))
+        print(item.stepFolderPath(step))
         print(item.currentStatus())
         print(item.latestVersionFilePath())
-        print(item.versionFolderPath("Tests"))
-    item = RamItem.fromPath(testPaths[2])
-    print(item)
-    if item:
-        print(item.stepFilePaths("ANIM"))
-        print(item.versionFilePaths("", "ANIM"))
-    item = RamItem.fromPath(testPaths[3])
-    print(item)
-    if item:
-        print(item.stepFolderPath("RIG"))
-        print(item.stepFilePaths("RIG"))
-        print(item.versionFilePaths("", "RIG"))
-    item = RamItem.fromPath(testPaths[4])
-    print(item)
-    if item:
-        print(item.itemType())
-        print(item.currentStatus())
-        print(item.latestVersionFilePath())
-        print(item.versionFolderPath())
-        print(item.versionFilePaths())
+        print(item.versionFolderPath(step))
+        print(item.projectShortName())
+
 
 def metadata():
     RamMetaDataManager.setComment(testPaths[1], "Test comment")
@@ -123,7 +109,7 @@ def perfTests():
 # ramFileTypes()
 # ramUsers()
 # ram()
-ramItem()
+ramItem(5)
 # metadata()
 # project()
 # perfTests()
