@@ -554,7 +554,7 @@ class RamFileManager():
         if step != "":
             ramsesFileBlocks.append( step )
 
-        if ramType == ItemType.GENERAL and object != "":
+        if ramType == ItemType.GENERAL and object != "" and object != step:
             ramsesFileBlocks.append( object )
 
         if resource != '':
@@ -637,17 +637,23 @@ class RamFileManager():
             name = os.path.basename(path)
 
         # We really need to find the project. If not found, try to decompose names in files inside the given path
-        if os.path.isdir(originalPath) and blocks['project'] == '':
+        if blocks['project'] == '':
+            if os.path.isfile(originalPath):
+                originalPath = os.path.dirname(originalPath)
+
             for f in os.listdir(originalPath):
-                if not os.path.isfile(f):
+                filePath = RamFileManager.buildPath(( originalPath, f ))
+                if not os.path.isfile(filePath):
                     continue
                 fileInfo = RamFileManager.decomposeRamsesFileName( f )
+                if fileInfo is None:
+                    continue
                 if fileInfo['project'] == '':
                     continue
                 
                 blocks['project'] = fileInfo['project']
                 break
-        
+
         return blocks
 
     @staticmethod
