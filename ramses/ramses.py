@@ -47,6 +47,7 @@ class Ramses( object ):
             cls._offline = True
             cls._folderPath = ""
             cls._states = []
+            cls._currentProject = None
             cls.publishScripts = []
             cls.statusScripts = []
             cls.importScripts = []
@@ -81,7 +82,16 @@ class Ramses( object ):
             if RamDaemonInterface.checkReply(reply):     
                 return RamProject.fromDict( reply['content'] )
 
-        return None
+        return self._currentProject
+
+    def setCurrentProject( self, project ):
+        """Sets the current project (useful if offline)"""
+
+        self._currentProject = project
+
+        if not self._offline:
+            daemon.setCurrentProject( project.shortName() )
+
 
     def currentUser(self):
         from .ram_user import RamUser
