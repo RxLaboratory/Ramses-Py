@@ -366,7 +366,7 @@ class RamItem( RamObject ):
             FolderNames.publish
             ))
 
-    def publishFilePaths( self, resource="", step="" ):
+    def publishFilePaths( self, resource=None, step="" ):
         """Gets the list of file paths in the publish folder.
             Paths are relative to the root of the item folder.
 
@@ -379,7 +379,7 @@ class RamItem( RamObject ):
         """
 
         publishFolderPath = self.publishFolderPath(step)
-        return RamFileManager.getFileWithResource( publishFolderPath, resource)
+        return RamFileManager.getRamsesFiles( publishFolderPath, resource )
 
     def versionFolderPath( self, step="" ): 
         """Path to the version folder relative to the item root folder
