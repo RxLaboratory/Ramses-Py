@@ -1,4 +1,3 @@
-from ramses.file_manager import RamFileManager
 from time import perf_counter
 from ramses import (
     log,
@@ -10,6 +9,7 @@ from ramses import (
     RamUser,
     RamItem,
     RamMetaDataManager,
+    RamFileManager,
     Ramses
     )
 
@@ -77,7 +77,6 @@ def ramItem(pathIndex, step=''):
         print(item.versionFolderPath(step))
         print(item.projectShortName())
 
-
 def metadata():
     RamMetaDataManager.setComment(testPaths[1], "Test comment")
     print( RamMetaDataManager.getComment( testPaths[1] ) )
@@ -89,16 +88,33 @@ def project():
     for shot in shots:
         print( shot )
 
-def perfTests():
-    project = ramses.project("FPE")
-
-    for i in range (0,20):
+def perfTest( method, numIterations=20 ):
+    print('=== Perf Test Begin ===')
+    start = perf_counter()
+    prevIt = 0.0
+    firstIt = 100000.0
+    for i in range (0,numIterations):
         tic = perf_counter()
-        steps = project.steps()
-        print(steps)
+        method()
         toc = perf_counter()
-
-        print('Iteration ' + str(i) + ' took ' + str(int(toc-tic)) + ' s.')
+        it = toc-tic
+        dif = it - prevIt
+        prevIt = it
+        if i == 0:
+            firstIt = it
+        if it < 0.001:
+            print(' > Iteration ' + str(i) + ' is too fast to be measured.')
+            continue
+        # Round
+        it = int(it*1000)/1000.0
+        dif = int( (dif / it)*1000 ) / 10.0
+        print(' > Iteration ' + str(i) + ' took ' + str(it) + 's. (variation: ' + str(dif) + ' %)')
+    end = perf_counter()
+    print('=== Total Time: ' + str(int(end-start)) + ' s.' + " ===")
+    if firstIt > 0.001:
+        endDif = prevIt - firstIt
+        endDifP = int( (endDif / firstIt)*1000 ) / 10.0
+        print('=== Total Variation: ' + str(endDifP) + ' %.' + " ===")
 
 
 
@@ -109,7 +125,13 @@ def perfTests():
 # ramFileTypes()
 # ramUsers()
 # ram()
-ramItem(5)
+# ramItem(5)
 # metadata()
 # project()
-# perfTests()
+
+def testDecompose( ):
+    test = 'FPE_A_TRISTAN_MOD_CleanPub.mb'
+    RamFileManager.decomposeRamsesFileName(test)
+
+# perfTest(testDecompose, 400)
+perfTest(testDecompose, 10000)

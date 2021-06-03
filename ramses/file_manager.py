@@ -14,6 +14,24 @@ settings = RamSettings.instance()
 class RamFileManager():
     """A Class to help managing files using the Ramses naming scheme"""
 
+    # Cache stuff
+    __nameRe = None
+
+    @staticmethod
+    def getRamsesFiles( folderPath ):
+        """Gets all files respecting the Ramses naming scheme in the given folder
+        Returns a list of file paths"""
+        if not os.path.isdir(folderPath):
+            return []
+        files = []
+        for f in os.listdir(folderPath):
+            if RamFileManager.isRamsesName(f):
+                fPath = RamFileManager.buildPath((
+                    folderPath,
+                    f
+                ))
+                files.append(f)
+
     @staticmethod
     def getFileWithResource( folder, resource):
         """returns the list of filepath corresponding to the given resource string contained in the folder"""
@@ -24,6 +42,8 @@ class RamFileManager():
 
         for file in os.listdir( folder ):
             fileInfo = RamFileManager.decomposeRamsesFileName( file )
+            if fileInfo is None:
+                continue
             if fileInfo['resource'] == resource:
                 files.append( RamFileManager.buildPath((
                     folder,
@@ -657,6 +677,14 @@ class RamFileManager():
         return blocks
 
     @staticmethod
+    def isRamsesName( fileName ):
+        """Checks if the filename respects the ramses naming scheme"""
+        fileInfo = RamFileManager.decomposeRamsesFileName( fileName )
+        if fileInfo is None:
+            return False
+        return True
+
+    @staticmethod
     def decomposeRamsesFileName( ramsesFileName ):
         """Used on files that respect Ramses' naming convention: it separates the name into blocks (one block for the project's shortname, one for the step, one for the extension...)
 
@@ -758,11 +786,17 @@ class RamFileManager():
     def _getRamsesNameRegEx():
         """Low-level, undocumented. Used to get a Regex to check if a file matches Ramses' naming convention.
         """
+
+        if RamFileManager.__nameRe is not None:
+            return RamFileManager.__nameRe
+
         regexStr = RamFileManager._getVersionRegExStr()
 
         regexStr = '^([a-z0-9+-]{1,10})_(?:([ASG])_((?!(?:' + regexStr + ')[0-9]+)[a-z0-9+-]{1,10}))(?:_((?!(?:' + regexStr + ')[0-9]+)[a-z0-9+-]{1,10}))?(?:_((?!(?:' + regexStr + ')[0-9]+)[a-z0-9+\\s-]+))?(?:_(' + regexStr + ')?([0-9]+))?(?:\\.([a-z0-9.]+))?$'
 
         regex = re.compile(regexStr, re.IGNORECASE)
+
+        RamFileManager.__nameRe = regex
         return regex
 
     @staticmethod
