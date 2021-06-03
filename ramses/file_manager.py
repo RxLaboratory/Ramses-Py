@@ -18,37 +18,24 @@ class RamFileManager():
     __nameRe = None
 
     @staticmethod
-    def getRamsesFiles( folderPath ):
+    def getRamsesFiles( folderPath, resource = None ):
         """Gets all files respecting the Ramses naming scheme in the given folder
         Returns a list of file paths"""
         if not os.path.isdir(folderPath):
             return []
+
         files = []
+
         for f in os.listdir(folderPath):
             if RamFileManager.isRamsesName(f):
-                fPath = RamFileManager.buildPath((
-                    folderPath,
-                    f
-                ))
-                files.append(f)
-
-    @staticmethod
-    def getFileWithResource( folder, resource):
-        """returns the list of filepath corresponding to the given resource string contained in the folder"""
-        if not os.path.isdir( folder ):
-            return ()
-
-        files = []
-
-        for file in os.listdir( folder ):
-            fileInfo = RamFileManager.decomposeRamsesFileName( file )
-            if fileInfo is None:
-                continue
-            if fileInfo['resource'] == resource:
-                files.append( RamFileManager.buildPath((
-                    folder,
-                    file
-                )))
+                fileInfo = RamFileManager.decomposeRamsesFileName( f )
+                if fileInfo is None:
+                    continue
+                if resource is None or fileInfo['resource'] == resource:
+                    files.append( RamFileManager.buildPath((
+                        folderPath,
+                        f
+                    )))
 
         return files
 
