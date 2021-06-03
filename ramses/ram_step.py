@@ -127,7 +127,33 @@ class RamStep( RamObject ):
             projectShortName + "_G_" + self._shortName + "_" + FolderNames.stepTemplates
         ))
 
+        if not os.path.isdir(self._templatesFolder):
+            os.makedirs(self._templatesFolder)
+
         return self._templatesFolder
+
+    def templatesPublishPath( self ):
+        """The path to the folder where templates are published"""
+        templatesFolderPath = self.templatesFolderPath()
+        if templatesFolderPath == '':
+            return ''
+
+        folder = RamFileManager.buildPath((
+            templatesFolderPath,
+            FolderNames.publish
+        ))
+
+        if not os.path.isdir(folder):
+            os.makedirs(folder)
+
+        return folder
+
+    def templatesPublishFilePaths( self ):
+        templatesPublishPath = self.templatesPublishPath()
+        if templatesPublishPath == '':
+            return []
+
+        return RamFileManager.getRamsesFiles( templatesPublishPath )
 
     def stepType( self ): #Immutable
         """The type of this step, one of StepType.PRE_PRODUCTION, StepType.SHOT_PRODUCTION,
