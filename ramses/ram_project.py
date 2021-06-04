@@ -65,7 +65,7 @@ class RamProject( RamObject ):
         self._preProdPath = ''
         self._prodPath = ''
         self._postProdPath = ''
-        self._assetsPath = ''
+        self._assetsPath = {}
         self._shotsPath = ''
         self._exportPath = ''
 
@@ -205,11 +205,16 @@ class RamProject( RamObject ):
 
         return thePath
 
-    def assetsPath( self ): #Immutable
+    def assetsPath( self, assetGroup='' ): #Immutable
         """Returns the path of the Assets folder (creates it if it does not exist yet)"""
 
-        if self._assetsPath != '':
-            return self._assetsPath
+        groupKey = 'ramsesAssetsPath'
+        if assetGroup != '':
+            groupKey = assetGroup
+
+        if groupKey in self._assetsPath:
+            if self._assetsPath[groupKey] != '':
+                return self._assetsPath[groupKey]
 
         projectFolder = self.folderPath()
         if not os.path.isdir( projectFolder ):
@@ -217,11 +222,14 @@ class RamProject( RamObject ):
 
         thePath = RamFileManager.buildPath((
             projectFolder,
-            settings.folderNames.assets
+            settings.folderNames.assets,
+            assetGroup
         ))
 
         if not os.path.isdir( thePath ):
             os.makedirs( thePath )
+
+        self._assetsPath[groupKey] = thePath
         
         return thePath
 
