@@ -80,18 +80,19 @@ class Ramses( object ):
             reply = daemon.getCurrentProject()
             # Check if successful
             if RamDaemonInterface.checkReply(reply):     
-                return RamProject.fromDict( reply['content'] )
+                return RamProject.fromDict( reply['content'] )  
 
         return self._currentProject
 
     def setCurrentProject( self, project ):
         """Sets the current project (useful if offline)"""
-
+        if project is None:
+            return
+            
         self._currentProject = project
 
         if not self._offline:
             daemon.setCurrentProject( project.shortName() )
-
 
     def currentUser(self):
         from .ram_user import RamUser
