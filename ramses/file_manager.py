@@ -648,6 +648,9 @@ class RamFileManager():
             if os.path.isfile(originalPath):
                 originalPath = os.path.dirname(originalPath)
 
+            if not os.path.isdir( originalPath ):
+                return blocks
+
             for f in os.listdir(originalPath):
                 filePath = RamFileManager.buildPath(( originalPath, f ))
                 if not os.path.isfile(filePath):
