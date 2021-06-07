@@ -128,7 +128,6 @@ class RamItem( RamObject ):
 
         return None
                 
-
     def currentStatus( self, step="", resource="" ):
         """The current status for the given step
 
@@ -636,14 +635,11 @@ class RamItem( RamObject ):
         if self._group != "":
             return self._group
 
-        # If we're online, ask the client (return a dict)
-        if Ramses.instance().online():
-            reply = daemon.getAsset( self._shortName )
-            # check if successful
-            if RamDaemonInterface.checkReply( reply ):
-                self._group = reply['content']['group']
-                if self._group != "":
-                    return self._group
+        # If we're online, ask the client
+        self.__updateFromDaemon()
+
+        if self._group != "":
+            return self._group
 
         # Else, check in the folders
         folderPath = self.folderPath()
