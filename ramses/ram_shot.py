@@ -53,6 +53,21 @@ class RamShot( RamItem ):
         super(RamShot, self).__init__( shotName, shotShortName, shotFolder, ItemType.SHOT )
         self._duration = duration
 
+    def __updateFromDaemon(self):
+        """Updates all info from what we get from the daemon"""
+
+        if not Ramses.instance().online():
+            return None
+
+        replyDict = super(RamShot, self).__updateFromDaemon()
+
+        if replyDict is None:
+            return None
+
+        self._duration = replyDict['content']['duration']
+
+        return replyDict
+
     def duration( self ): # Mutable
         """The shot duration, in seconds
 

@@ -61,6 +61,21 @@ class RamAsset( RamItem ):
         super().__init__( assetName, assetShortName, assetFolder, ItemType.ASSET, assetGroup )
         self._tags = tags
 
+    def __updateFromDaemon(self):
+        """Updates all info from what we get from the daemon"""
+
+        if not Ramses.instance().online():
+            return None
+
+        replyDict = super(RamAsset, self).__updateFromDaemon()
+
+        if replyDict is None:
+            return None
+
+        self._tags = replyDict['content']['tags']
+
+        return replyDict
+
     def tags( self ): # Mutable
         """Some tags describing the asset. An empty list if the Daemon is not available.
 
@@ -68,11 +83,7 @@ class RamAsset( RamItem ):
             list of str
         """
 
-        if Ramses.instance().online():
-            reply = daemon.getAsset( self._shortName )
-            # check if successful
-            if RamDaemonInterface.checkReply( reply ):
-                self._tags = reply['content']['tags']
+        self.__updateFromDaemon()
 
         return self._tags
 
