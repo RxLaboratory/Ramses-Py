@@ -51,6 +51,7 @@ class Ramses( object ):
             cls.publishScripts = []
             cls.statusScripts = []
             cls.importScripts = []
+            cls.userScripts = {}
 
             if settings.online:
                 log("I'm trying to contact the Ramses Client.", LogLevel.Info)
