@@ -53,6 +53,10 @@ class RamStep( RamObject ):
         self._folderPath = stepFolder
         self._type = stepType
         self._templatesFolder = ''
+        self._project = None
+        self._projectShortName = ""
+        self._inputPipes = []
+        self._outputPipes = []
 
     def folderPath( self ): # Immutable
         """The absolute path to the folder containing the common files for this step
@@ -73,7 +77,7 @@ class RamStep( RamObject ):
                 if self._folderPath != '':
                     return self._folderPath
 
-        stepType = self.type()
+        stepType = self.stepType()
 
         if stepType == '' or stepType == StepType.ALL:
             self._folderPath = ''
@@ -102,6 +106,38 @@ class RamStep( RamObject ):
         ) ) # /path/to/ProjectID/02-PROD/ProjectID_G_stepID
 
         return self._folderPath
+
+    def inputPipes( self ): # Immutable
+        if len(self._inputPipes) > 0:
+            return self._inputPipes
+
+        project = self.project()
+        if project is None:
+            return self._outputPipes
+
+        pipes = project.pipes()
+
+        for pipe in pipes:
+            if pipe.inputStepShortName() == self.shortName():
+                self._inputPipes.append(pipe)
+
+        return self._inputPipes
+    
+    def outputPipes( self ): # Immutable
+        if len(self._outputPipes) > 0:
+            return self._outputPipes
+
+        project = self.project()
+        if project is None:
+            return self._outputPipes
+
+        pipes = project.pipes()
+
+        for pipe in pipes:
+            if pipe.outputStepShortName() == self.shortName():
+                self._outputPipes.append(pipe)
+
+        return self._outputPipes
 
     def templatesFolderPath( self ): # Immutable
         """The path to the template files of this step
@@ -206,16 +242,30 @@ class RamStep( RamObject ):
 
         return ""
 
-    def project(self):
+    def project(self): # Immutable
         """Returns the project this step belongs to"""
         from .ram_project import RamProject
+
+        if self._project is not None:
+            return self._project
+
         folderPath = self.folderPath()
         if folderPath == '':
             return None
-        return RamProject.fromPath( folderPath )
 
-    def projectShortName(self):
+        self._project = RamProject.fromPath( folderPath )
+        return self._project
+
+    def projectShortName(self): # Immutable
         """Returns the short name of the step this item belongs to"""
+
+        if self._projectShortName != "":
+            return self._projectShortName
+
+        if self._project is not None:
+            self._projectShortName = self._project.shortName()
+            return self._projectShortName
+
         folderPath = self.folderPath()
         if folderPath == '':
             return ''
@@ -223,4 +273,6 @@ class RamStep( RamObject ):
         folderInfo = RamFileManager.decomposeRamsesFilePath(folderPath)
         if folderInfo is None:
             return ''
-        return folderInfo['project']
+
+        self._projectShortName = folderInfo['project']
+        return self._projectShortName

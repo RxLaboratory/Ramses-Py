@@ -10,7 +10,8 @@ from ramses import (
     RamItem,
     RamMetaDataManager,
     RamFileManager,
-    Ramses
+    Ramses,
+    RamStep
     )
 
 settings = RamSettings.instance()
@@ -133,4 +134,6 @@ def perfTest( method, numIterations=20 ):
 # ramItem(5)
 # metadata()
 project()
+modStep = RamStep('MOD', 'MOD', 'C:/Users/Duduf/Ramses/Projects/FPE/02-PROD/FPE_G_MOD')
+rigStep = RamStep('RIG', 'RIG')
 
