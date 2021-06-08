@@ -108,13 +108,18 @@ class RamDaemonInterface( object ):
 
         pipeFile1 = {}
         pipeFile1['colorSpace'] = ""
-        pipeFile1['shortName'] = "Mesh"
+        pipeFile1['shortName'] = "truc"
         pipeFile1['fileType'] = abcFile
 
         pipeFile2 = {}
         pipeFile2['colorSpace'] = ""
         pipeFile2['shortName'] = "vpShaders"
         pipeFile2['fileType'] = mbFile
+
+        pipeFile3 = {}
+        pipeFile3['colorSpace'] = ""
+        pipeFile3['shortName'] = "rdrShaders"
+        pipeFile3['fileType'] = mbFile
 
         content = {}
         pipes = []
@@ -124,7 +129,13 @@ class RamDaemonInterface( object ):
         pipe1['outputStepShortName'] = 'MOD'
         pipe1['pipeFiles'] = [pipeFile1, pipeFile2]
 
+        pipe2 = {}
+        pipe2['inputStepShortName'] = 'LAY'
+        pipe2['outputStepShortName'] = 'SHADE'
+        pipe2['pipeFiles'] = [pipeFile3]
+
         pipes.append(pipe1)
+        pipes.append(pipe2)
 
         content['pipes'] = pipes
         reply['content'] = content
