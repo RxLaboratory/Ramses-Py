@@ -768,14 +768,14 @@ class RamProject( RamObject ):
         for foundFile in os.listdir( folderPath ):
             # look in subfolder
             if os.path.isdir( folderPath + '/' + foundFile ):
-                assets = self._getAssetsInFolder( folderPath + '/' + foundFile )
+                assets = self._getAssetsInFolder( folderPath + '/' + foundFile, groupName )
                 assetList = assetList + assets
-            else:
-                # Try anyway
-                asset = RamAsset.fromPath( folderPath + '/' + foundFile )
-                if asset is None:
-                    continue
-                if groupName == '' or asset.group() == groupName:
-                    assetList.append( asset )
+            
+            # Get Asset
+            asset = RamAsset.fromPath( folderPath + '/' + foundFile )
+            if asset is None:
+                continue
+            if groupName == '' or asset.group() == groupName:
+                assetList.append( asset )
 
         return removeDuplicateObjectsFromList( assetList )

@@ -94,6 +94,12 @@ def project():
         for pipeFile in pipe.pipeFiles():
             print( pipeFile )
 
+    print( project.assetGroups() )
+    for asset in project.assets( "Characters" ):
+        print( asset )
+        print( asset.itemType() )
+        print( asset.group() )
+
 def perfTest( method, numIterations=20 ):
     print('=== Perf Test Begin ===')
     start = perf_counter()
@@ -134,6 +140,5 @@ def perfTest( method, numIterations=20 ):
 # ramItem(5)
 # metadata()
 project()
-modStep = RamStep('MOD', 'MOD', 'C:/Users/Duduf/Ramses/Projects/FPE/02-PROD/FPE_G_MOD')
-rigStep = RamStep('RIG', 'RIG')
+
 
