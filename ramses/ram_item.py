@@ -103,6 +103,8 @@ class RamItem( RamObject ):
         self._folderPath = itemFolder
         self._itemType = itemType
         self._group = assetGroup
+        self._project = None
+        self._projectShortName = ""
 
     def __updateFromDaemon(self):
         """Updates all info from what we get from the daemon"""
@@ -602,24 +604,40 @@ class RamItem( RamObject ):
 
         return stepsList
 
-    def project(self):
+    def project(self): # Immutable
         """Returns the project this item belongs to"""
         from .ram_project import RamProject
+
+        if self._project is not None:
+            return self._project
+
         folderPath = self.folderPath()
         if folderPath == '':
             return None
-        return RamProject.fromPath( folderPath )
 
-    def projectShortName(self):
+        self._project = RamProject.fromPath( folderPath )
+        return self._project
+
+    def projectShortName(self): # Immutable
         """Returns the short name of the project this item belongs to"""
+
+        if self._projectShortName != "":
+            return self._projectShortName
+
+        if self._project is not None:
+            self._projectShortName = self._project.shortName()
+            return self._projectShortName
+
         folderPath = self.folderPath()
         if folderPath == '':
-            return ''
+            return self._projectShortName
 
         folderInfo = RamFileManager.decomposeRamsesFilePath(folderPath)
         if folderInfo is None:
-            return ''
-        return folderInfo['project']
+            return self._projectShortName
+
+        self._projectShortName = folderInfo['project']
+        return self._projectShortName
 
     # Documented in RamAsset only
     def group( self ): # Immutable
