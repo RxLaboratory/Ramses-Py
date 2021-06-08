@@ -58,7 +58,7 @@ class RamAsset( RamItem ):
             assetGroupName (str)
             tags (list of str)
         """
-        super().__init__( assetName, assetShortName, assetFolder, ItemType.ASSET, assetGroup )
+        super(RamAsset, self).__init__( assetName, assetShortName, assetFolder, ItemType.ASSET, assetGroup )
         self._tags = tags
 
     def __updateFromDaemon(self):
