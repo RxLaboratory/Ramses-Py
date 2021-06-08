@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from .ram_pipefile import RamPipeFile
+
 class RamPipe:
     """A pipe which connects two steps together in the production pipeline.
         The pipe goes from the output step (which exports data into a specific file type)
@@ -9,14 +11,20 @@ class RamPipe:
     def fromDict( pipeDict ):
         """Builds a RamPipe from dict like the ones returned by the RamDaemonInterface"""
 
+        pipeFiles = []
+
+        for pipe in pipeDict['pipeFiles']:
+            pipeFiles.append(
+                RamPipeFile.fromDict(pipe)
+            )
+
         return RamPipe(
             pipeDict['inputStepShortName'],
             pipeDict['outputStepShortName'],
-            pipeDict['fileType'],
-            pipeDict['colorSpace']
+            pipeFiles
         )
 
-    def __init__( self, inputStepShortName, outputStepShortName, fileType='', colorSpace='' ):
+    def __init__( self, inputStepShortName, outputStepShortName, pipeFiles ):
         """
 
         Args:
@@ -27,8 +35,7 @@ class RamPipe:
         """
         self._inputStepShortName = inputStepShortName
         self._outputStepShortName = outputStepShortName
-        self._fileType = fileType
-        self._colorSpace = colorSpace
+        self._pipeFiles = pipeFiles
 
     def inputStepShortName( self ):
         """The short name of the input step
@@ -46,18 +53,5 @@ class RamPipe:
         """
         return self._outputStepShortName
 
-    def fileType( self ):
-        """The file type used through the pipe
-
-        Returns:
-            str
-        """
-        return self._fileType
-
-    def colorSpace( self ):
-        """The color space used through the pipe
-
-        Returns:
-            str
-        """
-        return self._colorSpace
+    def pipeFiles( self ):
+        return self._pipeFiles

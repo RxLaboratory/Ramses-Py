@@ -1,4 +1,4 @@
-from time import perf_counter
+# from time import perf_counter
 from ramses import (
     log,
     LogLevel,
@@ -88,6 +88,11 @@ def project():
     for shot in shots:
         print( shot )
 
+    pipes = project.pipes()
+    for pipe in pipes:
+        for pipeFile in pipe.pipeFiles():
+            print( pipeFile )
+
 def perfTest( method, numIterations=20 ):
     print('=== Perf Test Begin ===')
     start = perf_counter()
@@ -127,11 +132,5 @@ def perfTest( method, numIterations=20 ):
 # ram()
 # ramItem(5)
 # metadata()
-# project()
+project()
 
-def testDecompose( ):
-    test = 'FPE_A_TRISTAN_MOD_CleanPub.mb'
-    RamFileManager.decomposeRamsesFileName(test)
-
-# perfTest(testDecompose, 400)
-perfTest(testDecompose, 10000)

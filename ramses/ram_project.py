@@ -12,6 +12,7 @@ from .ram_object import RamObject
 from .ram_asset import RamAsset
 from .ram_shot import RamShot
 from .ram_step import RamStep
+from .ram_pipe import RamPipe
 from .constants import StepType, FolderNames, ItemType
 
 daemon = RamDaemonInterface.instance()
@@ -68,6 +69,7 @@ class RamProject( RamObject ):
         self._assetsPath = {}
         self._shotsPath = ''
         self._exportPath = ''
+        self._pipes = []
 
     def width( self ): #Mutable
         """
@@ -721,35 +723,31 @@ class RamProject( RamObject ):
 
         return stepsList
 
-    def inputPipes( self, inputStepShortName ): #TODO
-        """Gets all pipes using this step as input
-
-        Args:
-            inputStepShortName (str)
-
-        Returns:
-            list of RamPipe
-        """
-        pass
-
-    def outputPipes( self, outputStepShortName ):#TODO
-        """Gets all pipes using this step as output
-
-        Args:
-            outputStepShortName (str)
-
-        Returns:
-            list of RamPipe
-        """
-        pass
-
-    def pipes( self ): #TODO
+    def pipes( self ): #immutable
         """Available pipes in this project
 
         Returns:
             list of RamPipe
         """
-        pass
+
+        if len(self._pipes) > 0:
+            return self._pipes
+
+        # If we're online, ask the client
+        # DEV let's do it every time, just waiting for the implementation on the client side
+        #if Ramses.instance().online():
+        reply = daemon.getPipes()
+        # check if successful
+        if RamDaemonInterface.checkReply( reply ):
+            pipesDict = reply['content']['pipes']
+            for pipeDict in pipesDict:
+                self._pipes.append(
+                    RamPipe.fromDict( pipeDict )
+                )
+        
+        # note: any way to define pipes offline ?
+
+        return self._pipes
 
     def folderPath( self ): # Immutable
         if self._folderPath != '':
