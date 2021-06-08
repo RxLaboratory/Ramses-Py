@@ -321,6 +321,7 @@ class RamItem( RamObject ):
         """
 
         state = RamObject.getObjectShortName(state)
+        step = RamObject.getObjectShortName(step)
 
         highestVersion = -1
        
@@ -449,6 +450,9 @@ class RamItem( RamObject ):
         Returns:
             str
         """
+
+        step = RamObject.getObjectShortName(step)
+
         versionFolderPath = self.versionFolderPath(step )
 
         if versionFolderPath == '':
