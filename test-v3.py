@@ -1,3 +1,4 @@
+import os
 # from time import perf_counter
 from ramses import (
     log,
@@ -28,6 +29,7 @@ testPaths = (
     'C:/Users/Duduf/Ramses/Projects/FPE/04-ASSETS/Characters/FPE_A_TRISTAN/FPE_A_TRISTAN_MOD',
     'C:/Users/Duduf/Ramses/Projects/FPE/02-PROD/FPE_G_ANIM/FPE_G_ANIM_Templates/FPE_G_ANIM_Template.mb',
     'D:/SWAP/TEMP/testfile_G_bis.mb',
+    'C:/Users/Rainbox/Ramses/Projects/FPE/04-ASSETS/Characters/FPE_A_TRISTAN/FPE_A_TRISTAN_MOD/_published',
 )
 
 def ram():
@@ -88,17 +90,18 @@ def project():
     shots = project.shots()
     for shot in shots:
         print( shot )
-
-    pipes = project.pipes()
-    for pipe in pipes:
-        for pipeFile in pipe.pipeFiles():
-            print( pipeFile )
-
+    
     print( project.assetGroups() )
+
     for asset in project.assets( ):
         print( asset )
         print( asset.itemType() )
         print( asset.group() )
+
+    pipes = project.pipes()
+    for pipe in pipes:
+        for pipeFile in pipe.pipeFiles():
+            print( pipeFile.getFiles( testPaths[6] ) )
 
 def perfTest( method, numIterations=20 ):
     print('=== Perf Test Begin ===')

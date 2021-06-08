@@ -108,7 +108,7 @@ class RamDaemonInterface( object ):
 
         pipeFile1 = {}
         pipeFile1['colorSpace'] = ""
-        pipeFile1['shortName'] = "truc"
+        pipeFile1['shortName'] = "Geometry"
         pipeFile1['fileType'] = abcFile
 
         pipeFile2 = {}
