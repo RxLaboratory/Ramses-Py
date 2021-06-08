@@ -35,12 +35,6 @@ class RamObject(object):
 
         from .file_manager import RamFileManager
 
-        # Validate name & short name
-        if not RamFileManager.validateName( objectName ):
-            raise ValueError("This name does not respect the Ramses naming scheme: " + objectName)
-        if not RamFileManager.validateShortName( objectShortName ):
-            raise ValueError("This short name does not respect the Ramses naming scheme: " + objectShortName)
-
         self._name = objectName
         self._shortName = objectShortName
     
