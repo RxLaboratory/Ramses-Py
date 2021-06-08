@@ -95,7 +95,7 @@ def project():
             print( pipeFile )
 
     print( project.assetGroups() )
-    for asset in project.assets( "Characters" ):
+    for asset in project.assets( ):
         print( asset )
         print( asset.itemType() )
         print( asset.group() )

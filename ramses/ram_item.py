@@ -247,10 +247,15 @@ class RamItem( RamObject ):
             self.shortName()
         )
 
-        return RamFileManager.buildPath((
+        stepFolderPath = RamFileManager.buildPath((
             folderPath,
             stepFolderName
         ))
+
+        if not os.path.isdir(stepFolderPath):
+            os.makedirs( stepFolderPath )
+
+        return stepFolderPath
 
     def stepFilePaths( self, step="" ):
         """Returns the step files"""
