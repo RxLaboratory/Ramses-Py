@@ -89,59 +89,6 @@ class RamDaemonInterface( object ):
         Returns: dict.
         """
 
-        # TODO Temp, return a default for testing
-        reply = {}
-        reply['accepted'] = True
-        reply['query'] = 'getPipes'
-        reply['success'] = True
-        reply['message'] = 'Pipeline retrieved'
-
-        mbFile = {}
-        mbFile['name'] = "Maya Binary"
-        mbFile['shortName'] = "mb"
-        mbFile['extensions'] = ["mb"]
-
-        abcFile = {}
-        abcFile['name'] = "Alembic"
-        abcFile['shortName'] = "abc"
-        abcFile['extensions'] = ["abc"]
-
-        pipeFile1 = {}
-        pipeFile1['colorSpace'] = ""
-        pipeFile1['shortName'] = "Geometry"
-        pipeFile1['fileType'] = abcFile
-
-        pipeFile2 = {}
-        pipeFile2['colorSpace'] = ""
-        pipeFile2['shortName'] = "vpShaders"
-        pipeFile2['fileType'] = mbFile
-
-        pipeFile3 = {}
-        pipeFile3['colorSpace'] = ""
-        pipeFile3['shortName'] = "rdrShaders"
-        pipeFile3['fileType'] = mbFile
-
-        content = {}
-        pipes = []
-
-        pipe1 = {}
-        pipe1['inputStepShortName'] = 'RIG'
-        pipe1['outputStepShortName'] = 'MOD'
-        pipe1['pipeFiles'] = [pipeFile1, pipeFile2]
-
-        pipe2 = {}
-        pipe2['inputStepShortName'] = 'LAY'
-        pipe2['outputStepShortName'] = 'SHADE'
-        pipe2['pipeFiles'] = [pipeFile3]
-
-        pipes.append(pipe1)
-        pipes.append(pipe2)
-
-        content['pipes'] = pipes
-        reply['content'] = content
-
-        return reply
-
         if not self.__checkUser(): return self.__noUserReply('getPipes')
         return self.__post( "getPipes", 1048576 )
 
