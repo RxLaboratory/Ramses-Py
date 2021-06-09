@@ -4,6 +4,8 @@ from .constants import ItemType, Log, LogLevel, StepType, UserRole
 from .ram_object import RamObject
 from .ram_state import RamState
 from .ram_filetype import RamFileType
+from .ram_pipe import RamPipe
+from .ram_pipefile import RamPipeFile
 from .ram_user import RamUser
 from .ram_status import RamStatus
 from .ramses import Ramses
