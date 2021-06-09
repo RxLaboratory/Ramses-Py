@@ -138,6 +138,9 @@ class RamFileManager():
         if fileInfo is None:
             return ""
 
+        if fileInfo['type'] == '':
+            return ""
+
         if os.path.isfile( path ):
             saveFolder = os.path.dirname( path )
         else:
@@ -306,8 +309,9 @@ class RamFileManager():
         # Check File Name
         fileName = os.path.basename( filePath )
         decomposedFileName = RamFileManager.decomposeRamsesFileName( fileName )
-        if not decomposedFileName:
+        if decomposedFileName is None:
             log( Log.MalformedName, LogLevel.Critical )
+            return ''
 
         # Get versions
         versionsFolder = RamFileManager.getVersionFolder( filePath )
