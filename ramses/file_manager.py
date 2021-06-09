@@ -120,6 +120,16 @@ class RamFileManager():
         return False
 
     @staticmethod
+    def isRestoredFilePath( filePath ):
+        fileName = os.path.basename(filePath)
+        fileInfo = RamFileManager.decomposeRamsesFileName( fileName )
+        if fileInfo is None:
+            return False
+        if re.match( '\+restored-v\d+\+', fileInfo['resource']):
+            return True
+        return False
+
+    @staticmethod
     def getSaveFilePath( path ):
         """Gets the save path for an existing file.
         This path is not the same as the file path if the file path is located in the versions/preview/publish subfolder"""
@@ -314,7 +324,7 @@ class RamFileManager():
 
             decomposedFoundFile = RamFileManager.decomposeRamsesFileName(foundFile)
 
-            if decomposedFoundFile == None:
+            if decomposedFoundFile is None:
                 continue
             if decomposedFoundFile['project'] != decomposedFileName['project']:
                 continue
