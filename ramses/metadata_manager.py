@@ -19,6 +19,18 @@ class RamMetaDataManager():
         return None
 
     @staticmethod
+    def getPipeType(filePath):
+        pipeType = RamMetaDataManager.getValue(filePath, MetaDataKeys.PIPE_TYPE)
+        if pipeType is None:
+            return ''
+        return pipeType
+
+    @staticmethod
+    def setPipeType(filePath, pipeType):
+        print (pipeType)
+        RamMetaDataManager.setValue(filePath, MetaDataKeys.PIPE_TYPE, pipeType)
+
+    @staticmethod
     def setValue(filePath, key, value):
         """Sets a value for a specific key for the file"""
         # file data

@@ -5,6 +5,7 @@ from .file_manager import RamFileManager
 
 from .ram_object import RamObject
 from .ram_filetype import RamFileType
+from .metadata_manager import RamMetaDataManager
 
 class RamPipeFile( RamObject ):
     """A file which goes through a RamPipe."""
@@ -38,7 +39,14 @@ class RamPipeFile( RamObject ):
         if not self._fileType.check( filePath ):
             return False 
 
-        # And have the short name in the resource
+        # Have the type in the metadata
+        pipeType = RamMetaDataManager.getPipeType( filePath )
+        if pipeType == self.shortName():
+            return True
+        elif pipeType != '':
+            return False
+
+        # Or have the short name in the resource
         fileBlocks = filePath.split('.')[-2]
         if not fileBlocks.endswith(self.shortName()):
             return False
@@ -53,10 +61,11 @@ class RamPipeFile( RamObject ):
         files = []
 
         for file in os.listdir(folderPath):
-            if self.check( file ):
-                files.append( RamFileManager.buildPath((
-                    folderPath,
-                    file
-                )))
+            filePath = RamFileManager.buildPath((
+                folderPath,
+                file
+            ))
+            if self.check( filePath ):
+                files.append( filePath )
 
         return files

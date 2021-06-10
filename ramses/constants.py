@@ -21,6 +21,7 @@ class MetaDataKeys():
     COMMENT = 'comment'
     VERSION = 'version'
     VERSION_FILE = 'versionFilePath'
+    PIPE_TYPE = 'pipeFileShortName'
 
 class ItemType():
     GENERAL='G'
