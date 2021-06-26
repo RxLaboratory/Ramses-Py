@@ -573,7 +573,7 @@ class RamItem( RamObject ):
             status.completionRatio,
             status.version,
             status.user,
-            status.stateDate
+            status.date
         )    
 
     def status(self, step): #TODO

@@ -264,10 +264,10 @@ class RamDaemonInterface( object ):
         ]
 
         if completionRatio >= 0:
-            args.append( ('completionRatio', completionRatio ) )
+            args.append( ('completionRatio', str(completionRatio) ) )
         
         if version > 0:
-            args.append(( 'version', version ) )
+            args.append(( 'version', str(version) ) )
         
         if user is not None:
             args.append(('user', user.shortName()))

@@ -48,8 +48,6 @@ class RamStatus:
         # Get User
         if user is None:
             user = Ramses.instance().currentUser()
-            if user is not None:
-                user = user.shortName()
         self.user = user
 
         if stateDate is None:
