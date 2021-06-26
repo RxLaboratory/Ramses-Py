@@ -363,10 +363,15 @@ class RamItem( RamObject ):
         if stepFolder == '':
             return ''
 
-        return RamFileManager.buildPath(( 
+        previewFolder = RamFileManager.buildPath(( 
             stepFolder,
             FolderNames.preview
             ))
+
+        if not os.path.isdir(previewFolder):
+            os.makedirs(previewFolder)
+
+        return previewFolder
 
     def previewFilePaths( self, resource="", step=""):
         """Gets the list of file paths in the preview folder.
@@ -400,10 +405,15 @@ class RamItem( RamObject ):
         if stepFolder == '':
             return ''
 
-        return RamFileManager.buildPath(( 
+        publishFolder = RamFileManager.buildPath(( 
             stepFolder,
             FolderNames.publish
             ))
+
+        if not os.path.isdir(publishFolder):
+            os.makedirs(publishFolder)
+
+        return publishFolder
 
     def publishFilePaths( self, resource=None, step="" ):
         """Gets the list of file paths in the publish folder.
