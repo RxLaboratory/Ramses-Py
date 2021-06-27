@@ -197,6 +197,7 @@ class RamFileManager():
     @staticmethod
     def copyToPublish( filePath ):
         """Copies the given file to its corresponding publish folder"""
+        from ramses.metadata_manager import RamMetaDataManager
 
         if not os.path.isfile( filePath ):
             raise Exception( "Missing File: Cannot publish a file which does not exists: " + filePath )
@@ -226,6 +227,7 @@ class RamFileManager():
             newFileName
         ))
         shutil.copy2( filePath, newFilePath )
+        RamMetaDataManager.appendHistoryDate( newFilePath )
         return newFilePath
 
     @staticmethod
@@ -233,6 +235,7 @@ class RamFileManager():
         """Copies and increments a file into the version folder
         
         Returns the filePath of the new file version"""
+        from ramses.metadata_manager import RamMetaDataManager
 
         if not os.path.isfile( filePath ):
             raise Exception( "Missing File: Cannot increment a file which does not exists: " + filePath )
@@ -275,6 +278,7 @@ class RamFileManager():
 
         newFilePath = versionsFolder + '/' + newFileName
         shutil.copy2( filePath, newFilePath )
+        RamMetaDataManager.appendHistoryDate( newFilePath )
         return newFilePath
 
     @staticmethod

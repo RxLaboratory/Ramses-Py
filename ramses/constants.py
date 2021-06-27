@@ -22,6 +22,7 @@ class MetaDataKeys():
     VERSION = 'version'
     VERSION_FILE = 'versionFilePath'
     PIPE_TYPE = 'pipeFileShortName'
+    MODIFICATION_HISTORY = 'history'
 
 class ItemType():
     GENERAL='G'

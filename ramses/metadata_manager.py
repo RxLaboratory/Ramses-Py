@@ -1,4 +1,5 @@
-import os, json
+import os, json, time
+from datetime import datetime
 
 from .file_manager import RamFileManager
 from .constants import FileNames, MetaDataKeys
@@ -9,6 +10,16 @@ class RamMetaDataManager():
     Ramses will use a single sidecar file in the folder where the file is contained;
     thus the metadata used by Ramses is set on a per-folder basis, and is not copied when a file is copied/moved:
     it does not make sens for Ramses to have the same metadata when a file is moved."""
+
+    @staticmethod
+    def appendHistoryDate(filePath):
+        """Sets a new entry in the modification history"""
+        history = RamMetaDataManager.getValue(filePath, MetaDataKeys.MODIFICATION_HISTORY)
+        if history is None:
+            history = []
+        timeStamp = time.mktime( datetime.now().timetuple() )
+        history.append( int(timeStamp) )
+        RamMetaDataManager.setValue(filePath, MetaDataKeys.MODIFICATION_HISTORY, history)
 
     @staticmethod
     def getValue(filePath, key):
