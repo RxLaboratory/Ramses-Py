@@ -566,6 +566,10 @@ class RamItem( RamObject ):
         if self.itemType() == ItemType.GENERAL:
             return
 
+        step = RamObject.getObjectShortName( step )
+        if step == "":
+            return
+
         daemon.setStatus(
             self.shortName(),
             self.name(),
@@ -575,8 +579,8 @@ class RamItem( RamObject ):
             status.comment,
             status.completionRatio,
             status.version,
-            status.user,
-            status.date
+            status.published,
+            status.user
         )    
 
     def status(self, step): #TODO

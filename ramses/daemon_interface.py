@@ -245,13 +245,18 @@ class RamDaemonInterface( object ):
             ('type', itemType)
             ), 1024 )
 
-    def setStatus(self, itemShortName, itemName, step, itemType=ItemType.SHOT, state="", comment="", completionRatio=-1, version=0, user=None, stateDate=None):
+    def setStatus(self, itemShortName, itemName, step, itemType=ItemType.SHOT, state="", comment="", completionRatio=-1, version=0, published=False, user=None):
         """Sets the current status of an item for a specific step
 
         Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
         
         Returns: list
         """
+
+        if published:
+            published = "1"
+        else:
+            published = "0"
 
         args = [
             "setStatus",
@@ -261,6 +266,7 @@ class RamDaemonInterface( object ):
             ('type', itemType),
             ('state', state),
             ('comment', comment),
+            ('published', published)
         ]
 
         if completionRatio >= 0:
@@ -271,9 +277,6 @@ class RamDaemonInterface( object ):
         
         if user is not None:
             args.append(('user', user.shortName()))
-
-        if stateDate is not None:
-            args.append(('date', stateDate.strftime('%Y-%m-%d %H:%M:%S')))
 
 
         return self.__post( args, 0 )

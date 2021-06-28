@@ -56,6 +56,8 @@ class RamStatus:
             stateDate = datetime.strptime(stateDate, '%Y-%m-%d %H:%M:%S')
         self.date = stateDate
 
+        self.published = False
+
     @staticmethod
     def fromPath( filePath ):
         from .ram_asset import RamAsset
