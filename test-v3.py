@@ -30,6 +30,7 @@ testPaths = (
     'C:/Users/Duduf/Ramses/Projects/FPE/02-PROD/FPE_G_ANIM/FPE_G_ANIM_Templates/FPE_G_ANIM_Template.mb',
     'D:/SWAP/TEMP/testfile_G_bis.mb',
     'C:/Users/Rainbox/Ramses/Projects/FPE/04-ASSETS/Characters/FPE_A_TRISTAN/FPE_A_TRISTAN_MOD/_published',
+    'C:/Users/Duduf/Ramses/Projects/EXPLE/04-ASSETS/Characters/EXPLE_A_ISEULT/EXPLE_A_ISEULT_CD',
 )
 
 def ram():
@@ -140,8 +141,8 @@ def perfTest( method, numIterations=20 ):
 # ramFileTypes()
 # ramUsers()
 # ram()
-# ramItem(5)
+ramItem(7, "CD")
 # metadata()
-project()
+# project()
 
 

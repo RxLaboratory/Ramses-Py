@@ -145,11 +145,14 @@ class RamItem( RamObject ):
 
         # Check step, return shortName (str) or "" or raise TypeError:
         step = RamObject.getObjectShortName( step )
+        if step == "":
+            return RamStatus(Ramses.instance().defaultState)
 
         # If we're online, ask the client (return a dict)
         if Ramses.instance().online():
-            replyDict = daemon.getCurrentStatus( self._shortName, self._name, step )
+            replyDict = daemon.getCurrentStatus( self._shortName, self._name, step, self._itemType )
             # check if successful
+            print(replyDict)
             if daemon.checkReply( replyDict ):
                 return RamStatus.fromDict( replyDict['content'] )
                 
