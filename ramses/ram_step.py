@@ -160,7 +160,7 @@ class RamStep( RamObject ):
 
         self._templatesFolder = RamFileManager.buildPath((
             stepFolder,
-            projectShortName + "_G_" + self._shortName + "_" + FolderNames.stepTemplates
+            FolderNames.stepTemplates
         ))
 
         if not os.path.isdir(self._templatesFolder):
