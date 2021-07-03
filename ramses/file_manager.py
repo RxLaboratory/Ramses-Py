@@ -199,6 +199,18 @@ class RamFileManager():
         """Copies the given file to its corresponding publish folder"""
         from ramses.metadata_manager import RamMetaDataManager
 
+        newFilePath = RamFileManager.getPublishPath( filePath )
+        if newFilePath == "":
+            return
+        shutil.copy2( filePath, newFilePath )
+        RamMetaDataManager.appendHistoryDate( newFilePath )
+        return newFilePath
+
+    @staticmethod
+    def getPublishPath( filePath ):
+        """Copies the given file to its corresponding publish folder"""
+        from ramses.metadata_manager import RamMetaDataManager
+
         if not os.path.isfile( filePath ):
             raise Exception( "Missing File: Cannot publish a file which does not exists: " + filePath )
 
@@ -209,7 +221,7 @@ class RamFileManager():
         decomposedFileName = RamFileManager.decomposeRamsesFileName( fileName )
         if not decomposedFileName:
             log( Log.MalformedName, LogLevel.Critical )
-            return
+            return ""
 
         newFileName = RamFileManager.buildRamsesFileName(
             decomposedFileName['project'],
@@ -226,8 +238,7 @@ class RamFileManager():
             publishFolder,
             newFileName
         ))
-        shutil.copy2( filePath, newFilePath )
-        RamMetaDataManager.appendHistoryDate( newFilePath )
+        
         return newFilePath
 
     @staticmethod
