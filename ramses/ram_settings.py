@@ -46,6 +46,8 @@ class RamSettings( object ):
             cls.autoIncrementTimeout = cls.defaultAutoIncrementTimeout = 120
             # The folder containing all ramses files
             cls.defaultRamsesFolderPath = os.path.expanduser("~/Ramses")
+            # The custom settings
+            cls.userSettings = {}
 
             # The default ramses folder may be in Documents (in Maya....), adjust
             if cls.defaultRamsesFolderPath.endswith("Documents/Ramses"):
@@ -91,6 +93,8 @@ class RamSettings( object ):
                         cls.autoIncrementTimeout = settingsDict['autoIncrementTimeout']
                     if 'ramsesFolderPath' in settingsDict:
                         cls.ramsesFolderPath = settingsDict['ramsesFolderPath']
+                    if 'userSettings' in settingsDict:
+                        cls.userSettings = settingsDict['userSettings']
 
         return cls._instance
 
@@ -113,6 +117,7 @@ class RamSettings( object ):
             'logLevel': self.logLevel,
             'autoIncrementTimeout': self.autoIncrementTimeout,
             'ramsesFolderPath': self.ramsesFolderPath,
+            'userSettings': self.userSettings,
         }
 
         if self._filePath == '':
