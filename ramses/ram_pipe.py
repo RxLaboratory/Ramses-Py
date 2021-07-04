@@ -13,10 +13,11 @@ class RamPipe:
 
         pipeFiles = []
 
-        for pipe in pipeDict['pipeFiles']:
-            pipeFiles.append(
-                RamPipeFile.fromDict(pipe)
-            )
+        if 'pipeFiles' in pipeDict:
+            for pipe in pipeDict['pipeFiles']:
+                pipeFiles.append(
+                    RamPipeFile.fromDict(pipe)
+                )
 
         return RamPipe(
             pipeDict['inputStepShortName'],
