@@ -24,6 +24,8 @@ class RamMetaDataManager():
     @staticmethod
     def getValue(filePath, key):
         """Gets the value of a specific key for the file"""
+        if not os.path.isfile(filePath):
+            return None
         data = RamMetaDataManager.getFileMetaData( filePath )
         if key in data:
             return data[key]
