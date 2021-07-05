@@ -285,9 +285,6 @@ class RamProject( RamObject ):
             RamAsset
         """
 
-        if not isinstance( assetShortName, str ):
-            raise TypeError( "assetShortName must be a str" )
-
         # If we're online, ask the client (return a dict)
         if Ramses.instance().online():
             reply = daemon.getAsset( assetShortName )
@@ -313,9 +310,6 @@ class RamProject( RamObject ):
         Returns:
             list of RamAsset
         """
-
-        if not isinstance( groupName, str ):
-            raise TypeError( "Group name must be a str" )
 
         assetsList = []
 
@@ -386,9 +380,6 @@ class RamProject( RamObject ):
         Returns:
             RamShot
         """
-
-        if not isinstance( shotShortName, str ):
-            raise TypeError( "shotShortName must be a str" )
 
         # If we're online, ask the client (return a dict)
         if Ramses.instance().online():
