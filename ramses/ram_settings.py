@@ -1,5 +1,22 @@
 # -*- coding: utf-8 -*-
 
+#====================== BEGIN GPL LICENSE BLOCK ======================
+#
+#  This program is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU General Public License
+#  as published by the Free Software Foundation; either version 3
+#  of the License, or (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#======================= END GPL LICENSE BLOCK ========================
+
 import os
 import platform
 import json
@@ -60,7 +77,7 @@ class RamSettings( object ):
             cls.versionPrefixes = ['v','pub'] # The prefixes used in version files which are not states
 
             # API Settings
-            cls.version = "0.0.1-dev"
+            cls.version = "0.1.1-Alpha"
             cls.apiReferenceUrl = "https://ramses-docs.rainboxlab.org/dev/add-ons-reference/"
             cls.addonsHelpUrl = "https://ramses-docs.rainboxlab.org/addons/"
             cls.generalHelpUrl = "https://ramses-docs.rainboxlab.org/"
