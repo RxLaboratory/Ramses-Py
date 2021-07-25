@@ -142,8 +142,9 @@ class RamFileManager():
         fileInfo = RamFileManager.decomposeRamsesFileName( fileName )
         if fileInfo is None:
             return False
-        if re.match( '\+restored-v\d+\+', fileInfo['resource']):
-            return True
+        restoredInfo = re.match( '\+restored-v(\d+)\+', fileInfo['resource'])
+        if restoredInfo:
+            return int(restoredInfo.group(1))
         return False
 
     @staticmethod
