@@ -23,6 +23,8 @@ import json
 from .constants import FolderNames, LogLevel
 from .logger import log
 
+theVersion = "0.1.3-Alpha"
+
 class RamSettings( object ):
     """Gets and saves settings used by Ramses.
 
@@ -77,7 +79,7 @@ class RamSettings( object ):
             cls.versionPrefixes = ['v','pub'] # The prefixes used in version files which are not states
 
             # API Settings
-            cls.version = "0.1.2-Alpha"
+            cls.version = theVersion
             cls.apiReferenceUrl = "https://ramses-docs.rainboxlab.org/dev/add-ons-reference/"
             cls.addonsHelpUrl = "https://ramses-docs.rainboxlab.org/addons/"
             cls.generalHelpUrl = "https://ramses-docs.rainboxlab.org/"
