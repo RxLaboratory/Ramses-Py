@@ -72,7 +72,7 @@ class RamUser( RamObject ):
             str
         """
 
-        path = FolderNames.userConfig
+        path = FolderNames.config
         return self.folderPath() + "/" + path
 
     def folderPath( self ):

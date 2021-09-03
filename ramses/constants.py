@@ -23,7 +23,7 @@ class FolderNames():
     preview = "_preview"
     versions = "_versions"
     publish = "_published"
-    userConfig = "Config"
+    config = "_config"
     stepTemplates = "Templates"
     admin = "00-ADMIN"
     preProd = "01-PRE-PROD"
