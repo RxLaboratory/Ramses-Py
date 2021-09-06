@@ -62,10 +62,14 @@ def ramUsers():
         'name': "Nico Duf",
         'shortName': "Duduf",
         'folderPath': 'C:/Users/Duduf/Ramses/Users/Duduf',
-        'role': 'ADMIN'
+        'role': 'ADMIN',
+        'comment': ''
     })
     log( u )
     log( u.configPath() )
+    u = ramses.currentUser()
+    log( u )
+    log( u.comment() )
 
 def ramItem(pathIndex, step=''):
     item = RamItem.fromPath(testPaths[pathIndex])
@@ -139,9 +143,9 @@ def perfTest( method, numIterations=20 ):
 # ramObjects()
 # ramStates()
 # ramFileTypes()
-# ramUsers()
+ramUsers()
 # ram()
-ramItem(7, "CD")
+# ramItem(7, "CD")
 # metadata()
 # project()
 

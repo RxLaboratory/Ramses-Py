@@ -39,10 +39,11 @@ class RamUser( RamObject ):
             userDict['name'],
             userDict['shortName'],
             userDict['folderPath'],
-            role
+            role,
+            userDict['comment']
         )
 
-    def __init__( self, userName, userShortName, userFolderPath="", role=UserRole.STANDARD ):
+    def __init__( self, userName, userShortName, userFolderPath="", role=UserRole.STANDARD, comment=""):
         """
         Args:
             userName (str)
@@ -54,6 +55,10 @@ class RamUser( RamObject ):
         super(RamUser,self).__init__( userName, userShortName )
         self._folderPath = userFolderPath
         self._role = role
+        self._comment = comment
+
+    def comment( self ):
+        return self._comment
 
     def role( self ):
         """
