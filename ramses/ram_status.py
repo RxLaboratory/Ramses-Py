@@ -19,6 +19,7 @@
 
 import os
 from datetime import datetime
+from ramses.name_manager import RamNameManger
 
 from .ramses import Ramses
 from .file_manager import RamFileManager
@@ -90,19 +91,18 @@ class RamStatus:
         """
 
         baseName = os.path.basename( filePath )
-        blocks = RamFileManager.decomposeRamsesFileName( baseName )
-    
-        if blocks is None:
+        nm = RamNameManger()
+        if not nm.setFileName( baseName ):
             log( Log.MalformedName, LogLevel.Critical )
             return None
 
         version = 0
         stateId = 'WIP'
 
-        if blocks[ "version" ] >= 0: # The file is already a version: gets the version info directly from it
-            version =blocks[ "version" ]
-            if blocks[ "state" ] != '':
-                stateId = blocks[ "state" ]
+        if nm.version >= 0: # The file is already a version: gets the version info directly from it
+            version = nm.version
+            if nm.state != '':
+                stateId = nm.state
         else:
             latestStatus = RamFileManager.getLatestVersion( filePath )
             version = latestStatus[0]

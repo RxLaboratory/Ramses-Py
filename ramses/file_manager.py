@@ -24,6 +24,7 @@ from .ram_settings import RamSettings
 from .utils import intToStr
 from .logger import log
 from .constants import LogLevel, ItemType, Log, FolderNames
+from .name_manager import RamNameManger
 
 # Keep the settings at hand
 settings = RamSettings.instance()
@@ -44,11 +45,9 @@ class RamFileManager():
         files = []
 
         for f in os.listdir(folderPath):
-            if RamFileManager.isRamsesName(f):
-                fileInfo = RamFileManager.decomposeRamsesFileName( f )
-                if fileInfo is None:
-                    continue
-                if resource is None or fileInfo['resource'] == resource:
+            nm = RamNameManger
+            if nm.setFileName(f):
+                if resource is None or nm.resource == resource:
                     files.append( RamFileManager.buildPath((
                         folderPath,
                         f
@@ -74,9 +73,9 @@ class RamFileManager():
                         continue
                     # each folder is a step working folder in the asset
                     for stepFolder in os.listdir( assetPath ):
-                        stepInfo = RamFileManager.decomposeRamsesFileName( stepFolder )
-                        if stepInfo is not None:
-                            if stepInfo['step'] == stepShortName:
+                        nm = RamNameManger()
+                        if nm.setFileName( stepFolder ):
+                            if nm.step == stepShortName:
                                 return True
         return False
 
@@ -91,9 +90,9 @@ class RamFileManager():
                     continue
                 # each folder is a step working folder in the shot
                 for shotFolder in os.listdir( shotPath ):
-                    shotInfo = RamFileManager.decomposeRamsesFileName( shotFolder )
-                    if shotInfo is not None:
-                        if shotInfo['step'] == shotShortName:
+                    nm = RamNameManger()
+                    if nm.setFileName( shotFolder ):
+                        if nm.step == shotShortName:
                             return True
         return False
 
@@ -139,10 +138,10 @@ class RamFileManager():
     @staticmethod
     def isRestoredFilePath( filePath ):
         fileName = os.path.basename(filePath)
-        fileInfo = RamFileManager.decomposeRamsesFileName( fileName )
-        if fileInfo is None:
+        nm = RamNameManger()
+        if not nm.setFileName( fileName ):
             return False
-        restoredInfo = re.match( '\+restored-v(\d+)\+', fileInfo['resource'])
+        restoredInfo = re.match( '\+restored-v(\d+)\+', nm.resource)
         if restoredInfo:
             return int(restoredInfo.group(1))
         return False
@@ -152,11 +151,12 @@ class RamFileManager():
         """Gets the save path for an existing file.
         This path is not the same as the file path if the file path is located in the versions/preview/publish subfolder"""
 
-        fileInfo = RamFileManager.decomposeRamsesFilePath( path )
-        if fileInfo is None:
+        nm = RamNameManger()
+        nm.setFilePath( path )
+        if nm.project == '':
             return ""
 
-        if fileInfo['type'] == '':
+        if nm.ramType == '':
             return ""
 
         if os.path.isfile( path ):
@@ -174,18 +174,8 @@ class RamFileManager():
             # Still the case? something is wrong
             if RamFileManager.inReservedFolder( saveFolder ): return ""
 
-        # Check if this is a restored file
-        resourceStr = re.sub( '\+restored-v\d+\+', "", fileInfo['resource'])
-
-        saveFileName = RamFileManager.buildRamsesFileName(
-            fileInfo['project'],
-            fileInfo['step'],
-            fileInfo['extension'],
-            fileInfo['type'],
-            fileInfo['object'],
-            resourceStr,
-            )
-
+        saveFileName = nm.fileName()
+        
         return saveFolder + '/' + saveFileName
         
     @staticmethod
@@ -195,19 +185,15 @@ class RamFileManager():
             return
 
         fileName = os.path.basename( filePath )
-        decomposedVersionFile = RamFileManager.decomposeRamsesFileName( fileName )
-        if decomposedVersionFile is None:
+
+        nm = RamNameManger()
+        if not nm.setFileName( fileName ):
             log( Log.MalformedName, LogLevel.Critical )
             return
 
-        restoredFileName = RamFileManager.buildRamsesFileName(
-            decomposedVersionFile['project'],
-            decomposedVersionFile['step'],
-            decomposedVersionFile['extension'],
-            decomposedVersionFile['type'],
-            decomposedVersionFile['object'],
-            decomposedVersionFile['resource'] + "+restored-v" + str(decomposedVersionFile['version']) + "+",
-        )
+        # Set the resource
+        nm.resource = nm.resource +  "+restored-v" + str(nm.version) + "+"
+        restoredFileName = nm.fileName()
 
         versionFolder = os.path.dirname( filePath )
         saveFolder = os.path.dirname( versionFolder )
@@ -240,28 +226,20 @@ class RamFileManager():
 
         # Check File Name
         fileName = os.path.basename( filePath )
-        decomposedFileName = RamFileManager.decomposeRamsesFileName( fileName )
-        if not decomposedFileName:
+        nm = RamNameManger()
+        if not nm.setFileName( fileName ):
             log( Log.MalformedName, LogLevel.Critical )
             return ""
 
-        newFileName = RamFileManager.buildRamsesFileName(
-            decomposedFileName['project'],
-            decomposedFileName['step'],
-            decomposedFileName['extension'],
-            decomposedFileName['type'],
-            decomposedFileName['object'],
-            decomposedFileName['resource']
-        )
+        newFileName = nm.fileName()
 
         publishFolder = RamFileManager.getPublishFolder( filePath )
 
         # Check version
         versionTuple = RamFileManager.getLatestVersion( filePath )
         # Subfolder name
-        versionFolder = versionTuple[0]
-        if (versionTuple[0] == 0): versionFolder = "001"
-        while len(versionFolder < 3): versionFolder = "0" + versionFolder
+        versionFolder = intToStr( versionTuple[0] )
+        if (versionTuple[0] == 0): versionFolder = intToStr( 1 )
         if versionTuple[1] != "" and versionTuple[1] != "v":
             versionFolder = "_" + versionTuple[1]
 
@@ -293,8 +271,8 @@ class RamFileManager():
 
         # Check File Name
         fileName = os.path.basename( filePath )
-        decomposedFileName = RamFileManager.decomposeRamsesFileName( fileName )
-        if not decomposedFileName:
+        nm = RamNameManger()
+        if nm.setFileName( fileName ):
             log( Log.MalformedName, LogLevel.Critical )
             return
                
@@ -312,16 +290,9 @@ class RamFileManager():
         if versionNumber <= 0:
             versionNumber = 1
 
-        newFileName = RamFileManager.buildRamsesFileName(
-            decomposedFileName['project'],
-            decomposedFileName['step'],
-            decomposedFileName['extension'],
-            decomposedFileName['type'],
-            decomposedFileName['object'],
-            decomposedFileName['resource'],
-            versionNumber,
-            versionState,
-        )
+        nm.version = versionNumber
+        nm.state = versionState
+        newFileName = nm.fileName()
 
         versionsFolder = RamFileManager.getVersionFolder( filePath )
 
@@ -345,12 +316,12 @@ class RamFileManager():
         state = defaultStateShortName
 
         latestVersionFile = os.path.basename( latestVersionFilePath )
-        decomposedVersionFile = RamFileManager.decomposeRamsesFileName(latestVersionFile)
-        if decomposedVersionFile is None:
+        nm = RamNameManger()
+        if not nm.setFileName( latestVersionFile ):
             return ( 0, defaultStateShortName, datetime.now() )
 
-        version = decomposedVersionFile['version']
-        state = decomposedVersionFile["state"]
+        version = nm.version
+        state = nm.state
         date = datetime.fromtimestamp(
             os.path.getmtime( latestVersionFilePath )
         )
@@ -361,8 +332,8 @@ class RamFileManager():
     def getLatestVersionFilePath( filePath, previous=False ):
         # Check File Name
         fileName = os.path.basename( filePath )
-        decomposedFileName = RamFileManager.decomposeRamsesFileName( fileName )
-        if decomposedFileName is None:
+        nm = RamNameManger()
+        if not nm.setFileName( fileName ):
             log( Log.MalformedName, LogLevel.Critical )
             return ''
 
@@ -379,24 +350,23 @@ class RamFileManager():
             if not os.path.isfile( versionsFolder + '/' + foundFile ): # This is in case the user has created folders in _versions
                 continue
 
-            decomposedFoundFile = RamFileManager.decomposeRamsesFileName(foundFile)
+            foundNM = RamNameManger()
+            if not foundNM.setFileName( foundFile ):
+                continue
+            if foundNM.project != nm.project:
+                continue
+            if foundNM.ramType != nm.ramType:
+                continue
+            if foundNM.shortName != nm.shortName:
+                continue
+            if foundNM.step != nm.step:
+                continue
+            if foundNM.resource != nm.resource:
+                continue
+            if foundNM.version == -1:
+                continue
 
-            if decomposedFoundFile is None:
-                continue
-            if decomposedFoundFile['project'] != decomposedFileName['project']:
-                continue
-            if decomposedFoundFile['type'] != decomposedFileName['type']:
-                continue
-            if decomposedFoundFile['object'] != decomposedFileName['object']:
-                continue
-            if decomposedFoundFile['step'] != decomposedFileName['step']:
-                continue
-            if decomposedFoundFile['resource'] != decomposedFileName['resource']:
-                continue
-            if decomposedFoundFile["version"] == -1:
-                continue
-
-            version = decomposedFoundFile["version"]
+            version = foundNM.version
             if version > highestVersion:
                 highestVersion = version
                 prevVersionFilePath = versionFilePath
@@ -411,8 +381,8 @@ class RamFileManager():
     def getVersionFilePaths( filePath ):
         # Check File Name
         fileName = os.path.basename( filePath )
-        decomposedFileName = RamFileManager.decomposeRamsesFileName( fileName )
-        if not decomposedFileName:
+        nm = RamNameManger()
+        if not nm.setFileName( fileName ):
             log( Log.MalformedName, LogLevel.Critical )
 
         # Get versions
@@ -426,18 +396,18 @@ class RamFileManager():
             if not os.path.isfile( foundFilePath ): # This is in case the user has created folders in _versions
                 continue
             
-            decomposedFoundFile = RamFileManager.decomposeRamsesFileName(foundFile)
-            if decomposedFoundFile == None:
+            foundNM = RamNameManger()
+            if not foundNM.setFileName( foundFile ):
                 continue
-            if decomposedFoundFile['project'] != decomposedFileName['project']:
+            if foundNM.project != nm.project:
                 continue
-            if decomposedFoundFile['type'] != decomposedFileName['type']:
+            if foundNM.ramType != nm.ramType:
                 continue
-            if decomposedFoundFile['object'] != decomposedFileName['object']:
+            if foundNM.shortName != nm.shortName:
                 continue
-            if decomposedFoundFile['step'] != decomposedFileName['step']:
+            if foundNM.step != nm.step:
                 continue
-            if decomposedFoundFile['resource'] != decomposedFileName['resource']:
+            if foundNM.resource != nm.resource:
                 continue
 
             versionFiles.append( foundFilePath )
@@ -548,270 +518,6 @@ class RamFileManager():
         if re.match(regex, name):
             return True
         return False
-
-    @staticmethod
-    def composeRamsesFileName( ramsesFileNameDict, increment=False ):
-        """Builds a filename from a dict as returned by RamFileManager.decomposeRamsesFileName().
-        
-        The dict must contain:
-            - 'project' optional
-            - 'type'
-            - 'object' optional
-            - 'step' 
-            - 'resource' optional
-            - "state" optional
-            - "version" int optional
-            - "extension" optional
-        If "extension" does not start with a '.' it will be prepended.
-
-        If increment is true, increments the version by 1
-        """
-
-        version = ramsesFileNameDict['version']
-        if increment:
-            if version <= 0:
-                version = 1
-            else:
-                version = version + 1
-
-        return RamFileManager.buildRamsesFileName(
-            ramsesFileNameDict['project'],
-            ramsesFileNameDict['step'],
-            ramsesFileNameDict['extension'],
-            ramsesFileNameDict['type'],
-            ramsesFileNameDict['object'],
-            ramsesFileNameDict['resource'],
-            version,
-            ramsesFileNameDict['state']
-        )
-
-    @staticmethod
-    def buildRamsesFileName( project , step='' , ext="" , ramType = ItemType.GENERAL , object = '' , resource = "" , version = -1 , version_prefix = 'v' ):
-        """Used to build a filename respecting Ramses' naming conventions.
-
-        The name will look like this:
-            projShortName_ramType_objectShortName_stepShortName_resourceStr_versionBlock.extension
-        Ramses names follow these rules:
-        - ramType can be one of the following letters: A (asset), S (shot), G (general).
-        - there is an objectShortName only for assets and shots.
-        - resourceStr is optional. It only serves to differentiate the main working file and its resources, that serve as secondary working files.
-        - versionBlock is optional. It's made of an optional version prefix ('wip', 'v', 'pub', ...) followed by a version number.
-            Version prefixes consist of all the available states' shortnames ( see Ramses.getStates() ) and some additional prefixes ( see Ramses._versionPrefixes ).
-        For more information on Ramses' naming conventions (such as length limitation, allowed characters...), refer to the documentation.
-
-        If "ext" does not start with a '.' it will be prepended.
-
-        Args:
-            project: str
-            step: str
-            ext: str
-                The Extension. If it does not start with a '.', it will be prepended.
-            ramType: str
-                One of the following: 'A' (asset), 'S' (shot), 'G' (general)
-            objectShortName: str
-            resourceStr: str
-                Serves to differentiate the main working file and its resources, that serve as secondary working files.
-            version: int
-            version_prefix: str
-
-        Returns: str
-        """
-
-        resource = RamFileManager._fixResourceStr( resource )
-
-        ramsesFileBlocks = [ ]
-        ramsesFileBlocks.append(project)
-
-        if ramType != '':
-            ramsesFileBlocks.append( ramType )
-
-        if ramType in (ItemType.ASSET, ItemType.SHOT) and object != "":
-            ramsesFileBlocks.append( object )
-
-        if step != "":
-            ramsesFileBlocks.append( step )
-
-        if ramType == ItemType.GENERAL and object != "" and object != step:
-            ramsesFileBlocks.append( object )
-
-        if resource != '':
-            ramsesFileBlocks.append( resource )
-
-        if version != -1:
-            v = version_prefix + intToStr(version)
-            ramsesFileBlocks.append( v )
-
-        ramsesFileName = '_'.join( ramsesFileBlocks )
-        
-        if ext != '':
-            if not ext.startswith('.'):
-                ext = '.' + ext
-            ramsesFileName = ramsesFileName + ext
-
-        return ramsesFileName
-
-    @staticmethod
-    def decomposeRamsesFilePath( path ):
-        """Tries to get the maximum information from the path,
-        returns a dict similar to decomposeRamsesFileName"""
-
-        blocks = {
-            "project": "",
-            "type": "",
-            "object": "",
-            "step": "",
-            "resource": "",
-            "state": "",
-            "version": -1,
-            "extension": "",
-        }
-        
-        originalPath = path
-        name = os.path.basename( path )
-
-        # First get information specific to files or innest folder, won't be found in parent folders:
-        decomposedName = RamFileManager.decomposeRamsesFileName( name )
-        
-        if decomposedName is not None:
-            blocks = decomposedName
-
-        # If this is a project path, let's just return the project short name
-        if RamFileManager.isProjectFolder(path):
-            blocks['project'] = os.path.basename(path)
-            return blocks
-
-        # Move up to the parent folder
-        path = os.path.dirname(path)
-        name = os.path.basename(path)
-
-        # Move up the tree until we've found something which can be decomposed
-        while name != '':
-            # If we've found all the info, we can return
-            if blocks['project'] != '' and blocks['type'] != '' and blocks['object'] != '' and blocks['step'] != '':
-                return blocks
-
-            # Try to get more info from the folder name
-            decomposedName = RamFileManager.decomposeRamsesFileName( name )
-            if decomposedName is not None:
-                if blocks['project'] == '':
-                    blocks['project'] = decomposedName['project']
-                if blocks['type'] == '':
-                    blocks['type'] = decomposedName['type']
-                if blocks['object'] == '':
-                    blocks['object'] = decomposedName['object']
-                if blocks['step'] == '':
-                    blocks['step'] = decomposedName['step']
-
-            # We got to the project folder, no need to continue
-            if RamFileManager.isProjectFolder( path ):
-                # The project short name can still be found from the project folder
-                if blocks['project'] == '':
-                    blocks['project'] = name
-                return blocks
-
-            # Move up to the parent folder
-            path = os.path.dirname(path)
-            name = os.path.basename(path)
-
-        # We really need to find the project. If not found, try to decompose names in files inside the given path
-        if blocks['project'] == '':
-            if os.path.isfile(originalPath):
-                originalPath = os.path.dirname(originalPath)
-
-            if not os.path.isdir( originalPath ):
-                return blocks
-
-            for f in os.listdir(originalPath):
-                filePath = RamFileManager.buildPath(( originalPath, f ))
-                if not os.path.isfile(filePath):
-                    continue
-                fileInfo = RamFileManager.decomposeRamsesFileName( f )
-                if fileInfo is None:
-                    continue
-                if fileInfo['project'] == '':
-                    continue
-                
-                blocks['project'] = fileInfo['project']
-                break
-
-        return blocks
-
-    @staticmethod
-    def isRamsesName( fileName ):
-        """Checks if the filename respects the ramses naming scheme"""
-        fileInfo = RamFileManager.decomposeRamsesFileName( fileName )
-        if fileInfo is None:
-            return False
-        return True
-
-    @staticmethod
-    def decomposeRamsesFileName( ramsesFileName ):
-        """Used on files that respect Ramses' naming convention: it separates the name into blocks (one block for the project's shortname, one for the step, one for the extension...)
-
-        A Ramses filename can have all of these blocks:
-        - projectID_ramType_objectShortName_ramStep_resourceStr_versionBlock.extension
-        - ramType can be one of the following letters: A (asset), S (shot), G (general).
-        - there is an objectShortName only for assets and shots.
-        - resourceStr is optional. It only serves to differentiate the main working file and its resources, that serve as secondary working files.
-        - versionBlock is optional. It's made of two blocks: an optional version prefix, also named state, followed by a version number.
-            Version prefixes consist of all the available states' shortnames ( see Ramses.getStates() ) and some additional prefixes ( see Ramses._versionPrefixes ). Eg. 'wip', 'v', ...
-        For more information on Ramses' naming conventions (such as length limitation, forbidden characters...), refer to the documentation.
-
-        Arg:
-            ramsesFileName: str
-        
-        Returns: dict or None
-            If the file does not match Ramses' naming convention, returns None.
-            Else, returns a dictionary made of all the blocks: {"projectId", 'type', 'object', 'step', 'resource', "state", "version", "extension"}
-        """
-
-        splitRamsesName = re.match(RamFileManager._getRamsesNameRegEx(), ramsesFileName)
-
-        if splitRamsesName == None:
-            return None
-
-        project = splitRamsesName.group(1)
-        ramType = splitRamsesName.group(2)
-        objectShortName = ''
-        step = ''
-        resource = ''
-        state = ''
-        version = -1
-        extension = ''
-
-        if ramType in (ItemType.ASSET, ItemType.SHOT):
-            objectShortName = splitRamsesName.group(3)
-            if splitRamsesName.group(4) is not None:
-                step = splitRamsesName.group(4)
-        else:
-            step = splitRamsesName.group(3)
-            if splitRamsesName.group(4) is not None:
-                objectShortName = splitRamsesName.group(4)
-
-        if splitRamsesName.group(5) is not None:
-            resource = splitRamsesName.group(5)
-        
-        if splitRamsesName.group(6) is not None:
-            state = splitRamsesName.group(6)
-
-        if splitRamsesName.group(7) is not None:
-            version = int ( splitRamsesName.group(7) )
-
-        if splitRamsesName.group(8) is not None:
-            extension = splitRamsesName.group(8)
-
-        blocks = {
-            'project': project,
-            'type': ramType,
-            'object': objectShortName,
-            'step': step,
-            'resource': resource,
-            'state': state,
-            'version': version,
-            'extension': extension,
-        }
-
-        return blocks
 
     @staticmethod
     def buildPath( folders ):
@@ -928,7 +634,7 @@ class RamFileManager():
     @staticmethod
     def _versionFilesSorter( f ):
         fileName = os.path.basename(f)
-        d = RamFileManager.decomposeRamsesFileName(fileName)
-        if d is None:
+        nm = RamNameManger()
+        if not nm.setFileName( fileName ):
             return -1
-        return d['version']
+        return nm.version

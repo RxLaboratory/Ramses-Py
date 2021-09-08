@@ -19,7 +19,7 @@
 
 import os
 from platform import version
-
+from .name_manager import RamNameManger
 from .ramses import Ramses
 from .ram_object import RamObject
 from .file_manager import RamFileManager
@@ -52,8 +52,9 @@ class RamItem( RamObject ):
         """
 
         # Get info from the path
-        pathInfo = RamFileManager.decomposeRamsesFilePath( fileOrFolderPath )
-        if not pathInfo: # Wrong name, we can't do anything more
+        nm = RamNameManger()
+        nm.setFilePath( fileOrFolderPath )
+        if nm.project == '': # Wrong name, we can't do anything more
             log (Log.MalformedName, LogLevel.Debug)
             return None
 
@@ -72,35 +73,35 @@ class RamItem( RamObject ):
             itemFolderName = os.path.basename( itemFolder )
             if not RamFileManager._isRamsesItemFoldername( itemFolderName ): # Still wrong: consider it's a general item 
                 return RamItem(
-                    pathInfo['object'],
-                    pathInfo['step'],
+                    nm.project,
+                    nm.step,
                     saveFolder,
                     ItemType.GENERAL
                 )
 
-        if pathInfo['type'] == ItemType.ASSET: 
+        if nm.ramType == ItemType.ASSET: 
             # Get the group name
             assetGroupFolder = os.path.dirname( itemFolder )
             assetGroup = os.path.basename( assetGroupFolder )
             return RamAsset(
                 '',
-                pathInfo['object'],
+                nm.shortName,
                 itemFolder,
                 assetGroup
             )
 
-        if pathInfo['type'] == ItemType.SHOT:
+        if nm.ramType == ItemType.SHOT:
             return RamShot(
                 '',
-                pathInfo['object'],
+                nm.shortName,
                 itemFolder,
                 0.0
             )
 
-        if pathInfo['type'] == ItemType.GENERAL:
+        if nm.ramType == ItemType.GENERAL:
             return RamItem(
-                pathInfo['object'],
-                pathInfo['step'],
+                nm.shortName,
+                nm.step,
                 saveFolder,
                 ItemType.GENERAL
             )
@@ -221,12 +222,11 @@ class RamItem( RamObject ):
         if project is None:
             return ""
 
-        itemFolderName = RamFileManager.buildRamsesFileName(
-            project.shortName(),
-            self.shortName(),
-            '',
-            self.itemType()
-        )
+        nm = RamNameManger()
+        nm.project = project.shortName()
+        nm.step = self.shortName()
+        nm.ramType = self.itemType()
+        itemFolderName = nm.fileName()
 
         if self._itemType == ItemType.SHOT:
             # Get the shot folder name
@@ -237,7 +237,7 @@ class RamItem( RamObject ):
             
             return self._folderPath
             
-        if self._itemType == ItemType.ASSET:           
+        if self._itemType == ItemType.ASSET:
             # add the group
             self._folderPath = RamFileManager.buildPath((
                     project.assetsPath(),
@@ -259,13 +259,12 @@ class RamItem( RamObject ):
 
         project = self.projectShortName()
 
-        stepFolderName = RamFileManager.buildRamsesFileName(
-            project,
-            step,
-            '',
-            self.itemType(),
-            self.shortName()
-        )
+        nm = RamNameManger()
+        nm.project = project
+        nm.step = step
+        nm.ramType = self.itemType()
+        nm.shortName = self.shortName()
+        stepFolderName = nm.fileName()
 
         stepFolderPath = RamFileManager.buildPath((
             folderPath,
@@ -293,10 +292,10 @@ class RamItem( RamObject ):
 
         for file in os.listdir(stepFolder):
             # check file
-            fileInfo = RamFileManager.decomposeRamsesFileName(file)
-            if fileInfo is None:
+            nm = RamNameManger()
+            if not nm.setFileName( file ):
                 continue
-            if fileInfo['project'] != pShortName or fileInfo['step'] != step or fileInfo['object'] != self.shortName() or fileInfo['type'] != self.itemType():
+            if nm.project != pShortName or nm.step != step or nm.shortName != self.shortName() or nm.ramType != self.itemType():
                 continue
             files.append(RamFileManager.buildPath((
                 stepFolder,
@@ -316,14 +315,15 @@ class RamItem( RamObject ):
         if pShortName == '':
             return ''
 
-        fileName = RamFileManager.buildRamsesFileName(
-            pShortName,
-            step,
-            extension,
-            self.itemType(),
-            self.shortName(),
-            resource
-        )
+        nm = RamNameManger()
+        nm.project = pShortName
+        nm.step = step
+        nm.extension = extension
+        nm.ramType = self.itemType()
+        nm.shortName = self.shortName()
+        nm.resource = resource
+
+        fileName = nm.fileName
 
         filePath = RamFileManager.buildPath((
             stepFolder,
@@ -355,15 +355,15 @@ class RamItem( RamObject ):
             return highestVersion
 
         for file in os.listdir( versionFolder ):
-            fileInfo = RamFileManager.decomposeRamsesFileName(file)
-            if fileInfo is None:
+            nm = RamNameManger()
+            if not nm.setFileName( file ):
                 continue
-            if fileInfo['step'] != step and step != '':
+            if nm.step != step and step != '':
                 continue
-            if fileInfo['resource'] == resource:
-                if fileInfo['state'] == state or state == "":
-                    if fileInfo['version'] > highestVersion:
-                        highestVersion = fileInfo['version']
+            if nm.resource == resource:
+                if nm.state == state or state == "":
+                    if nm.version > highestVersion:
+                        highestVersion = nm.version
 
         return highestVersion
         
@@ -497,15 +497,15 @@ class RamItem( RamObject ):
         highestVersion = -1
 
         for file in os.listdir( versionFolderPath ):
-            fileInfo = RamFileManager.decomposeRamsesFileName( file )
-            if fileInfo is None:
+            nm = RamNameManger()
+            if not nm.setFileName( file ):
                 continue
-            if fileInfo['step'] != step and step != '':
+            if nm.step != step and step != '':
                 continue
-            if fileInfo['resource'] == resource:
-                if fileInfo['state'] == state or state == '':
-                    if fileInfo['version'] > highestVersion:
-                        highestVersion = fileInfo['version']
+            if nm.resource == resource:
+                if nm.state == state or state == '':
+                    if nm.version > highestVersion:
+                        highestVersion = nm.version
                         versionFile = RamFileManager.buildPath((
                             versionFolderPath,
                             file
@@ -530,21 +530,21 @@ class RamItem( RamObject ):
         files = []
 
         for file in os.listdir( versionFolderPath ):
-            fileInfo = RamFileManager.decomposeRamsesFileName( file )
-            if fileInfo is None:
+            nm = RamNameManger()
+            if not nm.setFileName( file ):
                 continue
-            if fileInfo['project'] != pShortName:
+            if nm.project != pShortName:
                 continue
             itemType = self.itemType()
-            if fileInfo['type'] != itemType:
+            if nm.ramType != itemType:
                 continue
             if itemType == ItemType.GENERAL:
-                if fileInfo['step'] != self.shortName():
+                if nm.step != self.shortName():
                     continue
             else:
-                if fileInfo['step'] != step or fileInfo['object'] != self.shortName():
+                if nm.step != step or nm.shortName != self.shortName():
                     continue
-            if fileInfo['resource'] == resource:
+            if nm.resource == resource:
                 files.append(RamFileManager.buildPath((
                     versionFolderPath,
                     file
@@ -639,9 +639,10 @@ class RamItem( RamObject ):
             return
 
         for f in folder:
-            fileInfo = RamFileManager.decomposeRamsesFileName( f )
-            if fileInfo['step'] != "":
-                step = project.step( fileInfo['step'] )
+            nm = RamNameManger()
+            nm.setFileName( f )
+            if nm.step != "":
+                step = project.step( nm.step )
                 if step is not None:
                     stepsList.append( step )
 
@@ -675,11 +676,12 @@ class RamItem( RamObject ):
         if folderPath == '':
             return self._projectShortName
 
-        folderInfo = RamFileManager.decomposeRamsesFilePath(folderPath)
-        if folderInfo is None:
+        nm = RamNameManger()
+        nm.setFilePath( folderPath )
+        if nm.project == '':
             return self._projectShortName
 
-        self._projectShortName = folderInfo['project']
+        self._projectShortName = nm.project
         return self._projectShortName
 
     # Documented in RamAsset only

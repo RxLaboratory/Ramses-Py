@@ -18,7 +18,7 @@
 #======================= END GPL LICENSE BLOCK ========================
 
 import os, re
-
+from .name_manager import RamNameManger
 from .daemon_interface import RamDaemonInterface
 from .file_manager import RamFileManager
 from .logger import log
@@ -54,9 +54,10 @@ class RamProject( RamObject ):
     def fromPath( path ):
         """Creates a project object from any path, trying to get info from the given path"""
 
-        pathInfo = RamFileManager.decomposeRamsesFilePath( path )
+        nm = RamNameManger()
+        nm.setFilePath( path )
 
-        projectShortName = pathInfo['project']
+        projectShortName = nm.project
         if projectShortName == '':
             return None
 
@@ -412,8 +413,9 @@ class RamProject( RamObject ):
             return None
 
         for shotFolder in os.listdir( shotsFolderPath ):
-            shotInfo = RamFileManager.decomposeRamsesFileName( shotFolder )
-            if shotInfo['object'] == shotShortName:
+            nm = RamNameManger()
+            nm.setFileName( shotFolder )
+            if nm.shortName == shotShortName:
                 return RamShot.fromPath( shotsFolderPath + "/" + shotFolder )
 
     def shots( self, nameFilter = "*" ):
@@ -497,7 +499,10 @@ class RamProject( RamObject ):
                 return RamStep.fromDict( reply['content'] )
 
         # Build the step folder name to find it
-        stepFolderName = RamFileManager.buildRamsesFileName( self.shortName(), stepShortName )
+        nm = RamNameManger()
+        nm.project = self.shortName()
+        nm.step = stepShortName
+        stepFolderName = nm.fileName()
 
         # Check in Pre Prod
         stepFolderPath = RamFileManager.buildPath((

@@ -18,7 +18,7 @@
 #======================= END GPL LICENSE BLOCK ========================
 
 import os
-
+from .name_manager import RamNameManger
 from .ram_object import RamObject
 from .ramses import Ramses
 from .logger import log
@@ -56,9 +56,11 @@ class RamStep( RamObject ):
             if project is None:
                 return None
 
-        pathInfo = RamFileManager.decomposeRamsesFilePath( path )
+        nm = RamNameManger()
+        nm.setFilePath( path )
+
         # To improve perf, pass other information than just step short name to the method
-        return project.step( pathInfo['step'], pathInfo['type'] )
+        return project.step( nm.step, nm.ramType )
 
     def __init__( self, stepName, stepShortName, stepFolder='', stepType=StepType.ALL ):
         """     
@@ -287,9 +289,10 @@ class RamStep( RamObject ):
         if folderPath == '':
             return ''
 
-        folderInfo = RamFileManager.decomposeRamsesFilePath(folderPath)
-        if folderInfo is None:
+        nm = RamNameManger()
+        nm.setFilePath( folderPath )
+        if nm.project == '':
             return ''
 
-        self._projectShortName = folderInfo['project']
+        self._projectShortName = nm.project
         return self._projectShortName
