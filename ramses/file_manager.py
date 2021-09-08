@@ -169,6 +169,10 @@ class RamFileManager():
 
         if RamFileManager.inReservedFolder( path ):
             saveFolder = os.path.dirname( saveFolder )
+            # We may still be in a reserved folder if this was published
+            if RamFileManager.inReservedFolder( saveFolder ): saveFolder = os.path.dirname( saveFolder )
+            # Still the case? something is wrong
+            if RamFileManager.inReservedFolder( saveFolder ): return ""
 
         # Check if this is a restored file
         resourceStr = re.sub( '\+restored-v\d+\+', "", fileInfo['resource'])
@@ -226,7 +230,7 @@ class RamFileManager():
 
     @staticmethod
     def getPublishPath( filePath ):
-        """Copies the given file to its corresponding publish folder"""
+        """Gets the publish path of the given file (including the version subfolder)"""
         from .metadata_manager import RamMetaDataManager
 
         if not os.path.isfile( filePath ):
@@ -252,10 +256,26 @@ class RamFileManager():
 
         publishFolder = RamFileManager.getPublishFolder( filePath )
 
+        # Check version
+        versionTuple = RamFileManager.getLatestVersion( filePath )
+        # Subfolder name
+        versionFolder = versionTuple[0]
+        if (versionTuple[0] == 0): versionFolder = "001"
+        while len(versionFolder < 3): versionFolder = "0" + versionFolder
+        if versionTuple[1] != "" and versionTuple[1] != "v":
+            versionFolder = "_" + versionTuple[1]
+
         newFilePath = RamFileManager.buildPath ((
             publishFolder,
-            newFileName
+            newFileName,
+            versionFolder
         ))
+
+        if not os.path.isdir( newFilePath ):
+            os.makedirs( newFilePath )
+
+        # Keep the date in the metadata, just in case
+        RamMetaDataManager.setDate( filePath, versionTuple[2] )
         
         return newFilePath
 
@@ -314,7 +334,7 @@ class RamFileManager():
     def getLatestVersion( filePath, defaultStateShortName="v", previous = False ):
         """Gets the latest version number and state of a file
         
-        Returns a tuple (version, state)
+        Returns a tuple (version, state, date)
         """
 
         latestVersionFilePath = RamFileManager.getLatestVersionFilePath( filePath, previous )
@@ -480,6 +500,9 @@ class RamFileManager():
     def inPublishFolder( path ):
         """Checks if the given path is inside a "published" folder"""
         currentFolder = os.path.dirname(path)
+        currentFolderName = os.path.basename( currentFolder )
+        if currentFolderName == settings.folderNames.publish: return True
+        currentFolder = os.path.dirname(currentFolder)
         currentFolderName = os.path.basename( currentFolder )
         return currentFolderName == settings.folderNames.publish
 

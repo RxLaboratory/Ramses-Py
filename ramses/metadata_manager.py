@@ -86,6 +86,19 @@ class RamMetaDataManager():
         RamMetaDataManager.setValue(filePath, MetaDataKeys.VERSION_FILE, versionfilePath)
 
     @staticmethod
+    def getDate( filePath ):
+        """Gets the date for the file"""
+        return RamMetaDataManager.getValue(filePath, MetaDataKeys.DATE)
+
+    @staticmethod
+    def setDate( filePath, date ):
+        """Sets a date for the file"""
+        if not isinstance(date, str ):
+            if not isinstance( date, int ): date = time.mktime( date.timetuple() )
+            date = str( date )
+        RamMetaDataManager.setValue(filePath, MetaDataKeys.DATE, date)
+
+    @staticmethod
     def getVersion( filePath ):
         """Gets the version for the file"""
         version = RamMetaDataManager.getValue(filePath, MetaDataKeys.VERSION)
