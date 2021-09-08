@@ -143,6 +143,9 @@ def threadedCopy():
     RamFileManager.copy(bigFile1, bigFile2)
     log("We're copying")
 
+def fileManager():
+    print( RamFileManager.getPublishPath( 'C:\\Users\\Duduf\\Ramses\\Projects\\EXPLE\\02-PROD\\EXPLE_G_TEX\\Templates\\EXPLE_G_TEX_Template.mb' ) )
+
 # === TESTS ===
 
 # ramObjects()
@@ -154,4 +157,4 @@ def threadedCopy():
 # metadata()
 # project()
 # threadedCopy()
-
+fileManager()

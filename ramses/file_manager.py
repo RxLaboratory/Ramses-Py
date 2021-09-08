@@ -207,7 +207,7 @@ class RamFileManager():
         return restoredFilePath
 
     @staticmethod
-    def copyToPublish( filePath ):
+    def getPublishPath( filePath ):
         """Copies the given file to its corresponding publish folder"""
         from .metadata_manager import RamMetaDataManager
 
@@ -226,7 +226,7 @@ class RamFileManager():
         if not os.path.isfile( filePath ):
             raise Exception( "Missing File: Cannot publish a file which does not exists: " + filePath )
 
-        log("Publishing file: " + filePath, LogLevel.Debug)
+        log("Getting pulbish file: " + filePath, LogLevel.Debug)
 
         # Check File Name
         fileName = os.path.basename( filePath )
@@ -245,16 +245,20 @@ class RamFileManager():
         versionFolder = intToStr( versionTuple[0] )
         if (versionTuple[0] == 0): versionFolder = intToStr( 1 )
         if versionTuple[1] != "" and versionTuple[1] != "v":
-            versionFolder = "_" + versionTuple[1]
+            versionFolder = versionFolder + "_" + versionTuple[1]
 
         newFilePath = RamFileManager.buildPath ((
             publishFolder,
-            newFileName,
             versionFolder
         ))
 
         if not os.path.isdir( newFilePath ):
             os.makedirs( newFilePath )
+
+        newFilePath = RamFileManager.buildPath ((
+            newFilePath,
+            newFileName
+        ))
 
         # Keep the date in the metadata, just in case
         RamMetaDataManager.setDate( filePath, versionTuple[2] )
