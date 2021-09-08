@@ -18,7 +18,7 @@
 #======================= END GPL LICENSE BLOCK ========================
 
 import os
-from .name_manager import RamNameManger
+from .name_manager import RamNameManager
 from .ram_object import RamObject
 from .ramses import Ramses
 from .logger import log
@@ -56,7 +56,7 @@ class RamStep( RamObject ):
             if project is None:
                 return None
 
-        nm = RamNameManger()
+        nm = RamNameManager()
         nm.setFilePath( path )
 
         # To improve perf, pass other information than just step short name to the method
@@ -289,7 +289,7 @@ class RamStep( RamObject ):
         if folderPath == '':
             return ''
 
-        nm = RamNameManger()
+        nm = RamNameManager()
         nm.setFilePath( folderPath )
         if nm.project == '':
             return ''

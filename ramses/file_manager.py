@@ -24,7 +24,7 @@ from .ram_settings import RamSettings
 from .utils import intToStr
 from .logger import log
 from .constants import LogLevel, ItemType, Log, FolderNames
-from .name_manager import RamNameManger
+from .name_manager import RamNameManager
 
 # Keep the settings at hand
 settings = RamSettings.instance()
@@ -58,7 +58,7 @@ class RamFileManager():
         files = []
 
         for f in os.listdir(folderPath):
-            nm = RamNameManger
+            nm = RamNameManager
             if nm.setFileName(f):
                 if resource is None or nm.resource == resource:
                     files.append( RamFileManager.buildPath((
@@ -86,7 +86,7 @@ class RamFileManager():
                         continue
                     # each folder is a step working folder in the asset
                     for stepFolder in os.listdir( assetPath ):
-                        nm = RamNameManger()
+                        nm = RamNameManager()
                         if nm.setFileName( stepFolder ):
                             if nm.step == stepShortName:
                                 return True
@@ -103,7 +103,7 @@ class RamFileManager():
                     continue
                 # each folder is a step working folder in the shot
                 for shotFolder in os.listdir( shotPath ):
-                    nm = RamNameManger()
+                    nm = RamNameManager()
                     if nm.setFileName( shotFolder ):
                         if nm.step == shotShortName:
                             return True
@@ -151,7 +151,7 @@ class RamFileManager():
     @staticmethod
     def isRestoredFilePath( filePath ):
         fileName = os.path.basename(filePath)
-        nm = RamNameManger()
+        nm = RamNameManager()
         if not nm.setFileName( fileName ):
             return False
         restoredInfo = re.match( '\+restored-v(\d+)\+', nm.resource)
@@ -164,7 +164,7 @@ class RamFileManager():
         """Gets the save path for an existing file.
         This path is not the same as the file path if the file path is located in the versions/preview/publish subfolder"""
 
-        nm = RamNameManger()
+        nm = RamNameManager()
         nm.setFilePath( path )
         if nm.project == '':
             return ""
@@ -199,7 +199,7 @@ class RamFileManager():
 
         fileName = os.path.basename( filePath )
 
-        nm = RamNameManger()
+        nm = RamNameManager()
         if not nm.setFileName( fileName ):
             log( Log.MalformedName, LogLevel.Critical )
             return
@@ -239,7 +239,7 @@ class RamFileManager():
 
         # Check File Name
         fileName = os.path.basename( filePath )
-        nm = RamNameManger()
+        nm = RamNameManager()
         if not nm.setFileName( fileName ):
             log( Log.MalformedName, LogLevel.Critical )
             return ""
@@ -284,7 +284,7 @@ class RamFileManager():
 
         # Check File Name
         fileName = os.path.basename( filePath )
-        nm = RamNameManger()
+        nm = RamNameManager()
         if nm.setFileName( fileName ):
             log( Log.MalformedName, LogLevel.Critical )
             return
@@ -329,7 +329,7 @@ class RamFileManager():
         state = defaultStateShortName
 
         latestVersionFile = os.path.basename( latestVersionFilePath )
-        nm = RamNameManger()
+        nm = RamNameManager()
         if not nm.setFileName( latestVersionFile ):
             return ( 0, defaultStateShortName, datetime.now() )
 
@@ -345,7 +345,7 @@ class RamFileManager():
     def getLatestVersionFilePath( filePath, previous=False ):
         # Check File Name
         fileName = os.path.basename( filePath )
-        nm = RamNameManger()
+        nm = RamNameManager()
         if not nm.setFileName( fileName ):
             log( Log.MalformedName, LogLevel.Critical )
             return ''
@@ -363,7 +363,7 @@ class RamFileManager():
             if not os.path.isfile( versionsFolder + '/' + foundFile ): # This is in case the user has created folders in _versions
                 continue
 
-            foundNM = RamNameManger()
+            foundNM = RamNameManager()
             if not foundNM.setFileName( foundFile ):
                 continue
             if foundNM.project != nm.project:
@@ -394,7 +394,7 @@ class RamFileManager():
     def getVersionFilePaths( filePath ):
         # Check File Name
         fileName = os.path.basename( filePath )
-        nm = RamNameManger()
+        nm = RamNameManager()
         if not nm.setFileName( fileName ):
             log( Log.MalformedName, LogLevel.Critical )
 
@@ -409,7 +409,7 @@ class RamFileManager():
             if not os.path.isfile( foundFilePath ): # This is in case the user has created folders in _versions
                 continue
             
-            foundNM = RamNameManger()
+            foundNM = RamNameManager()
             if not foundNM.setFileName( foundFile ):
                 continue
             if foundNM.project != nm.project:
@@ -647,7 +647,7 @@ class RamFileManager():
     @staticmethod
     def _versionFilesSorter( f ):
         fileName = os.path.basename(f)
-        nm = RamNameManger()
+        nm = RamNameManager()
         if not nm.setFileName( fileName ):
             return -1
         return nm.version

@@ -25,7 +25,7 @@ from .ram_settings import RamSettings
 # Keep the settings at hand
 settings = RamSettings.instance()
 
-class RamNameManger():
+class RamNameManager():
     """A class to help generating filenames or getting data from filenames"""
 
     # Cache stuff
@@ -54,8 +54,8 @@ class RamNameManger():
     def __getRamsesNameRegEx( self ):
         """Private method to get a Regex to check if a file matches Ramses' naming convention."""
 
-        if RamNameManger.__nameRe is not None:
-            return RamNameManger.__nameRe
+        if RamNameManager.__nameRe is not None:
+            return RamNameManager.__nameRe
 
         regexStr = self.___getVersionRegExStr()
 
@@ -63,7 +63,7 @@ class RamNameManger():
 
         regex = re.compile(regexStr, re.IGNORECASE)
 
-        RamNameManger.__nameRe = regex
+        RamNameManager.__nameRe = regex
         return regex
 
     def ___getVersionRegExStr( self ):
@@ -187,7 +187,7 @@ class RamNameManger():
                 return
 
             # Try to get more info from the folder name
-            nm = RamNameManger()
+            nm = RamNameManager()
             if nm.setFileName( name ):
                 if self.project == '':
                     self.project = nm.project
@@ -221,7 +221,7 @@ class RamNameManger():
                 filePath = RamFileManager.buildPath(( originalPath, f ))
                 if not os.path.isfile(filePath):
                     continue
-                nm = RamNameManger()
+                nm = RamNameManager()
                 if nm.setFileName( name ):
                     if nm.project == '':
                         continue

@@ -19,7 +19,7 @@
 
 import os
 from platform import version
-from .name_manager import RamNameManger
+from .name_manager import RamNameManager
 from .ramses import Ramses
 from .ram_object import RamObject
 from .file_manager import RamFileManager
@@ -52,7 +52,7 @@ class RamItem( RamObject ):
         """
 
         # Get info from the path
-        nm = RamNameManger()
+        nm = RamNameManager()
         nm.setFilePath( fileOrFolderPath )
         if nm.project == '': # Wrong name, we can't do anything more
             log (Log.MalformedName, LogLevel.Debug)
@@ -222,7 +222,7 @@ class RamItem( RamObject ):
         if project is None:
             return ""
 
-        nm = RamNameManger()
+        nm = RamNameManager()
         nm.project = project.shortName()
         nm.step = self.shortName()
         nm.ramType = self.itemType()
@@ -259,7 +259,7 @@ class RamItem( RamObject ):
 
         project = self.projectShortName()
 
-        nm = RamNameManger()
+        nm = RamNameManager()
         nm.project = project
         nm.step = step
         nm.ramType = self.itemType()
@@ -292,7 +292,7 @@ class RamItem( RamObject ):
 
         for file in os.listdir(stepFolder):
             # check file
-            nm = RamNameManger()
+            nm = RamNameManager()
             if not nm.setFileName( file ):
                 continue
             if nm.project != pShortName or nm.step != step or nm.shortName != self.shortName() or nm.ramType != self.itemType():
@@ -315,7 +315,7 @@ class RamItem( RamObject ):
         if pShortName == '':
             return ''
 
-        nm = RamNameManger()
+        nm = RamNameManager()
         nm.project = pShortName
         nm.step = step
         nm.extension = extension
@@ -355,7 +355,7 @@ class RamItem( RamObject ):
             return highestVersion
 
         for file in os.listdir( versionFolder ):
-            nm = RamNameManger()
+            nm = RamNameManager()
             if not nm.setFileName( file ):
                 continue
             if nm.step != step and step != '':
@@ -497,7 +497,7 @@ class RamItem( RamObject ):
         highestVersion = -1
 
         for file in os.listdir( versionFolderPath ):
-            nm = RamNameManger()
+            nm = RamNameManager()
             if not nm.setFileName( file ):
                 continue
             if nm.step != step and step != '':
@@ -530,7 +530,7 @@ class RamItem( RamObject ):
         files = []
 
         for file in os.listdir( versionFolderPath ):
-            nm = RamNameManger()
+            nm = RamNameManager()
             if not nm.setFileName( file ):
                 continue
             if nm.project != pShortName:
@@ -639,7 +639,7 @@ class RamItem( RamObject ):
             return
 
         for f in folder:
-            nm = RamNameManger()
+            nm = RamNameManager()
             nm.setFileName( f )
             if nm.step != "":
                 step = project.step( nm.step )
@@ -676,7 +676,7 @@ class RamItem( RamObject ):
         if folderPath == '':
             return self._projectShortName
 
-        nm = RamNameManger()
+        nm = RamNameManager()
         nm.setFilePath( folderPath )
         if nm.project == '':
             return self._projectShortName
