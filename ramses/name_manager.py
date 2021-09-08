@@ -31,7 +31,7 @@ class RamNameManager():
     # Cache stuff
     __nameRe = None # The regexp to handle names. Initialized the first time it's needed
 
-    def ___init__(self):
+    def __init__(self):
         
         self.__init()
 
@@ -222,9 +222,26 @@ class RamNameManager():
                 if not os.path.isfile(filePath):
                     continue
                 nm = RamNameManager()
-                if nm.setFileName( name ):
-                    if nm.project == '':
-                        continue
+                nm.setFileName( name )
+                if nm.project == '':
+                    continue
                 
                 self.project = nm.project
                 break
+
+    def copy( self ):
+        """Returns a copy of the current instance"""
+
+        nm = RamNameManager()
+        nm.project = self.project
+        nm.ramType = self.ramType
+        nm.shortName = self.shortName
+        nm.step = self.step
+        nm.resource = self.resource
+        nm.state = self.state
+        nm.version = self.version
+        nm.extension = self.extension
+        nm.__stateShortNames = self.__stateShortNames
+        nm.__fileName = nm.__fileName
+
+        return nm

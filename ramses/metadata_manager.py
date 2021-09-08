@@ -128,7 +128,8 @@ class RamMetaDataManager():
     def getMetaDataFile( path ):
         """Gets the metadata .json file for the given path"""
         folder = path
-        if os.path.isfile(folder):
+        # if it's a file or if it does not exist (yet, it may be a file being created, due to threading, it may not be available yet)
+        if os.path.isfile(folder) or not os.path.exists(folder):
             folder = os.path.dirname(folder)
         if not os.path.isdir(folder):
             raise ValueError("The given path does not exist: " + folder)

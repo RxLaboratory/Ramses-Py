@@ -36,17 +36,17 @@ class RamFileManager():
     __nameRe = None
 
     @staticmethod
-    def copy( originPath, destinatinPath, separateThread=True ):
+    def copy( originPath, destinationPath, separateThread=True ):
         """Copies a file, in a separated thread if separateThread is True"""
 
         if separateThread:
-            t = Thread( target=RamFileManager.copy, args=(originPath, destinatinPath, False) )
+            t = Thread( target=RamFileManager.copy, args=(originPath, destinationPath, False) )
             log( "Launching parallel copy of a file.", LogLevel.Debug )
             t.start()
         else:
-            log("Starting copy of\n" + originPath + "\nto: " + destinatinPath, LogLevel.Debug )
-            shutil.copy2( originPath, destinatinPath )
-            log("Finished copying\n" + originPath + "\nto: " + destinatinPath, LogLevel.Debug )
+            log("Starting copy of\n" + originPath + "\nto: " + destinationPath, LogLevel.Debug )
+            shutil.copy2( originPath, destinationPath )
+            log("Finished copying\n" + originPath + "\nto: " + destinationPath, LogLevel.Debug )
 
     @staticmethod
     def getRamsesFiles( folderPath, resource = None ):
@@ -285,7 +285,7 @@ class RamFileManager():
         # Check File Name
         fileName = os.path.basename( filePath )
         nm = RamNameManager()
-        if nm.setFileName( fileName ):
+        if not nm.setFileName( fileName ):
             log( Log.MalformedName, LogLevel.Critical )
             return
                

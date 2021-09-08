@@ -19,7 +19,7 @@
 
 import os
 from datetime import datetime
-from ramses.name_manager import RamNameManager
+from .name_manager import RamNameManager
 
 from .ramses import Ramses
 from .file_manager import RamFileManager
