@@ -183,7 +183,7 @@ class RamFileManager():
     @staticmethod
     def restoreVersionFile( filePath ):
         if not RamFileManager.inVersionsFolder( filePath ):
-            log( "This version can't be restored, it is not in a Ramses versions subfolder.", LogLevel.Critical )
+            log( "This version can't be restored, it is not in a Ramses version subfolder.", LogLevel.Critical )
             return
 
         fileName = os.path.basename( filePath )
@@ -193,8 +193,10 @@ class RamFileManager():
             log( Log.MalformedName, LogLevel.Critical )
             return
 
-        # Set the resource
+        # Set the resource, remove state and version
         nm.resource = nm.resource +  "+restored-v" + str(nm.version) + "+"
+        nm.state = ""
+        nm.version = -1
         restoredFileName = nm.fileName()
 
         versionFolder = os.path.dirname( filePath )
