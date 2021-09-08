@@ -136,17 +136,22 @@ def perfTest( method, numIterations=20 ):
         endDifP = int( (endDif / firstIt)*1000 ) / 10.0
         print('=== Total Variation: ' + str(endDifP) + ' %.' + " ===")
 
-
+def threadedCopy():
+    bigFile1 = 'C:\\Users\\Duduf\Downloads\\ubuntu-20.04.2.0-desktop-amd64.iso'
+    bigFile2 = 'D:\\SWAP\\TEMP\\ubuntu-copy.iso'
+    log("Before copying")
+    RamFileManager.copy(bigFile1, bigFile2)
+    log("We're copying")
 
 # === TESTS ===
 
 # ramObjects()
 # ramStates()
 # ramFileTypes()
-ramUsers()
+# ramUsers()
 # ram()
 # ramItem(7, "CD")
 # metadata()
 # project()
-
+# threadedCopy()
 

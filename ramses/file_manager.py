@@ -19,7 +19,7 @@
 
 import os, re, shutil
 from datetime import datetime
-
+from threading import Thread
 from .ram_settings import RamSettings
 from .utils import intToStr
 from .logger import log
@@ -34,6 +34,19 @@ class RamFileManager():
 
     # Cache stuff
     __nameRe = None
+
+    @staticmethod
+    def copy( originPath, destinatinPath, separateThread=True ):
+        """Copies a file, in a separated thread if separateThread is True"""
+
+        if separateThread:
+            t = Thread( target=RamFileManager.copy, args=(originPath, destinatinPath, False) )
+            log( "Launching parallel copy of a file.", LogLevel.Debug )
+            t.start()
+        else:
+            log("Starting copy of\n" + originPath + "\nto: " + destinatinPath, LogLevel.Debug )
+            shutil.copy2( originPath, destinatinPath )
+            log("Finished copying\n" + originPath + "\nto: " + destinatinPath, LogLevel.Debug )
 
     @staticmethod
     def getRamsesFiles( folderPath, resource = None ):
@@ -199,7 +212,7 @@ class RamFileManager():
         saveFolder = os.path.dirname( versionFolder )
 
         restoredFilePath = saveFolder + '/' + restoredFileName
-        shutil.copy2( filePath, restoredFilePath )
+        RamFileManager.copy( filePath, restoredFilePath )
         return restoredFilePath
 
     @staticmethod
@@ -210,7 +223,7 @@ class RamFileManager():
         newFilePath = RamFileManager.getPublishPath( filePath )
         if newFilePath == "":
             return
-        shutil.copy2( filePath, newFilePath )
+        RamFileManager.copy( filePath, newFilePath )
         RamMetaDataManager.appendHistoryDate( newFilePath )
         return newFilePath
 
@@ -297,7 +310,7 @@ class RamFileManager():
         versionsFolder = RamFileManager.getVersionFolder( filePath )
 
         newFilePath = versionsFolder + '/' + newFileName
-        shutil.copy2( filePath, newFilePath )
+        RamFileManager.copy( filePath, newFilePath )
         RamMetaDataManager.appendHistoryDate( newFilePath )
         return newFilePath
 
