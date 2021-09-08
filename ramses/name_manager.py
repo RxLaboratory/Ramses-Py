@@ -50,6 +50,8 @@ class RamNameManager():
         self.state = ""
         self.version = -1
         self.extension = ""
+        self.isRestoredVersion = False
+        self.restoredVersion = -1
 
     def __getRamsesNameRegEx( self ):
         """Private method to get a Regex to check if a file matches Ramses' naming convention."""
@@ -147,7 +149,11 @@ class RamNameManager():
 
         if splitRamsesName.group(5) is not None:
             self.resource = splitRamsesName.group(5)
-            self.resource = re.sub( '\+restored-v\d+\+', "", self.resource)
+            restoredInfo = re.match( '\\+restored-v(\\d+)\\+', self.resource)
+            if restoredInfo:
+                self.isRestoredVersion = True
+                self.restoredVersion = int( restoredInfo.group(1) )
+                self.resource = re.sub( '\\+restored-v\\d+\\+', "", self.resource)
         
         if splitRamsesName.group(6) is not None:
             self.state = splitRamsesName.group(6)

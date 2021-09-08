@@ -323,7 +323,7 @@ class RamItem( RamObject ):
         nm.shortName = self.shortName()
         nm.resource = resource
 
-        fileName = nm.fileName
+        fileName = nm.fileName()
 
         filePath = RamFileManager.buildPath((
             stepFolder,

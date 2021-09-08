@@ -70,7 +70,11 @@ class RamObject(object):
         return self._shortName
 
     def __str__( self ):
-        return self._shortName + " | " + self._name
+        n = self._shortName
+        if self._name != '':
+            if n != '': n = n + " | "
+            n = n + self._name
+        return n
 
     def __eq__(self, other):
         try:

@@ -149,17 +149,6 @@ class RamFileManager():
         return False
 
     @staticmethod
-    def isRestoredFilePath( filePath ):
-        fileName = os.path.basename(filePath)
-        nm = RamNameManager()
-        if not nm.setFileName( fileName ):
-            return False
-        restoredInfo = re.match( '\+restored-v(\d+)\+', nm.resource)
-        if restoredInfo:
-            return int(restoredInfo.group(1))
-        return False
-
-    @staticmethod
     def getSaveFilePath( path ):
         """Gets the save path for an existing file.
         This path is not the same as the file path if the file path is located in the versions/preview/publish subfolder"""
