@@ -93,9 +93,7 @@ class RamMetaDataManager():
     @staticmethod
     def setDate( filePath, date ):
         """Sets a date for the file"""
-        if not isinstance(date, str ):
-            if not isinstance( date, int ): date = time.mktime( date.timetuple() )
-            date = str( date )
+        if not isinstance( date, int ): date = time.mktime( date.timetuple() )
         RamMetaDataManager.setValue(filePath, MetaDataKeys.DATE, date)
 
     @staticmethod

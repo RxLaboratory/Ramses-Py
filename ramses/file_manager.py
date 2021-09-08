@@ -261,7 +261,7 @@ class RamFileManager():
         ))
 
         # Keep the date in the metadata, just in case
-        RamMetaDataManager.setDate( filePath, versionTuple[2] )
+        RamMetaDataManager.setDate( newFilePath, versionTuple[2] )
         
         return newFilePath
 
