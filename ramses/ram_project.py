@@ -502,6 +502,7 @@ class RamProject( RamObject ):
         nm = RamNameManager()
         nm.project = self.shortName()
         nm.step = stepShortName
+        nm.ramType = ItemType.GENERAL
         stepFolderName = nm.fileName()
 
         # Check in Pre Prod

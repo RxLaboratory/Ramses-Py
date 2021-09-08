@@ -166,8 +166,7 @@ class RamStep( RamObject ):
 
         if self._templatesFolder != '':
             return self._templatesFolder
-
-        
+     
         stepFolder = self.folderPath()
 
         if stepFolder == '':
