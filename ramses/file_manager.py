@@ -211,16 +211,21 @@ class RamFileManager():
     @staticmethod
     def publishFile( filePath ):
         """Copies the given file to its corresponding publish folder"""
+        from .metadata_manager import RamMetaDataManager
+
         newFilePath = RamFileManager.getPublishPath( filePath )
         if newFilePath == "":
             return
+
         RamFileManager.copy( filePath, newFilePath )
+        # Keep the date in the metadata, just in case
+        RamMetaDataManager.setDate( newFilePath, versionTuple[2] )
+
         return newFilePath
 
     @staticmethod
     def getPublishPath( filePath ):
-        """Gets the publish path of the given file (including the version subfolder)"""
-        from .metadata_manager import RamMetaDataManager
+        """Gets the publish path of the given file (including the version subfolder)"""  
 
         if not os.path.isfile( filePath ):
             raise Exception( "Missing File: Cannot publish a file which does not exists: " + filePath )
@@ -261,9 +266,6 @@ class RamFileManager():
             newFileName
         ))
 
-        # Keep the date in the metadata, just in case
-        RamMetaDataManager.setDate( newFilePath, versionTuple[2] )
-        
         return newFilePath
 
     @staticmethod
@@ -333,21 +335,14 @@ class RamFileManager():
         if latestVersionFilePath == "":
             return ( 0, defaultStateShortName, datetime.now() )
 
-        version = 0
-        state = defaultStateShortName
-
         latestVersionFile = os.path.basename( latestVersionFilePath )
         nm = RamNameManager()
         if not nm.setFileName( latestVersionFile ):
             return ( 0, defaultStateShortName, datetime.now() )
 
-        version = nm.version
-        state = nm.state
-        date = datetime.fromtimestamp(
-            os.path.getmtime( latestVersionFilePath )
-        )
+        if nm.state == '': nm.state = defaultStateShortName
 
-        return (version, state, date)
+        return nm
 
     @staticmethod
     def getLatestVersionFilePath( filePath, previous=False ):

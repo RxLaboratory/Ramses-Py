@@ -18,6 +18,7 @@
 #======================= END GPL LICENSE BLOCK ========================
 
 import os, re
+from datetime import datetime
 from .constants import ItemType, LogLevel
 from .utils import intToStr
 from .ram_settings import RamSettings
@@ -53,6 +54,7 @@ class RamNameManager():
         self.extension = ""
         self.isRestoredVersion = False
         self.restoredVersion = -1
+        self.date = None
 
     def __getRamsesNameRegEx( self ):
         """Private method to get a Regex to check if a file matches Ramses' naming convention."""
@@ -179,6 +181,11 @@ class RamNameManager():
 
         # First get information specific to files or innest folder, won't be found in parent folders:
         self.setFileName( name )
+
+        # The date of the file
+        self.date = datetime.fromtimestamp(
+            os.path.getmtime( path )
+        )
 
         # If this is a project path, let's just use the project short name
         if RamFileManager.isProjectFolder( path):
