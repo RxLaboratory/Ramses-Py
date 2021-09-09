@@ -23,7 +23,7 @@ from threading import Thread
 from .ram_settings import RamSettings
 from .utils import intToStr
 from .logger import log
-from .constants import LogLevel, ItemType, Log, FolderNames
+from .constants import LogLevel, Log, FolderNames
 from .name_manager import RamNameManager
 
 # Keep the settings at hand
@@ -38,6 +38,7 @@ class RamFileManager():
     @staticmethod
     def copy( originPath, destinationPath, separateThread=True ):
         """Copies a file, in a separated thread if separateThread is True"""
+        from .metadata_manager import RamMetaDataManager
 
         if separateThread:
             t = Thread( target=RamFileManager.copy, args=(originPath, destinationPath, False) )
@@ -46,6 +47,7 @@ class RamFileManager():
         else:
             log("Starting copy of\n" + originPath + "\nto: " + destinationPath, LogLevel.Debug )
             shutil.copy2( originPath, destinationPath )
+            RamMetaDataManager.appendHistoryDate( destinationPath )
             log("Finished copying\n" + originPath + "\nto: " + destinationPath, LogLevel.Debug )
 
     @staticmethod
@@ -58,7 +60,7 @@ class RamFileManager():
         files = []
 
         for f in os.listdir(folderPath):
-            nm = RamNameManager
+            nm = RamNameManager()
             if nm.setFileName(f):
                 if resource is None or nm.resource == resource:
                     files.append( RamFileManager.buildPath((
@@ -207,15 +209,12 @@ class RamFileManager():
         return restoredFilePath
 
     @staticmethod
-    def getPublishPath( filePath ):
+    def publishFile( filePath ):
         """Copies the given file to its corresponding publish folder"""
-        from .metadata_manager import RamMetaDataManager
-
         newFilePath = RamFileManager.getPublishPath( filePath )
         if newFilePath == "":
             return
         RamFileManager.copy( filePath, newFilePath )
-        RamMetaDataManager.appendHistoryDate( newFilePath )
         return newFilePath
 
     @staticmethod
@@ -226,7 +225,7 @@ class RamFileManager():
         if not os.path.isfile( filePath ):
             raise Exception( "Missing File: Cannot publish a file which does not exists: " + filePath )
 
-        log("Getting pulbish file: " + filePath, LogLevel.Debug)
+        log("Getting publish file: " + filePath, LogLevel.Debug)
 
         # Check File Name
         fileName = os.path.basename( filePath )
@@ -242,9 +241,11 @@ class RamFileManager():
         # Check version
         versionTuple = RamFileManager.getLatestVersion( filePath )
         # Subfolder name
-        versionFolder = intToStr( versionTuple[0] )
+        versionFolder = ""
+        if nm.resource != "": versionFolder = nm.resource + "_"
+        versionFolder = versionFolder + intToStr( versionTuple[0] )
         if (versionTuple[0] == 0): versionFolder = intToStr( 1 )
-        if versionTuple[1] != "" and versionTuple[1] != "v":
+        if versionTuple[1] != "" and versionTuple[1].lower() != "v":
             versionFolder = versionFolder + "_" + versionTuple[1]
 
         newFilePath = RamFileManager.buildPath ((
@@ -264,6 +265,19 @@ class RamFileManager():
         RamMetaDataManager.setDate( newFilePath, versionTuple[2] )
         
         return newFilePath
+
+    @staticmethod
+    def getPublishedVersions( filePath ):
+        """"Gets all the version subfolders in the publish path"""
+        folder = RamFileManager.getPublishFolder( filePath )
+
+        folders = []
+        for f in os.listdir(folder):
+            folderPath = RamFileManager.buildPath(( folder, f ))
+            if not os.path.isdir(folderPath): continue
+            folders.append( folderPath )
+
+        return folders
 
     @staticmethod
     def copyToVersion( filePath, increment = False, stateShortName="" ):
@@ -306,7 +320,6 @@ class RamFileManager():
 
         newFilePath = versionsFolder + '/' + newFileName
         RamFileManager.copy( filePath, newFilePath )
-        RamMetaDataManager.appendHistoryDate( newFilePath )
         return newFilePath
 
     @staticmethod
@@ -556,58 +569,6 @@ class RamFileManager():
         if re.match( '^([a-z0-9+-]{1,10})_([ASG])_([a-z0-9+-]{1,10})$', n , re.IGNORECASE): return True
         return False
 
-    @staticmethod
-    def _getRamsesNameRegEx():
-        """Low-level, undocumented. Used to get a Regex to check if a file matches Ramses' naming convention.
-        """
-
-        if RamFileManager.__nameRe is not None:
-            return RamFileManager.__nameRe
-
-        regexStr = RamFileManager._getVersionRegExStr()
-
-        regexStr = '^([a-z0-9+-]{1,10})_(?:([ASG])_((?!(?:' + regexStr + ')[0-9]+)[a-z0-9+-]{1,10}))(?:_((?!(?:' + regexStr + ')[0-9]+)[a-z0-9+-]{1,10}))?(?:_((?!(?:' + regexStr + ')[0-9]+)[a-z0-9+\\s-]+))?(?:_(' + regexStr + ')?([0-9]+))?(?:\\.([a-z0-9.]+))?$'
-
-        regex = re.compile(regexStr, re.IGNORECASE)
-
-        RamFileManager.__nameRe = regex
-        return regex
-
-    @staticmethod
-    def _getVersionRegEx():
-        """Low-leve, undocumented. Builds a Regex to find the version and state in a given file name.
-        group #0 is the underscore + versionblock + extension _v12.abc
-        group #1 is the underscore + versionblock _v12
-        group #2 is the state v (or empty)
-        group #3 is version 12
-        """
-
-        states = RamFileManager._getVersionRegExStr()
-        regexStr = '(?:(_' + states + ')?([0-9]+)))(?:\\.[a-z0-9.]+)?$'
-        regex = re.compile(regexStr, re.IGNORECASE)
-        return regex
-
-    @staticmethod
-    def _getVersionRegExStr():
-        """Low-level, undocumented. Used to get a Regex str that can be used to identify version blocks.
-
-        A version block is composed of an optional version prefix and a version number.
-        'wip002', 'v10', '1002' are version blocks; '002wip', '10v', 'v-10' are not.\n
-        Version prefixes consist of all the available states' shortnames ( see Ramses.getStates() ) and some additional prefixes ( see Ramses._versionPrefixes ).
-        """
-
-        from .ramses import Ramses
-        ramses = Ramses.instance()
-        
-        prefixes = settings.versionPrefixes
-
-        states = ramses.states()
-
-        for state in states:
-            prefixes.append( state.shortName() )
-
-        return '|'.join(prefixes)
-        
     @staticmethod
     def _fixResourceStr( resourceStr ):
         """Low-level, undocumented. Used to remove all forbidden characters from a resource.

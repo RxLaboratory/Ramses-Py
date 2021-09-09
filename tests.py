@@ -1,4 +1,5 @@
 import os
+from ramses.name_manager import RamNameManager
 # from time import perf_counter
 from ramses import (
     log,
@@ -144,7 +145,10 @@ def threadedCopy():
     log("We're copying")
 
 def fileManager():
-    print( RamFileManager.getPublishPath( 'C:\\Users\\Duduf\\Ramses\\Projects\\EXPLE\\02-PROD\\EXPLE_G_TEX\\Templates\\EXPLE_G_TEX_Template.mb' ) )
+    #print( RamFileManager.getPublishPath( 'C:\\Users\\Duduf\\Ramses\\Projects\\EXPLE\\02-PROD\\EXPLE_G_TEX\\Templates\\EXPLE_G_TEX_Template.mb' ) )
+    nm = RamNameManager()
+    nm.setFileName('EXPLE_G_TEX_Template.mb')
+    nm.setFileName('EXPLE_G_TEX_TEstTemplate2.mb')
 
 # === TESTS ===
 

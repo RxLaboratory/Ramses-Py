@@ -435,7 +435,7 @@ class RamItem( RamObject ):
 
         return publishFolder
 
-    def publishFilePaths( self, resource=None, step="" ):
+    def publishedVersionFolderPaths( self, step="" ):
         """Gets the list of file paths in the publish folder.
             Paths are relative to the root of the item folder.
 
@@ -448,7 +448,13 @@ class RamItem( RamObject ):
         """
 
         publishFolderPath = self.publishFolderPath(step)
-        return RamFileManager.getRamsesFiles( publishFolderPath, resource )
+        versionFolders = []
+        for f in os.listdir(publishFolderPath):
+            folderPath = RamFileManager.buildPath(( publishFolderPath, f ))
+            if not os.path.isdir(folderPath): continue
+            versionFolders.append( folderPath )
+
+        return versionFolders
 
     def versionFolderPath( self, step="" ): 
         """Path to the version folder relative to the item root folder
@@ -541,6 +547,8 @@ class RamItem( RamObject ):
             if itemType == ItemType.GENERAL:
                 if nm.step != self.shortName():
                     continue
+                if self.name() != nm.shortName:
+                    continue
             else:
                 if nm.step != step or nm.shortName != self.shortName():
                     continue
@@ -553,9 +561,9 @@ class RamItem( RamObject ):
         files.sort( key = RamFileManager._versionFilesSorter )
         return files
 
-    def isPublished( self, resource="", step="" ):
+    def isPublished( self, step="" ):
         """Convenience function to check if there are published files in the publish folder.
-            Equivalent to len(self.publishedFilePaths(step, resource)) > 0
+            Equivalent to len(self.publishedVersionFolderPaths(step, resource)) > 0
 
         Args:
             step (RamStep)
@@ -564,7 +572,7 @@ class RamItem( RamObject ):
         Returns:
             bool
         """
-        result = self.publishFilePaths( step, resource, step )
+        result = self.publishedVersionFolderPaths( step )
         return len( result ) > 0
 
     def setStatus( self, status, step ):

@@ -18,6 +18,7 @@
 #======================= END GPL LICENSE BLOCK ========================
 
 import os
+from platform import version
 from .name_manager import RamNameManager
 from .ram_object import RamObject
 from .ramses import Ramses
@@ -202,12 +203,17 @@ class RamStep( RamObject ):
 
         return folder
 
-    def templatesPublishFilePaths( self ):
+    def templatesPublishedVersionFolderPaths( self ):
         templatesPublishPath = self.templatesPublishPath()
-        if templatesPublishPath == '':
-            return []
+        
+        versionFolders = []
 
-        return RamFileManager.getRamsesFiles( templatesPublishPath )
+        for f in os.listdir(templatesPublishPath):
+            folderPath = RamFileManager.buildPath(( templatesPublishPath, f ))
+            if not os.path.isdir(folderPath): continue
+            versionFolders.append( folderPath )
+
+        return versionFolders
 
     def stepType( self ): #Immutable
         """The type of this step, one of StepType.PRE_PRODUCTION, StepType.SHOT_PRODUCTION,
