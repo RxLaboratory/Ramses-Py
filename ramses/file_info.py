@@ -18,6 +18,7 @@
 #======================= END GPL LICENSE BLOCK ========================
 
 import os, re
+from ramses.file_manager import RamFileManager
 from datetime import datetime
 from .constants import ItemType, LogLevel
 from .utils import intToStr
@@ -27,7 +28,7 @@ from .logger import log
 # Keep the settings at hand
 settings = RamSettings.instance()
 
-class RamNameManager():
+class RamFileInfo():
     """A class to help generating filenames or getting data from filenames"""
 
     # Cache stuff
@@ -41,6 +42,7 @@ class RamNameManager():
 
         # Other private attributes
         self.__fileName = ""
+        self.__filePath = ""
 
     def __init( self ):
         """Private method to (re)initialize attributes except cache"""
@@ -59,8 +61,8 @@ class RamNameManager():
     def __getRamsesNameRegEx( self ):
         """Private method to get a Regex to check if a file matches Ramses' naming convention."""
 
-        if RamNameManager.__nameRe is not None:
-            return RamNameManager.__nameRe
+        if RamFileInfo.__nameRe is not None:
+            return RamFileInfo.__nameRe
 
         regexStr = self.___getVersionRegExStr()
 
@@ -70,7 +72,7 @@ class RamNameManager():
 
         regex = re.compile(regexStr, re.IGNORECASE)
 
-        RamNameManager.__nameRe = regex
+        RamFileInfo.__nameRe = regex
         return regex
 
     def ___getVersionRegExStr( self ):
@@ -91,6 +93,10 @@ class RamNameManager():
                 self.__stateShortNames.append( state.shortName() )
 
         return '|'.join( self.__stateShortNames )
+
+    def originalFilePath( self ):
+        """Gets the original filepath if it was set"""
+        return self.__filePath
 
     def originalFileName( self ):
         """Gets the original filename without any change"""
@@ -131,9 +137,22 @@ class RamNameManager():
 
         return ramsesFileName
 
+    def filePath( self ):
+        """Returns the new filename appended to the original path if it was set, otherwise returns an empty string"""
+        if self.__filePath == "": return ""
+
+        fileName = self.fileName()
+        folder = os.path.dirname( self.__filePath )
+        return RamFileManager.buildPath((
+            folder,
+            fileName
+        ))
+
     def setFileName( self, name ):
         """Sets the filename and parses data from it. Returns boolean for success"""
         self.__init()
+
+        self.__fileName = name
 
         splitRamsesName = re.match(self.__getRamsesNameRegEx(), name)
 
@@ -176,6 +195,8 @@ class RamNameManager():
 
         from .file_manager import RamFileManager
 
+        self.__filePath = path
+
         originalPath = path
         name = os.path.basename( path )
 
@@ -203,7 +224,7 @@ class RamNameManager():
                 return
 
             # Try to get more info from the folder name
-            nm = RamNameManager()
+            nm = RamFileInfo()
             if nm.setFileName( name ):
                 if self.project == '':
                     self.project = nm.project
@@ -237,7 +258,7 @@ class RamNameManager():
                 filePath = RamFileManager.buildPath(( originalPath, f ))
                 if not os.path.isfile(filePath):
                     continue
-                nm = RamNameManager()
+                nm = RamFileInfo()
                 nm.setFileName( name )
                 if nm.project == '':
                     continue
@@ -248,7 +269,7 @@ class RamNameManager():
     def copy( self ):
         """Returns a copy of the current instance"""
 
-        nm = RamNameManager()
+        nm = RamFileInfo()
         nm.project = self.project
         nm.ramType = self.ramType
         nm.shortName = self.shortName
@@ -261,3 +282,15 @@ class RamNameManager():
         nm.__fileName = nm.__fileName
 
         return nm
+
+    def __str__( self ):
+        return self.fileName()
+
+    def __eq__(self, other):
+        if self.project != other.project: return False
+        if self.ramType != other.ramType: return False
+        if self.shortName != other.shortName: return False
+        if self.step != other.step: return False
+        if self.resource != other.resource: return False
+        if self.extension != other.extension: return False
+        return True

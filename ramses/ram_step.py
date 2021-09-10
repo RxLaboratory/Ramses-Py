@@ -19,7 +19,7 @@
 
 import os
 from platform import version
-from .name_manager import RamNameManager
+from .file_info import RamFileInfo
 from .ram_object import RamObject
 from .ramses import Ramses
 from .logger import log
@@ -57,7 +57,7 @@ class RamStep( RamObject ):
             if project is None:
                 return None
 
-        nm = RamNameManager()
+        nm = RamFileInfo()
         nm.setFilePath( path )
 
         # To improve perf, pass other information than just step short name to the method
@@ -294,7 +294,7 @@ class RamStep( RamObject ):
         if folderPath == '':
             return ''
 
-        nm = RamNameManager()
+        nm = RamFileInfo()
         nm.setFilePath( folderPath )
         if nm.project == '':
             return ''

@@ -19,7 +19,7 @@
 
 import os
 from datetime import datetime
-from .name_manager import RamNameManager
+from .file_info import RamFileInfo
 
 from .ramses import Ramses
 from .file_manager import RamFileManager
@@ -91,7 +91,7 @@ class RamStatus:
         """
 
         baseName = os.path.basename( filePath )
-        nm = RamNameManager()
+        nm = RamFileInfo()
         if not nm.setFileName( baseName ):
             log( Log.MalformedName, LogLevel.Critical )
             return None
@@ -104,7 +104,7 @@ class RamStatus:
             if nm.state != '':
                 stateId = nm.state
         else:
-            latestStatus = RamFileManager.getLatestVersion( filePath )
+            latestStatus = RamFileManager.getLatestVersionInfo( filePath )
             version = latestStatus[0]
             stateId = latestStatus[1]
 
