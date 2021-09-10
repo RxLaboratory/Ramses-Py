@@ -18,7 +18,6 @@
 #======================= END GPL LICENSE BLOCK ========================
 
 import os, re
-from ramses.file_manager import RamFileManager
 from datetime import datetime
 from .constants import ItemType, LogLevel
 from .utils import intToStr
@@ -139,6 +138,8 @@ class RamFileInfo():
 
     def filePath( self ):
         """Returns the new filename appended to the original path if it was set, otherwise returns an empty string"""
+        from .file_manager import RamFileManager
+
         if self.__filePath == "": return ""
 
         fileName = self.fileName()
@@ -192,7 +193,6 @@ class RamFileInfo():
 
     def setFilePath( self, path ):
         """Tries to get the maximum information from the path"""
-
         from .file_manager import RamFileManager
 
         self.__filePath = path
