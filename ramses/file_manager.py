@@ -33,7 +33,7 @@ class RamFileManager():
     """A Class to help managing files using the Ramses naming scheme"""
 
     # Cache stuff
-    __nameRe = None
+    __writingThreads = []
 
     @staticmethod
     def copy( originPath, destinationPath, separateThread=True ):
@@ -44,11 +44,18 @@ class RamFileManager():
             t = Thread( target=RamFileManager.copy, args=(originPath, destinationPath, False) )
             log( "Launching parallel copy of a file.", LogLevel.Debug )
             t.start()
+            RamFileManager.__writingThreads.append(t)
         else:
             log("Starting copy of: " + os.path.basename( originPath ) + "\nto: " + destinationPath, LogLevel.Debug )
             shutil.copy2( originPath, destinationPath )
             RamMetaDataManager.appendHistoryDate( destinationPath )
             log("Finished writing: " + os.path.basename( destinationPath ), LogLevel.Debug )
+
+    @staticmethod
+    def waitFiles():
+        """Waits for all writing operations to finish"""
+        for t in RamFileManager.__writingThreads:
+            t.join()
 
     @staticmethod
     def getRamsesFiles( folderPath, resource = None ):
