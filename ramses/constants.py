@@ -43,6 +43,7 @@ class MetaDataKeys():
     PIPE_TYPE = 'pipeFileShortName'
     MODIFICATION_HISTORY = 'history'
     DATE = 'date'
+    STATE = 'stateShortName'
 
 class ItemType():
     GENERAL='G'
