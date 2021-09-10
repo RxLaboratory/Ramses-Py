@@ -281,6 +281,7 @@ class RamFileInfo():
         nm.extension = self.extension
         nm.__stateShortNames = self.__stateShortNames
         nm.__fileName = nm.__fileName
+        nm.__filePath = nm.__filePath
 
         return nm
 
