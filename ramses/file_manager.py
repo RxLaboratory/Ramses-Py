@@ -45,10 +45,10 @@ class RamFileManager():
             log( "Launching parallel copy of a file.", LogLevel.Debug )
             t.start()
         else:
-            log("Starting copy of\n" + originPath + "\nto: " + destinationPath, LogLevel.Debug )
+            log("Starting copy of: " + os.path.basename( originPath ) + "\nto: " + destinationPath, LogLevel.Debug )
             shutil.copy2( originPath, destinationPath )
             RamMetaDataManager.appendHistoryDate( destinationPath )
-            log("Finished copying\n" + originPath + "\nto: " + destinationPath, LogLevel.Debug )
+            log("Finished writing: " + os.path.basename( destinationPath ), LogLevel.Debug )
 
     @staticmethod
     def getRamsesFiles( folderPath, resource = None ):
@@ -330,7 +330,7 @@ class RamFileManager():
 
         versionsFolder = RamFileManager.getVersionFolder( filePath )
 
-        newFilePath = RamFileManager.buildPath(( versionsFolder + '/' + newFileName ))
+        newFilePath = RamFileManager.buildPath(( versionsFolder, newFileName ))
         RamFileManager.copy( filePath, newFilePath )
         RamMetaDataManager.setDate( newFilePath, fileInfo.date )
         return newFilePath
