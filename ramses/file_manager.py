@@ -17,8 +17,7 @@
 #
 #======================= END GPL LICENSE BLOCK ========================
 
-import os, re, shutil
-from datetime import datetime
+import os, re, shutil, codecs
 from threading import Thread
 from .ram_settings import RamSettings
 from .utils import intToStr
@@ -613,3 +612,17 @@ class RamFileManager():
         if not nm.setFileName( fileName ):
             return -1
         return nm.version
+
+    @staticmethod
+    def _publishVersionFoldersSorter( f ):
+        folderName = os.path.basename(f)
+        folderNameList = folderName.split('_')
+        numBlocks = len(folderNameList)
+        # Invalid, return the lowest value
+        if numBlocks == 0 or numBlocks > 3: return float('-inf')
+        # Without resource, we return the version
+        if numBlocks == 2: return int(folderNameList[0])
+        # With resource, -resourceId + version
+        resourceBytes = folderNameList[0].encode('utf_8', 'replace')
+        resourceInt = - int( codecs.encode( resourceBytes, 'hex' ), 16 ) * 1000
+        return resourceInt + int( folderNameList[1] )

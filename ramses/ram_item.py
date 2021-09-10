@@ -454,6 +454,8 @@ class RamItem( RamObject ):
             if not os.path.isdir(folderPath): continue
             versionFolders.append( folderPath )
 
+        versionFolders.sort(key=RamFileManager._publishVersionFoldersSorter)
+
         return versionFolders
 
     def versionFolderPath( self, step="" ): 
