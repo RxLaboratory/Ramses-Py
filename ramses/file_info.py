@@ -55,7 +55,7 @@ class RamFileInfo():
         self.extension = ""
         self.isRestoredVersion = False
         self.restoredVersion = -1
-        self.date = None
+        self.date = datetime.now()
 
     def __getRamsesNameRegEx( self ):
         """Private method to get a Regex to check if a file matches Ramses' naming convention."""
@@ -204,9 +204,10 @@ class RamFileInfo():
         self.setFileName( name )
 
         # The date of the file
-        self.date = datetime.fromtimestamp(
-            os.path.getmtime( path )
-        )
+        if os.path.exists( path ):
+            self.date = datetime.fromtimestamp(
+                os.path.getmtime( path )
+            )
 
         # If this is a project path, let's just use the project short name
         if RamFileManager.isProjectFolder( path):

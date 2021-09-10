@@ -306,34 +306,33 @@ class RamFileManager():
         log("Incrementing version for file: " + filePath, LogLevel.Debug)
 
         # Check File Name
-        fileName = os.path.basename( filePath )
-        nm = RamFileInfo()
-        if not nm.setFileName( fileName ):
+        fileInfo = RamFileInfo()
+        fileInfo.setFilePath( filePath )
+        if fileInfo.project == '':
             log( Log.MalformedName, LogLevel.Critical )
             return
                
         # Look for the latest version to increment and save
-        version = RamFileManager.getLatestVersionInfo( filePath, stateShortName )
-        versionNumber = version[0]
+        versioInfo = RamFileManager.getLatestVersionInfo( filePath, stateShortName )
+        fileInfo.version = versioInfo.version
         if stateShortName == "":
-            versionState = version[1]
+            fileInfo.state = versioInfo.state
         else:
-            versionState = stateShortName
+            fileInfo.state = stateShortName
 
         if increment:
-            versionNumber = versionNumber + 1
+            fileInfo.version += 1
 
-        if versionNumber <= 0:
-            versionNumber = 1
+        if fileInfo.version <= 0:
+            fileInfo.version = 1
 
-        nm.version = versionNumber
-        nm.state = versionState
-        newFileName = nm.fileName()
+        newFileName = fileInfo.fileName()
 
         versionsFolder = RamFileManager.getVersionFolder( filePath )
 
-        newFilePath = versionsFolder + '/' + newFileName
+        newFilePath = RamFileManager.buildPath(( versionsFolder + '/' + newFileName ))
         RamFileManager.copy( filePath, newFilePath )
+        RamMetaDataManager.setDate( newFilePath, fileInfo.date )
         return newFilePath
 
     @staticmethod
