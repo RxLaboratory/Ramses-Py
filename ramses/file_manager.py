@@ -343,15 +343,10 @@ class RamFileManager():
         """
 
         latestVersionFilePath = RamFileManager.getLatestVersionFilePath( filePath, previous )
-        if latestVersionFilePath == "":
-            return ( 0, defaultStateShortName, datetime.now() )
-
-        latestVersionFile = os.path.basename( latestVersionFilePath )
-        nm = RamFileInfo()
-        nm.setFileName( latestVersionFile )
-        if nm.state == '': nm.state = defaultStateShortName
-
-        return nm
+        versionInfo = RamFileInfo()
+        versionInfo.setFilePath( latestVersionFilePath )
+        if versionInfo.state == '': versionInfo.state = defaultStateShortName
+        return versionInfo
 
     @staticmethod
     def getLatestVersionFilePath( filePath, previous=False ):
