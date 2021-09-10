@@ -280,8 +280,8 @@ class RamFileInfo():
         nm.version = self.version
         nm.extension = self.extension
         nm.__stateShortNames = self.__stateShortNames
-        nm.__fileName = nm.__fileName
-        nm.__filePath = nm.__filePath
+        nm.__fileName = self.__fileName
+        nm.__filePath = self.__filePath
 
         return nm
 
