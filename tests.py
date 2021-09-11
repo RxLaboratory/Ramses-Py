@@ -13,7 +13,8 @@ from ramses import (
     RamMetaDataManager,
     RamFileManager,
     Ramses,
-    RamStep
+    RamStep,
+    RamPipeFile
     )
 
 settings = RamSettings.instance()
@@ -150,6 +151,13 @@ def fileManager():
     nm.setFileName('EXPLE_G_TEX_Template.mb')
     nm.setFileName('EXPLE_G_TEX_TEstTemplate2.mb')
 
+def metaDataManager():
+    f = 'C:/Users/Duduf/Ramses/Projects/TEST/04-ASSETS/Main Characters/TEST_A_TRI/TEST_A_TRI_MOD/_published/066_OK/TEST_A_TRI_MOD_Tristan-GeoPipe.abc'
+    version = RamMetaDataManager.getVersion(f)
+    state = RamMetaDataManager.getState(f)
+    print('Version is: ' + str(version))
+    print('State is: ' + state)
+
 # === TESTS ===
 
 # ramObjects()
@@ -161,4 +169,5 @@ def fileManager():
 # metadata()
 # project()
 # threadedCopy()
-fileManager()
+# fileManager()
+# metaDataManager()

@@ -91,7 +91,7 @@ class RamMetaDataManager():
 
     @staticmethod
     def getState( filePath ):
-        RamMetaDataManager.getValue(filePath, MetaDataKeys.STATE)
+        return RamMetaDataManager.getValue(filePath, MetaDataKeys.STATE)
 
     @staticmethod
     def getDate( filePath ):

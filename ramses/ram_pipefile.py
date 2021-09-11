@@ -86,3 +86,4 @@ class RamPipeFile( RamObject ):
                 files.append( filePath )
 
         return files
+    

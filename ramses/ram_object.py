@@ -78,6 +78,6 @@ class RamObject(object):
 
     def __eq__(self, other):
         try:
-            return self._shortName == other._shortName
+            return self.shortName() == other.shortName()
         except:
             return False
