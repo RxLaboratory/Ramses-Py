@@ -48,12 +48,12 @@ class RamPipeFile( RamObject ):
     def colorSapce(self):
         return self._colorSpace
 
-    def check(self, filePath):
+    def check(self, filePath, checkFileType=False):
         """Checks if a file corresponds to this pipe.
         Note that the filename must end with the pipe shortname (it must be at the end of its resource)"""
 
         # It must be of the correct type
-        if not self._fileType.check( filePath ):
+        if not self._fileType.check( filePath ) and checkFileType:
             return False 
 
         # Have the type in the metadata
