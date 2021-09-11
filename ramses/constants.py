@@ -44,6 +44,7 @@ class MetaDataKeys():
     MODIFICATION_HISTORY = 'history'
     DATE = 'date'
     STATE = 'stateShortName'
+    RESOURCE = 'resource'
 
 class ItemType():
     GENERAL='G'

@@ -53,14 +53,22 @@ class RamMetaDataManager():
     @staticmethod
     def getPipeType(filePath):
         pipeType = RamMetaDataManager.getValue(filePath, MetaDataKeys.PIPE_TYPE)
-        if pipeType is None:
-            return ''
+        if pipeType is None: return ''
         return pipeType
 
     @staticmethod
     def setPipeType(filePath, pipeType):
-        print (pipeType)
         RamMetaDataManager.setValue(filePath, MetaDataKeys.PIPE_TYPE, pipeType)
+
+    @staticmethod
+    def getResource(filePath):
+        resource = RamMetaDataManager.getValue(filePath, MetaDataKeys.RESOURCE)
+        if resource is None: return ''
+        return resource
+
+    @staticmethod
+    def setResource(filePath, resource):
+        RamMetaDataManager.setValue(filePath, MetaDataKeys.RESOURCE, resource)
 
     @staticmethod
     def setValue(filePath, key, value):
@@ -91,7 +99,9 @@ class RamMetaDataManager():
 
     @staticmethod
     def getState( filePath ):
-        return RamMetaDataManager.getValue(filePath, MetaDataKeys.STATE)
+        state = RamMetaDataManager.getValue(filePath, MetaDataKeys.STATE)
+        if state is None: return ''
+        return state
 
     @staticmethod
     def getDate( filePath ):
@@ -101,6 +111,7 @@ class RamMetaDataManager():
     @staticmethod
     def setDate( filePath, date ):
         """Sets a date for the file"""
+        if date is None: date = datetime.now()
         if not isinstance( date, int ): date = time.mktime( date.timetuple() )
         RamMetaDataManager.setValue(filePath, MetaDataKeys.DATE, date)
 

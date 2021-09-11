@@ -458,6 +458,23 @@ class RamItem( RamObject ):
 
         return versionFolders
 
+    def latestPublishedVersion( self, fileName='', resource='' ):
+        """Gets the latest published version for the given fileName. Returns the latest folder if the fileName is omitted or an empty string"""
+        versionFolders = self.publishedVersionFolderPaths()
+        
+        if len(versionFolders) == 0: return ''
+
+        for folder in versionFolders:
+            # Check the resource
+            folderName = os.path.dirname( folder ).split('_')
+            if len(folderName) != 3 and resource != '': continue
+            elif len(folderName) == 3 and resource != folderName[0]: continue
+            
+            if fileName == '': return folder
+
+            for f in os.listdir(folder):
+                if f == fileName: return RamFileManager.buildPath((folder, f))
+
     def versionFolderPath( self, step="" ): 
         """Path to the version folder relative to the item root folder
 
