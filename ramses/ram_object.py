@@ -30,6 +30,21 @@ class RamObject(object):
         )
 
     @staticmethod
+    def fromString( objStr ):
+        """Rebuilds an item from the string returned by str(item)"""
+
+        splitName = objStr.split(' | ')
+        shortName =  splitName[0]
+        name = shortName
+        if len(splitName) == 2:
+            name = splitName[1]
+
+        return RamObject(
+            name,
+            shortName 
+        )
+
+    @staticmethod
     def getObjectShortName( obj ):
         from .file_manager import RamFileManager
 
@@ -70,10 +85,10 @@ class RamObject(object):
         return self._shortName
 
     def __str__( self ):
-        n = self._shortName
-        if self._name != '':
+        n = self.shortName()
+        if self.name() != '':
             if n != '': n = n + " | "
-            n = n + self._name
+            n = n + self.name()
         return n
 
     def __eq__(self, other):

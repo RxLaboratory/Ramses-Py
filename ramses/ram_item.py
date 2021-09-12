@@ -54,6 +54,7 @@ class RamItem( RamObject ):
         # Get info from the path
         nm = RamFileInfo()
         nm.setFilePath( fileOrFolderPath )
+
         if nm.project == '': # Wrong name, we can't do anything more
             log (Log.MalformedName, LogLevel.Debug)
             return None
@@ -108,6 +109,28 @@ class RamItem( RamObject ):
 
         log( "The given path does not belong to a shot nor an asset", LogLevel.Debug )
         return None
+
+    @staticmethod
+    def fromString( itemString, itemType = ItemType.GENERAL ):
+        
+        obj = RamObject.fromString( itemString )
+        item = RamItem( obj.name(), obj.shortName() )
+
+        if itemType != ItemType.SHOT and itemType != ItemType.ASSET: return item
+
+        # try to get from current project
+        proj = Ramses.instance().currentProject()
+        if proj is None: return item
+        
+        if itemType == ItemType.ASSET:
+            i = proj.asset( item.shortName() )
+            if i is None: return item
+            return i
+        
+        if itemType == ItemType.SHOT:
+            i = proj.shot( item.shortName() )
+            if i is None: return item
+            return i
 
     # Do not document Asset Group nor Type as its used by derived classes
     def __init__( self, itemName, itemShortName, itemFolder="", itemType=ItemType.GENERAL, assetGroup="" ):

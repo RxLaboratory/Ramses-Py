@@ -14,25 +14,19 @@ from ramses import (
     RamFileManager,
     Ramses,
     RamStep,
-    RamPipeFile
+    RamPipeFile,
+    ItemType
     )
 
 settings = RamSettings.instance()
-settings.logLevel = LogLevel.Debug
+settings.logLevel = LogLevel.Info
 
 ramses = Ramses.instance()
 
 # daemon = RamDaemonInterface.instance()
 
 testPaths = (
-    'C:/Users/Duduf/Ramses/Projects/FPE/02-PROD/FPE_G_MOD',
-    'C:/TEMP/MAYA/MAYA_G_Tests.mb',
-    'C:/Users/Duduf/Ramses/Projects/FPE/05-SHOTS/FPE_S_001',
-    'C:/Users/Duduf/Ramses/Projects/FPE/04-ASSETS/Characters/FPE_A_TRISTAN/FPE_A_TRISTAN_MOD',
-    'C:/Users/Duduf/Ramses/Projects/FPE/02-PROD/FPE_G_ANIM/FPE_G_ANIM_Templates/FPE_G_ANIM_Template.mb',
-    'D:/SWAP/TEMP/testfile_G_bis.mb',
-    'C:/Users/Rainbox/Ramses/Projects/FPE/04-ASSETS/Characters/FPE_A_TRISTAN/FPE_A_TRISTAN_MOD/_published',
-    'C:/Users/Duduf/Ramses/Projects/EXPLE/04-ASSETS/Characters/EXPLE_A_ISEULT/EXPLE_A_ISEULT_CD',
+    'C:/Users/Duduf/Ramses/Projects/TEST/04-ASSETS/Main Characters/TEST_A_IS/TEST_A_IS_SET/_published/AllCharas_004_CHK/TEST_A_IS_SET_AllCharas-Set.mb',
 )
 
 def ram():
@@ -78,7 +72,26 @@ def ramStep():
     print(step.color())
 
 def ramItem(pathIndex, step=''):
+    print ("========FROM STRING=======")
+    item = RamItem.fromString('IS | Iseult', ItemType.ASSET)
+    print ("==========================")
+    print(item)
+    if item:
+        print(item.itemType())
+        print(item.folderPath())
+        print(item.stepFolderPath(step))
+        print(item.stepFilePaths(step))
+        print(item.currentStatus(step))
+        print(item.itemType())
+        print(item.stepFolderPath(step))
+        print(item.currentStatus())
+        print(item.latestVersionFilePath('', '', step))
+        print(item.versionFolderPath(step))
+        print(item.projectShortName())
+
+    print ("========FROM PATH=======")
     item = RamItem.fromPath(testPaths[pathIndex])
+    print ("========================")
     print(item)
     if item:
         print(item.stepFolderPath(step))
@@ -87,7 +100,7 @@ def ramItem(pathIndex, step=''):
         print(item.itemType())
         print(item.stepFolderPath(step))
         print(item.currentStatus())
-        print(item.latestVersionFilePath())
+        print(item.latestVersionFilePath(step))
         print(item.versionFolderPath(step))
         print(item.projectShortName())
 
@@ -169,10 +182,10 @@ def metaDataManager():
 # ramFileTypes()
 # ramUsers()
 # ram()
-# ramItem(7, "CD")
+ramItem(0, "MOD")
 # metadata()
 # project()
 # threadedCopy()
 # fileManager()
 # metaDataManager()
-ramStep()
+# ramStep()

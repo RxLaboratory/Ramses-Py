@@ -46,6 +46,19 @@ class RamStep( RamObject ):
         s._color = stepDict['color']
         return s
 
+    @staticmethod
+    def fromString( stepString ):
+        obj = RamObject.fromString( itemString )
+        step = RamStep( obj.name(), obj.shortName() )
+
+        # try to get from current project
+        proj = Ramses.instance().currentProject()
+        if proj is None: return step
+        
+        s = proj.step( stp.shortName() )
+        if s is None: return step
+        return s
+
     # project is undocumented and used to improve performance, when called from a RamProject
     @staticmethod
     def fromPath( path, project=None ):

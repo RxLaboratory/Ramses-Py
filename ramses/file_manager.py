@@ -177,16 +177,21 @@ class RamFileManager():
         if saveFolder == "":
             return ""
 
-        if RamFileManager.inReservedFolder( path ):
-            saveFolder = os.path.dirname( saveFolder )
-            # We may still be in a reserved folder if this was published
-            if RamFileManager.inReservedFolder( saveFolder ): saveFolder = os.path.dirname( saveFolder )
-            # Still the case? something is wrong
-            if RamFileManager.inReservedFolder( saveFolder ): return ""
+        # Get up the tree until we find a reserved folder and get out of it!
+        path = os.path.dirname(saveFolder)
+        name = os.path.basename(path)
+        while name != '':
+            # Found it!
+            if RamFileManager.isReservedFolder( path ):
+                saveFolder = os.path.dirname( path )
+                break
+            # Move up to the parent folder
+            path = os.path.dirname(path)
+            name = os.path.basename(path)
 
         saveFileName = nm.fileName()
         
-        return saveFolder + '/' + saveFileName
+        return RamFileManager.buildPath(( saveFolder, saveFileName ))
         
     @staticmethod
     def restoreVersionFile( filePath ):
@@ -509,20 +514,23 @@ class RamFileManager():
         currentFolderName = os.path.basename( currentFolder )
         return currentFolderName == settings.folderNames.versions
 
-    @staticmethod
-    def inReservedFolder( path ):
-        """Checks if the given path is (directly) inside a "versions/preview/published" folder"""
-        if os.path.isfile( path ):
-            currentFolder = os.path.dirname( path )
-            currentFolderName = os.path.basename( currentFolder )
-        else:
-            currentFolderName = os.path.basename( path )
-
-        return currentFolderName in [
+    def isReservedFolder( path ):
+        """Checks if this is a reserved folder"""
+        name = os.path.basename( path )
+        return name in [
             FolderNames.versions,
             FolderNames.publish,
             FolderNames.preview
         ]
+
+    @staticmethod
+    def inReservedFolder( path ):
+        """Checks if the given path is (directly) inside a "versions/preview/published" folder"""
+        currentFolder = path
+        if os.path.isfile( path ):
+            currentFolder = os.path.dirname( path )
+
+        return isReservedFolder( currentFolder )
     
     @staticmethod
     def validateName( name ):
