@@ -73,6 +73,10 @@ def ramUsers():
     log( u )
     log( u.comment() )
 
+def ramStep():
+    step = Ramses.instance().currentProject().step('RIG')
+    print(step.color())
+
 def ramItem(pathIndex, step=''):
     item = RamItem.fromPath(testPaths[pathIndex])
     print(item)
@@ -171,3 +175,4 @@ def metaDataManager():
 # threadedCopy()
 # fileManager()
 # metaDataManager()
+ramStep()

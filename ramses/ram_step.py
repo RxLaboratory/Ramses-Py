@@ -43,6 +43,7 @@ class RamStep( RamObject ):
             stepDict['folder'],
             stepDict['type']
         )
+        s._color = stepDict['color']
         return s
 
     # project is undocumented and used to improve performance, when called from a RamProject
@@ -77,6 +78,24 @@ class RamStep( RamObject ):
         self._projectShortName = ""
         self._inputPipes = []
         self._outputPipes = []
+        self._color = None
+
+    def color( self ): # Immutable
+        if self._color is not None:
+            return self._color
+
+        color = ( 165/255.0, 38/255.0, 196/255.0 )
+
+        # if online
+        if Ramses.instance().online():
+            reply = daemon.getStep( self._shortName )
+            # check if successful
+            if RamDaemonInterface.checkReply( reply ):
+                content = reply['content']
+                self._color = content['color']
+                color = self._color
+
+        return color
 
     def folderPath( self ): # Immutable
         """The absolute path to the folder containing the common files for this step
