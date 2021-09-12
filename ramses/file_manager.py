@@ -531,7 +531,7 @@ class RamFileManager():
         if os.path.isfile( path ):
             currentFolder = os.path.dirname( path )
 
-        return isReservedFolder( currentFolder )
+        return RamFileManager.isReservedFolder( currentFolder )
     
     @staticmethod
     def validateName( name ):

@@ -121,7 +121,7 @@ class RamFileInfo():
             nameList.append( self.shortName )
 
         if self.resource != '':
-            nameList.append( self.resource )
+            nameList.append( self.resource.replace('_', ' ') )
 
         if self.version != -1:
             v = self.state + intToStr(self.version)
