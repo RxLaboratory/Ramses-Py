@@ -509,7 +509,6 @@ class RamItem( RamObject ):
         if len(versionFolders) == 0: return ''
         return versionFolders[-1]
         
-
     def versionFolderPath( self, step="" ): 
         """Path to the version folder relative to the item root folder
 
