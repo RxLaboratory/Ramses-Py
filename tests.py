@@ -103,6 +103,8 @@ def ramItem(pathIndex, step=''):
         print(item.latestVersionFilePath(step))
         print(item.versionFolderPath(step))
         print(item.projectShortName())
+        print("----------")
+        print(item.latestPublishedVersionFolderPath('SET', 'TEST_A_IS_SET_AllCharas-Set.mb'))
 
 def metadata():
     RamMetaDataManager.setComment(testPaths[1], "Test comment")

@@ -514,6 +514,7 @@ class RamFileManager():
         currentFolderName = os.path.basename( currentFolder )
         return currentFolderName == settings.folderNames.versions
 
+    @staticmethod
     def isReservedFolder( path ):
         """Checks if this is a reserved folder"""
         name = os.path.basename( path )

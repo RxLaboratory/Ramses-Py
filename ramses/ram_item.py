@@ -458,19 +458,20 @@ class RamItem( RamObject ):
 
         return publishFolder
 
-    def publishedVersionFolderPaths( self, step="" ):
+    def publishedVersionFolderPaths( self, step="", fileName = '', resource=None ):
         """Gets the list of file paths in the publish folder.
             Paths are relative to the root of the item folder.
 
         Args:
             step (RamStep or str)
-            resource (str, optional): Defaults to "".
+            resource (str, optional): Defaults to None (returns all resources).
 
         Returns:
             list of str
         """
 
         publishFolderPath = self.publishFolderPath(step)
+
         versionFolders = []
         for f in os.listdir(publishFolderPath):
             folderPath = RamFileManager.buildPath(( publishFolderPath, f ))
@@ -479,24 +480,35 @@ class RamItem( RamObject ):
 
         versionFolders.sort(key=RamFileManager._publishVersionFoldersSorter)
 
-        return versionFolders
+        if len(versionFolders) == 0: return versionFolders
 
-    def latestPublishedVersion( self, fileName='', resource='' ):
-        """Gets the latest published version for the given fileName. Returns the latest folder if the fileName is omitted or an empty string"""
-        versionFolders = self.publishedVersionFolderPaths()
-        
-        if len(versionFolders) == 0: return ''
+        if fileName == '' and resource is None: return versionFolders
 
+        publishedFolders = []
+        #filter by filename and resource
         for folder in versionFolders:
             # Check the resource
-            folderName = os.path.dirname( folder ).split('_')
-            if len(folderName) != 3 and resource != '': continue
-            elif len(folderName) == 3 and resource != folderName[0]: continue
-            
-            if fileName == '': return folder
+            if resource is not None:
+                folderName = os.path.basename( folder ).split('_')
+                if len(folderName) != 3 and resource != '': continue
+                elif len(folderName) == 3 and resource != folderName[0]: continue
+
+            if fileName == '':
+                publishedFolders.append(folder)
+                continue
 
             for f in os.listdir(folder):
-                if f == fileName: return RamFileManager.buildPath((folder, f))
+                if f == fileName: publishedFolders.append(folder)
+
+        return publishedFolders
+
+    def latestPublishedVersionFolderPath( self, step="", fileName='', resource=None ):
+        """Gets the latest published version folder for the given fileName. Returns the latest folder if the fileName is omitted or an empty string"""
+        versionFolders = self.publishedVersionFolderPaths(step, fileName, resource)
+        
+        if len(versionFolders) == 0: return ''
+        return versionFolders[-1]
+        
 
     def versionFolderPath( self, step="" ): 
         """Path to the version folder relative to the item root folder
