@@ -37,8 +37,6 @@ class RamFileManager():
     @staticmethod
     def copy( originPath, destinationPath, separateThread=True ):
         """Copies a file, in a separated thread if separateThread is True"""
-        from .metadata_manager import RamMetaDataManager
-
         if separateThread:
             t = Thread( target=RamFileManager.copy, args=(originPath, destinationPath, False) )
             log( "Launching parallel copy of a file.", LogLevel.Debug )
@@ -47,7 +45,6 @@ class RamFileManager():
         else:
             log("Starting copy of: " + os.path.basename( originPath ) + "\nto: " + destinationPath, LogLevel.Debug )
             shutil.copy2( originPath, destinationPath )
-            RamMetaDataManager.appendHistoryDate( destinationPath )
             log("Finished writing: " + os.path.basename( destinationPath ), LogLevel.Debug )
 
     @staticmethod
@@ -199,6 +196,8 @@ class RamFileManager():
             log( "This version can't be restored, it is not in a Ramses version subfolder.", LogLevel.Critical )
             return
 
+        from .metadata_manager import RamMetaDataManager
+
         fileName = os.path.basename( filePath )
 
         nm = RamFileInfo()
@@ -217,6 +216,7 @@ class RamFileManager():
 
         restoredFilePath = saveFolder + '/' + restoredFileName
         RamFileManager.copy( filePath, restoredFilePath )
+        RamMetaDataManager.appendHistoryDate( restoredFilePath )
         return restoredFilePath
 
     @staticmethod
@@ -230,8 +230,7 @@ class RamFileManager():
 
         publishFilePath = fileInfo.filePath()
         RamFileManager.copy( filePath, publishFilePath )
-        # Keep the date in the metadata, just in case
-        RamMetaDataManager.setDate( publishFilePath, fileInfo.date )
+        RamMetaDataManager.appendHistoryDate( publishFilePath )
 
         return publishFilePath
 
@@ -343,7 +342,7 @@ class RamFileManager():
 
         newFilePath = RamFileManager.buildPath(( versionsFolder, newFileName ))
         RamFileManager.copy( filePath, newFilePath )
-        RamMetaDataManager.setDate( newFilePath, fileInfo.date )
+        RamMetaDataManager.appendHistoryDate( newFilePath )
         return newFilePath
 
     @staticmethod
