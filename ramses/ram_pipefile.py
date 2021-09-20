@@ -34,19 +34,24 @@ class RamPipeFile( RamObject ):
         return RamPipeFile(
             pipeFileDict['shortName'],
             fileType,
-            pipeFileDict['colorSpace']
+            pipeFileDict['colorSpace'],
+            pipeFileDict['customSettings']
         )
 
-    def __init__(self, shortName, fileType, colorSpace = ''):
+    def __init__(self, shortName, fileType, colorSpace = '', customSettings = ''):
         super(RamPipeFile, self).__init__( '', shortName )
         self._fileType = fileType
         self._colorSpace = colorSpace
+        self._customSettings = customSettings
 
     def fileType(self):
         return self._fileType
 
     def colorSapce(self):
         return self._colorSpace
+
+    def customSettings(self):
+        return self._customSettings
 
     def check(self, filePath, checkFileType=False):
         """Checks if a file corresponds to this pipe.
