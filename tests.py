@@ -111,11 +111,13 @@ def metadata():
     print( RamMetaDataManager.getComment( testPaths[1] ) )
 
 def project():
-    project = ramses.project("FPE")
+    project = ramses.project("galibot")
     print(project)
     shots = project.shots()
     for shot in shots:
         print( shot )
+
+    print( project.sequences() )
     
     print( project.assetGroups() )
 
@@ -184,9 +186,9 @@ def metaDataManager():
 # ramFileTypes()
 # ramUsers()
 # ram()
-ramItem(0, "MOD")
+# ramItem(0, "MOD")
 # metadata()
-# project()
+project()
 # threadedCopy()
 # fileManager()
 # metaDataManager()

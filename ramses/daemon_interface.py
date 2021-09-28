@@ -233,6 +233,17 @@ class RamDaemonInterface( object ):
         if not self.__checkUser(): return self.__noUserReply('getAssetGroups')
         return self.__post( "getAssetGroups", 2048 )
 
+    def getSequences(self):
+        """Gets the sequence list
+
+        Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
+        
+        Returns: list
+        """
+
+        if not self.__checkUser(): return self.__noUserReply('getSequences')
+        return self.__post( "getSequences", 2048 )
+
     def getCurrentStatuses(self, itemShortName, itemName, itemType=ItemType.SHOT):
         """Gets the current status (list) of an item
 

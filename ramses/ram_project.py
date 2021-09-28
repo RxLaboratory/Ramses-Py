@@ -418,7 +418,7 @@ class RamProject( RamObject ):
             if nm.shortName == shotShortName:
                 return RamShot.fromPath( shotsFolderPath + "/" + shotFolder )
 
-    def shots( self, nameFilter = "*" ):
+    def shots( self, nameFilter = "*", sequence = "" ):
         """Available shots in this project
 
         Args:
@@ -447,9 +447,10 @@ class RamProject( RamObject ):
                     if useFilter:
                         if not re.match(regex, shotDict['shortName']):
                             continue
-                    shot = RamShot.fromDict( shotDict )
-                    if shot is not None:
-                        shotsList.append( shot )
+                    if sequence == "" or shotDict['sequence'] == sequence:
+                        shot = RamShot.fromDict( shotDict )
+                        if shot is not None:
+                            shotsList.append( shot )
 
                 if len(shotsList) > 0:
                     return shotsList
@@ -480,6 +481,22 @@ class RamProject( RamObject ):
                 foundShots.append( shot )
 
         return foundShots
+
+    def sequences( self ): # Mutable
+        sequences = []
+
+        # If we're online, ask the client
+        if Ramses.instance().online():
+            reply = daemon.getSequences()
+            # check if successful
+            if RamDaemonInterface.checkReply( reply ):
+                content = reply['content']
+                foundGroups = content['sequences']
+                for group in foundGroups:
+                    groupName = group['name']
+                    sequences.append(groupName)
+        
+        return sequences
 
     # itemType is undocumented: used internally by RamStep.fromPath to improve performance
     def step( self, stepShortName, itemType='' ):

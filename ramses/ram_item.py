@@ -133,7 +133,7 @@ class RamItem( RamObject ):
             return i
 
     # Do not document Asset Group nor Type as its used by derived classes
-    def __init__( self, itemName, itemShortName, itemFolder="", itemType=ItemType.GENERAL, assetGroup="" ):
+    def __init__( self, itemName, itemShortName, itemFolder="", itemType=ItemType.GENERAL, group="" ):
         """
         Args:
             itemName (str)
@@ -143,7 +143,7 @@ class RamItem( RamObject ):
         super(RamItem, self).__init__( itemName, itemShortName )
         self._folderPath = itemFolder
         self._itemType = itemType
-        self._group = assetGroup
+        self._group = group
         self._project = None
         self._projectShortName = ""
 
@@ -159,6 +159,7 @@ class RamItem( RamObject ):
             if daemon.checkReply( replyDict ):
                 self._folderPath = replyDict['content']['folder']
                 self._name = replyDict['content']['name']
+                self._group = replyDict['content']['sequence']
                 return replyDict
                 
         replyDict = daemon.getAsset( self._shortName, self._name )
@@ -745,16 +746,13 @@ class RamItem( RamObject ):
         self._projectShortName = nm.project
         return self._projectShortName
 
-    # Documented in RamAsset only
+    # Documented in RamAsset and RamShot
     def group( self ): # Immutable
-        """The name of group containing this asset. (e.g. Props)
+        """The name of group containing this asset or shot. (e.g. 'Props' or 'Sequence01')
 
         Returns:
             str
         """
-
-        if not self.itemType() == ItemType.ASSET:
-            return ""
 
         if self._group != "":
             return self._group
@@ -765,7 +763,9 @@ class RamItem( RamObject ):
         if self._group != "":
             return self._group
 
-        # Else, check in the folders
+        # Else, check in the folders if it's an asset
+        if not self.itemType() == ItemType.ASSET: return ""
+
         folderPath = self.folderPath()
 
         if not os.path.isdir( folderPath ):

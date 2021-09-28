@@ -36,7 +36,8 @@ class RamShot( RamItem ):
             shotDict['name'],
             shotDict['shortName'],
             shotDict['folder'],
-            shotDict['duration']
+            shotDict['duration'],
+            shotDict['sequence']
         )
 
     @staticmethod
@@ -61,7 +62,7 @@ class RamShot( RamItem ):
 
         return shot
 
-    def __init__( self, shotName, shotShortName, shotFolder="", duration=0.0 ):
+    def __init__( self, shotName, shotShortName, shotFolder="", duration=0.0, sequence="" ):
         """
         Args:
             shotName (str)
