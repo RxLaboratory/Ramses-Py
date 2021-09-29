@@ -161,7 +161,10 @@ class RamProject( RamObject ):
         ))
 
         if not os.path.isdir( thePath ):
-            os.makedirs( thePath )
+            try:
+                os.makedirs( thePath )
+            except:
+                return ""
         
         return thePath
 
@@ -181,7 +184,10 @@ class RamProject( RamObject ):
         ))
 
         if not os.path.isdir( thePath ):
-            os.makedirs( thePath )
+            try:
+                os.makedirs( thePath )
+            except:
+                return ""
 
         return thePath
 
@@ -201,7 +207,10 @@ class RamProject( RamObject ):
         ))
 
         if not os.path.isdir( thePath ):
-            os.makedirs( thePath )
+            try:
+                os.makedirs( thePath )
+            except:
+                return ""
 
         return thePath
 
@@ -221,7 +230,10 @@ class RamProject( RamObject ):
         ))
 
         if not os.path.isdir( thePath ):
-            os.makedirs( thePath )
+            try:
+                os.makedirs( thePath )
+            except:
+                return ""
 
         return thePath
 
@@ -247,7 +259,10 @@ class RamProject( RamObject ):
         ))
 
         if not os.path.isdir( thePath ):
-            os.makedirs( thePath )
+            try:
+                os.makedirs( thePath )
+            except:
+                return ""
 
         self._assetsPath[groupKey] = thePath
         
@@ -269,7 +284,10 @@ class RamProject( RamObject ):
         ))
 
         if not os.path.isdir( thePath ):
-            os.makedirs( thePath )
+            try:
+                os.makedirs( thePath )
+            except:
+                return ""
         
         return thePath
 
@@ -289,7 +307,10 @@ class RamProject( RamObject ):
         ))
 
         if not os.path.isdir( thePath ):
-            os.makedirs( thePath )
+            try:
+                os.makedirs( thePath )
+            except:
+                return ""
         
         return thePath
 
