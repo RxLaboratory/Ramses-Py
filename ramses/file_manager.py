@@ -628,9 +628,10 @@ class RamFileManager():
         numBlocks = len(folderNameList)
         # Invalid, return the lowest value
         if numBlocks == 0 or numBlocks > 3: return float('-inf')
-        # Without resource, we return the version
-        if numBlocks == 2: return int(folderNameList[0])
-        # With resource, -resourceId + version
+        # Single or dual block, should be a number
+        if numBlocks == 1 or numBlocks == 2: return int(folderNameList[0])
+        # Triple block, there's a resource, we return the version
+        # -resourceId + version
         resourceBytes = folderNameList[0].encode('utf_8', 'replace')
         resourceInt = - int( codecs.encode( resourceBytes, 'hex' ), 16 ) * 1000
         return resourceInt + int( folderNameList[1] )
