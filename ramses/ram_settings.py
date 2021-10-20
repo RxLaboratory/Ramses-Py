@@ -23,7 +23,7 @@ import json
 from .constants import FolderNames, LogLevel
 from .logger import log
 
-theVersion = "0.2.0-Alpha"
+theVersion = "0.2.0"
 
 class RamSettings( object ):
     """Gets and saves settings used by Ramses.
@@ -65,6 +65,8 @@ class RamSettings( object ):
             cls.autoIncrementTimeout = cls.defaultAutoIncrementTimeout = 120
             # The folder containing all ramses files
             cls.defaultRamsesFolderPath = os.path.expanduser("~/Ramses")
+            # A Debug mode to throw errors
+            cls.debugMode = cls.defaultDebugMode = False
             # The custom settings
             cls.userSettings = {}
 
@@ -112,6 +114,8 @@ class RamSettings( object ):
                         cls.autoIncrementTimeout = settingsDict['autoIncrementTimeout']
                     if 'ramsesFolderPath' in settingsDict:
                         cls.ramsesFolderPath = settingsDict['ramsesFolderPath']
+                    if 'debugMode' in settingsDict:
+                        cls.debugMode = settingsDict['debugMode']
                     if 'userSettings' in settingsDict:
                         cls.userSettings = settingsDict['userSettings']
 
@@ -137,6 +141,7 @@ class RamSettings( object ):
             'autoIncrementTimeout': self.autoIncrementTimeout,
             'ramsesFolderPath': self.ramsesFolderPath,
             'userSettings': self.userSettings,
+            'debugMode': self.debugMode,
         }
 
         if self._filePath == '':
