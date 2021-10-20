@@ -18,6 +18,8 @@
 #======================= END GPL LICENSE BLOCK ========================
 
 from datetime import datetime
+import linecache
+import sys
 from .constants import LogLevel
 
 def log( message, level = LogLevel.Info ):
@@ -45,3 +47,16 @@ def log( message, level = LogLevel.Info ):
 
     #print( "[" + now.strftime("%Y/%m/%d - %H:%M:%s") + "] " + message )
     print( message )
+
+def printException():
+    exc_type, exc_obj, tb = sys.exc_info()
+    f = tb.tb_frame
+    lineno = tb.tb_lineno
+    filename = f.f_code.co_filename
+    linecache.checkcache(filename)
+    line = linecache.getline(filename, lineno, f.f_globals)
+
+    log(
+        'an EXCEPTION was thrown:\n\tfrom `{}`\n\tat line {}: "{}"\n\t\t{}'.format(filename, lineno, line.strip(), exc_obj),
+        LogLevel.Critical
+        )

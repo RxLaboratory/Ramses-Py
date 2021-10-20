@@ -17,7 +17,7 @@
 #
 #======================= END GPL LICENSE BLOCK ========================
 
-from .logger import log
+from .logger import log, printException
 from .ram_settings import RamSettings
 from .constants import ItemType, Log, LogLevel, StepType, UserRole
 from .ram_object import RamObject
