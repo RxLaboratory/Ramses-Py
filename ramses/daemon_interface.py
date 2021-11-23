@@ -409,6 +409,7 @@ class RamDaemonInterface( object ):
             log("Daemon did not reply correctly")
             return False
         if content['ramses'] == "Ramses": return True
+        if content['ramses'] == "Ramses-Client": return True
 
         log("Invalid content in the Daemon reply", LogLevel.Critical)
         return False
