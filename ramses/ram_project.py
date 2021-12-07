@@ -359,11 +359,12 @@ class RamProject( RamObject ):
             if RamDaemonInterface.checkReply( reply ):
                 content = reply['content']
                 foundAssets = content['assets']
-                for assetDict in foundAssets:
-                    if groupName == "" or assetDict['group'] == groupName:
-                        asset = RamAsset.fromDict( assetDict )
-                        assetsList.append( asset )
-                if len(assetsList) > 0:
+                # If there are assets in the reply only. If not, we're going to check in the folders later.
+                if len(foundAssets) > 0:
+                    for assetDict in foundAssets:
+                        if groupName == "" or assetDict['group'] == groupName:
+                            asset = RamAsset.fromDict( assetDict )
+                            assetsList.append( asset )
                     return assetsList
 
         # Else, check in the folders
