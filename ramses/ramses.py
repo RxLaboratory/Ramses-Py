@@ -68,6 +68,7 @@ class Ramses( object ):
             cls.publishScripts = []
             cls.statusScripts = []
             cls.importScripts = []
+            cls.replaceScripts = []
             cls.userScripts = {}
 
             if settings.online:
@@ -413,4 +414,8 @@ class Ramses( object ):
 
     def importItem(self, item, filePath, step=None):
         for script in self.importScripts:
+            script( item, filePath, step )
+
+    def replaceItem(self, item, filePath, step=None):
+        for script in self.replaceScripts:
             script( item, filePath, step )
