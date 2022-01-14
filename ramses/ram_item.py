@@ -74,8 +74,8 @@ class RamItem( RamObject ):
             itemFolderName = os.path.basename( itemFolder )
             if not RamFileManager._isRamsesItemFoldername( itemFolderName ): # Still wrong: consider it's a general item 
                 return RamItem(
-                    nm.project,
-                    nm.step,
+                    '',
+                    nm.shortName,
                     saveFolder,
                     ItemType.GENERAL
                 )
@@ -101,8 +101,8 @@ class RamItem( RamObject ):
 
         if nm.ramType == ItemType.GENERAL:
             return RamItem(
+                '',
                 nm.shortName,
-                nm.step,
                 saveFolder,
                 ItemType.GENERAL
             )
@@ -599,9 +599,7 @@ class RamItem( RamObject ):
             if nm.ramType != itemType:
                 continue
             if itemType == ItemType.GENERAL:
-                if nm.step != self.shortName():
-                    continue
-                if self.name() != nm.shortName:
+                if self.shortName() != nm.shortName:
                     continue
             else:
                 if nm.step != step or nm.shortName != self.shortName():

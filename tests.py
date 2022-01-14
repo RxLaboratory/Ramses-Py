@@ -27,6 +27,7 @@ ramses = Ramses.instance()
 
 testPaths = (
     'C:/Users/Duduf/Ramses/Projects/TEST/04-ASSETS/Main Characters/TEST_A_IS/TEST_A_IS_SET/_published/AllCharas_004_CHK/TEST_A_IS_SET_AllCharas-Set.mb',
+    'D:/RxLab/Gestion/ZZ-Ramses-Data/Projects/synchronie/02-PROD/synchronie_G_MOD/Templates/synchronie_G_MOD_Template/synchronie_G_MOD_Template.mb'
 )
 
 def ram():
@@ -94,17 +95,8 @@ def ramItem(pathIndex, step=''):
     print ("========================")
     print(item)
     if item:
-        print(item.stepFolderPath(step))
-        print(item.stepFilePaths(step))
-        print(item.currentStatus(step))
-        print(item.itemType())
-        print(item.stepFolderPath(step))
-        print(item.currentStatus())
-        print(item.latestVersionFilePath(step))
         print(item.versionFolderPath(step))
-        print(item.projectShortName())
-        print("----------")
-        print(item.latestPublishedVersionFolderPath('SET', 'TEST_A_IS_SET_AllCharas-Set.mb'))
+        print(item.versionFilePaths("", step))
 
 def metadata():
     RamMetaDataManager.setComment(testPaths[1], "Test comment")
@@ -186,9 +178,9 @@ def metaDataManager():
 # ramFileTypes()
 # ramUsers()
 # ram()
-# ramItem(0, "MOD")
+ramItem(1, "MOD")
 # metadata()
-project()
+# project()
 # threadedCopy()
 # fileManager()
 # metaDataManager()
