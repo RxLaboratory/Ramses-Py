@@ -95,8 +95,7 @@ def ramItem(pathIndex, step=''):
     print ("========================")
     print(item)
     if item:
-        print(item.versionFolderPath(step))
-        print(item.versionFilePaths("", step))
+        print(item.publishedVersionFolderPaths(step))
 
 def metadata():
     RamMetaDataManager.setComment(testPaths[1], "Test comment")
