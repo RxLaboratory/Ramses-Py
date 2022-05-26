@@ -82,9 +82,9 @@ class RamSettings( object ):
 
             # API Settings
             cls.version = theVersion
-            cls.apiReferenceUrl = "https://ramses-docs.rainboxlab.org/dev/add-ons-reference/"
-            cls.addonsHelpUrl = "https://ramses-docs.rainboxlab.org/addons/"
-            cls.generalHelpUrl = "https://ramses-docs.rainboxlab.org/"
+            cls.apiReferenceUrl = "https://ramses.rxlab.guide/dev/"
+            cls.addonsHelpUrl = "https://ramses.rxlab.guide/components/addons/maya/"
+            cls.generalHelpUrl = "https://ramses.rxlab.guide"
 
             # Set the path to the settings file and temporary folder (os-specific)
             system = platform.system()
