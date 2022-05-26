@@ -396,7 +396,7 @@ class Ramses( object ):
         return settings
 
     @staticmethod
-    def version(self):
+    def version():
         """The current version of this API
 
         Returns:
@@ -404,9 +404,10 @@ class Ramses( object ):
         """
         return Ramses._version
 
-    def publish(self, item, step, publishFileInfo):
+    def publish(self, item, step, publishFileInfo, editPublishSettings=False):
+        """Publishes the item; runs the list of scripts Ramses.publishScripts"""
         for script in self.publishScripts:
-            script(item, step, publishFileInfo)
+            script(item, step, publishFileInfo, editPublishSettings)
 
     def updateStatus(self, item, status, step=None):
         for script in self.statusScripts:

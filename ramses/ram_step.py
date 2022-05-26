@@ -28,35 +28,40 @@ from .file_manager import RamFileManager
 from .daemon_interface import RamDaemonInterface
 
 # Keep the daemon at hand
-daemon = RamDaemonInterface.instance()
+DAEMON = RamDaemonInterface.instance()
 
 class RamStep( RamObject ):
     """A step in the production of the shots or assets of the project."""
 
     @staticmethod
-    def fromDict( stepDict ):
+    def fromDict( objectDict ):
         """Builds a RamStep from dict like the ones returned by the RamDaemonInterface"""
 
         s = RamStep(
-            stepDict['name'],
-            stepDict['shortName'],
-            stepDict['folder'],
-            stepDict['type']
+            objectDict['name'],
+            objectDict['shortName'],
+            objectDict['folder'],
+            objectDict['type']
         )
-        s._color = stepDict['color']
+        if 'color' in objectDict:
+            s._color = objectDict['color'] # pylint: disable=protected-access
+        if 'publishSettings' in objectDict:
+            s._publishSettings = objectDict['publishSettings'] # pylint: disable=protected-access
         return s
 
     @staticmethod
-    def fromString( stepString ):
-        obj = RamObject.fromString( itemString )
+    def fromString( objStr ):
+        obj = RamObject.fromString( objStr )
         step = RamStep( obj.name(), obj.shortName() )
 
         # try to get from current project
         proj = Ramses.instance().currentProject()
-        if proj is None: return step
+        if proj is None:
+            return step
         
-        s = proj.step( stp.shortName() )
-        if s is None: return step
+        s = proj.step( step.shortName() )
+        if s is None:
+            return step
         return s
 
     # project is undocumented and used to improve performance, when called from a RamProject
@@ -92,6 +97,7 @@ class RamStep( RamObject ):
         self._inputPipes = []
         self._outputPipes = []
         self._color = None
+        self._publishSettings = ""
 
     def color( self ): # Immutable
         if self._color is not None:
@@ -101,7 +107,7 @@ class RamStep( RamObject ):
 
         # if online
         if Ramses.instance().online():
-            reply = daemon.getStep( self._shortName )
+            reply = DAEMON.getStep( self._shortName )
             # check if successful
             if RamDaemonInterface.checkReply( reply ):
                 content = reply['content']
@@ -122,7 +128,7 @@ class RamStep( RamObject ):
 
         # if online
         if Ramses.instance().online():
-            reply = daemon.getStep( self._shortName )
+            reply = DAEMON.getStep( self._shortName )
             # check if successful
             if RamDaemonInterface.checkReply( reply ):
                 self._folderPath = reply['content']['folder']
@@ -262,7 +268,7 @@ class RamStep( RamObject ):
 
         # if online
         if Ramses.instance().online():
-            reply = daemon.getStep( self._shortName )
+            reply = DAEMON.getStep( self._shortName )
             # check if successful
             if RamDaemonInterface.checkReply( reply ):
                 content = reply['content']
@@ -335,3 +341,21 @@ class RamStep( RamObject ):
 
         self._projectShortName = nm.project
         return self._projectShortName
+
+    def publishSettings(self): # Immutable
+        """Returns the publish settings, as a string,
+        which should be a yaml document, according to the Ramses guidelines.
+        But this string is user-defined and can be anything set in the Ramses Client."""
+        if self._publishSettings != "":
+            return self._publishSettings
+
+        # if online
+        if Ramses.instance().online():
+            reply = DAEMON.getStep( self._shortName )
+            # check if successful
+            if RamDaemonInterface.checkReply( reply ):
+                content = reply['content']
+                if "publishSettings" in content:
+                    self._publishSettings = content['publishSettings']
+
+        return self._publishSettings
