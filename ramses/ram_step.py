@@ -47,6 +47,8 @@ class RamStep( RamObject ):
             s._color = objectDict['color'] # pylint: disable=protected-access
         if 'publishSettings' in objectDict:
             s._publishSettings = objectDict['publishSettings'] # pylint: disable=protected-access
+        if 'importSettings' in objectDict:
+            s._importSettings = objectDict['importSettings'] # pylint: disable=protected-access
         return s
 
     @staticmethod
@@ -98,6 +100,7 @@ class RamStep( RamObject ):
         self._outputPipes = []
         self._color = None
         self._publishSettings = ""
+        self._importSettings = ""
 
     def color( self ): # Immutable
         if self._color is not None:
@@ -359,3 +362,18 @@ class RamStep( RamObject ):
                     self._publishSettings = content['publishSettings']
 
         return self._publishSettings
+
+    def imporSettings(self): # Immutable
+        if self._imporSettings != "":
+            return self._imporSettings
+
+        # if online
+        if Ramses.instance().online():
+            reply = DAEMON.getStep( self._shortName )
+            # check if successful
+            if RamDaemonInterface.checkReply( reply ):
+                content = reply['content']
+                if "imporSettings" in content:
+                    self._imporSettings = content['imporSettings']
+
+        return self._imporSettings
