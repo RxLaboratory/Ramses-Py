@@ -363,9 +363,9 @@ class RamStep( RamObject ):
 
         return self._publishSettings
 
-    def imporSettings(self): # Immutable
-        if self._imporSettings != "":
-            return self._imporSettings
+    def importSettings(self): # Immutable
+        if self._importSettings != "":
+            return self._importSettings
 
         # if online
         if Ramses.instance().online():
@@ -374,6 +374,6 @@ class RamStep( RamObject ):
             if RamDaemonInterface.checkReply( reply ):
                 content = reply['content']
                 if "imporSettings" in content:
-                    self._imporSettings = content['imporSettings']
+                    self._importSettings = content['imporSettings']
 
-        return self._imporSettings
+        return self._importSettings
