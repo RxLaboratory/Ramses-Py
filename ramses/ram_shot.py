@@ -100,3 +100,17 @@ class RamShot( RamItem ):
                 self._duration = reply['content']['duration']
                 
         return self._duration
+
+    def frames( self ): # Mutable
+        """The shot duration, in frames
+        
+        Returns:
+            int
+        """
+
+        duration = self.duration()
+        project = self.project()
+        fps = 24.0
+        if project:
+            fps = project.framerate()
+        return int(duration * fps)
