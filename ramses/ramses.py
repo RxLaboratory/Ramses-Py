@@ -417,6 +417,6 @@ class Ramses( object ):
         for script in self.importScripts:
             script( item, filePath, step, editImportSettings )
 
-    def replaceItem(self, item, filePath, step=None):
+    def replaceItem(self, item, filePath, step=None, editImportSettings=False):
         for script in self.replaceScripts:
-            script( item, filePath, step )
+            script( item, filePath, step, editImportSettings )
