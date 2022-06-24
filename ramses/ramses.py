@@ -404,19 +404,19 @@ class Ramses( object ):
         """
         return Ramses._version
 
-    def publish(self, item, step, publishFileInfo, editPublishSettings=False):
+    def publish(self, item, step, publishFileInfo, publishOptions=None, showPublishOptions=False ):
         """Publishes the item; runs the list of scripts Ramses.publishScripts"""
         for script in self.publishScripts:
-            script(item, step, publishFileInfo, editPublishSettings)
+            script(item, step, publishFileInfo, publishOptions, showPublishOptions)
 
     def updateStatus(self, item, status, step=None):
         for script in self.statusScripts:
             script( item, status, step)
 
-    def importItem(self, item, filePath, step=None, editImportSettings=False):
+    def importItem(self, item, filePath, step=None, importOptions=None, showImportOptions=False ):
         for script in self.importScripts:
-            script( item, filePath, step, editImportSettings )
+            script( item, filePath, step, importOptions, showImportOptions )
 
-    def replaceItem(self, item, filePath, step=None, editImportSettings=False):
+    def replaceItem(self, item, filePath, step=None, importOptions=None, showImportOptions=False):
         for script in self.replaceScripts:
-            script( item, filePath, step, editImportSettings )
+            script( item, filePath, step, importOptions, showImportOptions )
