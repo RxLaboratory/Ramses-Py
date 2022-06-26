@@ -24,10 +24,13 @@ class RamObject(object):
     def fromDict( objectDict ):
         """Builds a RamObject from dict like the ones returned by the RamDaemonInterface"""
 
-        return RamObject(
+        obj = RamObject(
             objectDict['name'],
             objectDict['shortName']
         )
+
+        if 'comment' in objectDict:
+            obj._comment = objectDict['comment']
 
     @staticmethod
     def fromString( objStr ):
@@ -69,6 +72,7 @@ class RamObject(object):
 
         self._name = objectName
         self._shortName = objectShortName
+        self._comment = ""
     
     def name( self ):
         """
@@ -83,6 +87,13 @@ class RamObject(object):
             str
         """
         return self._shortName
+
+    def comment( self ):
+        """
+        Returns:
+            str
+        """
+        return self._comment
 
     def __str__( self ):
         n = self.shortName()
