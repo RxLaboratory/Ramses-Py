@@ -73,3 +73,6 @@ class RamPipe:
 
     def pipeFiles( self ):
         return self._pipeFiles
+
+    def __str__( self ):
+        return self.outputStepShortName() + " -> " + self.inputStepShortName()
