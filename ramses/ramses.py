@@ -405,10 +405,10 @@ class Ramses( object ):
         """
         return Ramses._version
 
-    def publish(self, item, step, file_path, publishOptions=None, showPublishOptions=False ):
+    def publish(self, item, step, filePath, publishOptions=None, showPublishOptions=False ):
         """Publishes the item; runs the list of scripts Ramses.publishScripts"""
         for script in self.publishScripts:
-            script(item, step, file_path, publishOptions, showPublishOptions)
+            script(item, step, filePath, publishOptions, showPublishOptions)
 
     def updateStatus(self, item, status, step=None):
         for script in self.statusScripts:
