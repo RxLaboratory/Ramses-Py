@@ -138,6 +138,7 @@ class Ramses( object ):
         Returns:
             bool
         """
+        print("Is Ramses online? " + str(not self._offline))
         return not self._offline
     
     def alternativeFolderPaths(self):  # TODO

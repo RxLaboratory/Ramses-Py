@@ -359,3 +359,12 @@ class RamStep( RamObject ):
                     self._publishSettings = content['publishSettings']
 
         return self._publishSettings
+
+    def setPublishSettings(self, settings):
+        if not Ramses.instance().online():
+            return
+        DAEMON.setPublishSettings(
+            self.shortName(),
+            self.name(),
+            settings
+        )

@@ -313,6 +313,21 @@ class RamDaemonInterface( object ):
         if not self.__checkUser(): return self.__noUserReply('getRamsesFolderPath')
         return self.__post( "getRamsesFolderPath", 1024 )
 
+    def setPublishSettings(self, stepShortName, stepName, settings):
+        """Sets the publish settings for a specific step
+
+        Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
+        """
+
+        args = [
+            "setPublishSettings",
+            ('shortName', stepShortName),
+            ('name', stepName),
+            ('settings', settings)
+        ]
+
+        return self.__post(args, 0)
+
     def __buildQuery(self, query):
         """Builds a query from a list of args
 
