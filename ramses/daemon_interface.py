@@ -62,57 +62,27 @@ class RamDaemonInterface( object ):
     def ping(self):
         """Gets the version and current user of the ramses daemon.
 
-        Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
+        Read the Ramses Daemon reference at http://ramses.rxlab.guide/dev/daemon-reference/ for more information.
 
         Returns: dict.
-            Read http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
+            Read http://ramses.rxlab.guide/dev/daemon-reference/ for more information.
         """
         return self.__post('ping', 1024)
 
     def raiseWindow(self):
         """Raises the Ramses Client application main window.
         
-        Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
+        Read the Ramses Daemon reference at http://ramses.rxlab.guide/dev/daemon-reference/ for more information.
         """
         self.__post('raise')
 
-    def getAssets(self):
-        """Gets the list of the assets for the current project
-
-        Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
-        
-        Returns: dict.
-        """
-
-        if not self.__checkUser(): return self.__noUserReply('getAssets')
-        return self.__post( "getAssets", 1048576 )
-
-    def getCurrentProject(self):
-        """Gets the current project
-
-        Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
-        
-        Returns: dict.
-        """
-
-        if not self.__checkUser(): return self.__noUserReply('getCurrentProject')
-        return self.__post( "getCurrentProject", 1024 )
-
-    def getPipes(self): #TODO Update Client
-        """Gets the list of the pipes for the current project
-
-        Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
-        
-        Returns: dict.
-        """
-
-        if not self.__checkUser(): return self.__noUserReply('getPipes')
-        return self.__post( "getPipes", 1048576 )
+    def getRamsesFolderPath(self):
+        return self.__post( "getRamsesFolder", 1024 )
 
     def getProjects(self):
         """Gets the list of the projects
 
-        Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
+        Read the Ramses Daemon reference at http://ramses.rxlab.guide/dev/daemon-reference/ for more information.
         
         Returns: dict.
         """
@@ -120,87 +90,21 @@ class RamDaemonInterface( object ):
         if not self.__checkUser(): return self.__noUserReply('getProjects')
         return self.__post( "getProjects", 32768 )
 
-    def getShots(self, filter = ""):
-        """Gets the list of the shots for the current project
+    def getCurrentProject(self):
+        """Gets the current project
 
-        Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
+        Read the Ramses Daemon reference at http://ramses.rxlab.guide/dev/daemon-reference/ for more information.
         
         Returns: dict.
         """
 
-        if not self.__checkUser(): return self.__noUserReply('getShots')
-        if filter == "": return self.__post( ("getShots"), 1048576 )
-        return self.__post( (
-            "getShots",
-            ('filter', filter)
-        ), 1048576  )
+        if not self.__checkUser(): return self.__noUserReply('getCurrentProject')
+        return self.__post( "getCurrentProject", 1024 )
 
-    def getShot( self, shortName, name = ''):
-        if not self.__checkUser(): return self.__noUserReply('getShot')
-        return self.__post((
-            "getShot",
-            ("shortName", shortName),
-            ("name", name),
-        ), 1024)
-
-    def getAsset( self, shortName, name = '' ):
-        if not self.__checkUser(): return self.__noUserReply('getAsset')
-        return self.__post((
-            "getAsset",
-            ("shortName", shortName),
-            ("name", name),
-        ), 1024)
-
-    def getStep( self, shortName, name = '' ):
-        if not self.__checkUser(): return self.__noUserReply('getStep')
-        return self.__post((
-            "getStep",
-            ("shortName", shortName),
-            ("name", name),
-        ), 1024)
-
-    def getState( self, shortName, name = '' ):
-        if not self.__checkUser(): return self.__noUserReply('getState')
-        return self.__post((
-            "getState",
-            ("shortName", shortName),
-            ("name", name),
-        ), 1024)
-
-    def getProject( self, shortName, name = '' ):
-        if not self.__checkUser(): return self.__noUserReply('getProject')
-        return self.__post((
-            "getProject",
-            ("shortName", shortName),
-            ("name", name),
-        ), 1024)
-
-    def getStates(self):
-        """Gets the list of the states
-
-        Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
-        
-        Returns: dict.
-        """
-
-        if not self.__checkUser(): return self.__noUserReply('getStates')
-        return self.__post( "getStates", 8192 )
-
-    def getSteps(self):
-        """Gets the list of the steps
-
-        Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
-        
-        Returns: dict.
-        """
-
-        if not self.__checkUser(): return self.__noUserReply('getSteps')
-        return self.__post( "getSteps", 1048576 )
-
-    def setCurrentProject(self, projectShortName):
+    def setCurrentProject(self, projectUuid):
         """Sets the current project.
 
-        Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
+        Read the Ramses Daemon reference at http://ramses.rxlab.guide/dev/daemon-reference/ for more information.
         
         Returns: dict.
         """
@@ -208,125 +112,39 @@ class RamDaemonInterface( object ):
         if not self.__checkUser(): return self.__noUserReply('setCurrentProject')
         return self.__post( (
             "setCurrentProject",
-            ('shortName', projectShortName)
+            ('uuid', projectUuid)
             ) )
 
-    def getCurrentUser(self):
-        """Gets the current user
+    def getData(self, uuid):
+        """Gets the data for a specific RamObject.
 
-        Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
+        Read the Ramses Daemon reference at http://ramses.rxlab.guide/dev/daemon-reference/ for more information.
+        
+        Returns: dict.
+        """
+        if not self.__checkUser(): return self.__noUserReply('getData')
+        return self.__post( (
+            "getData",
+            ('uuid', uuid)
+            ) )
+
+    def setData(self, uuid, data):
+        """Sets the data of a specific RamObject.
+
+        Read the Ramses Daemon reference at http://ramses.rxlab.guide/dev/daemon-reference/ for more information.
         
         Returns: dict.
         """
 
-        if not self.__checkUser(): return self.__noUserReply('getCurrentUser')
-        return self.__post( "getCurrentUser", 1024 )
+        if not isinstance(data, str):
+            data = json.dumps(data)
 
-    def getAssetGroups(self):
-        """Gets the asset group list
-
-        Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
-        
-        Returns: list
-        """
-
-        if not self.__checkUser(): return self.__noUserReply('getAssetGroups')
-        return self.__post( "getAssetGroups", 2048 )
-
-    def getSequences(self):
-        """Gets the sequence list
-
-        Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
-        
-        Returns: list
-        """
-
-        if not self.__checkUser(): return self.__noUserReply('getSequences')
-        return self.__post( "getSequences", 2048 )
-
-    def getCurrentStatuses(self, itemShortName, itemName, itemType=ItemType.SHOT):
-        """Gets the current status (list) of an item
-
-        Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
-        
-        Returns: list
-        """
+        if not self.__checkUser(): return self.__noUserReply('getData')
         return self.__post( (
-            "getCurrentStatus",
-            ('shortName', itemShortName),
-            ('name', itemName),
-            ('type', itemType)
-            ), 8192 )
-
-    def getCurrentStatus(self, itemShortName, itemName, step, itemType=ItemType.SHOT):
-        """Gets the current status of an item for a specific step
-
-        Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
-        
-        Returns: list
-        """
-        return self.__post( (
-            "getCurrentStatus",
-            ('shortName', itemShortName),
-            ('name', itemName),
-            ('step', step),
-            ('type', itemType)
-            ), 1024 )
-
-    def setStatus(self, itemShortName, itemName, step, itemType=ItemType.SHOT, state="", comment="", completionRatio=-1, version=0, published=False, user=None):
-        """Sets the current status of an item for a specific step
-
-        Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
-        
-        Returns: list
-        """
-
-        if published:
-            published = "1"
-        else:
-            published = "0"
-
-        args = [
-            "setStatus",
-            ('shortName', itemShortName),
-            ('name', itemName),
-            ('step', step),
-            ('type', itemType),
-            ('state', state),
-            ('comment', comment),
-            ('published', published)
-        ]
-
-        if completionRatio >= 0:
-            args.append( ('completionRatio', str(completionRatio) ) )
-        
-        if version > 0:
-            args.append(( 'version', str(version) ) )
-        
-        if user is not None:
-            args.append(('user', user.shortName()))
-
-
-        return self.__post( args, 0 )
-
-    def getRamsesFolderPath(self):
-        if not self.__checkUser(): return self.__noUserReply('getRamsesFolderPath')
-        return self.__post( "getRamsesFolderPath", 1024 )
-
-    def setPublishSettings(self, stepShortName, stepName, settings):
-        """Sets the publish settings for a specific step
-
-        Read the Ramses Daemon reference at http://ramses-docs.rainboxlab.org/dev/daemon-reference/ for more information.
-        """
-
-        args = [
-            "setPublishSettings",
-            ('shortName', stepShortName),
-            ('name', stepName),
-            ('settings', settings)
-        ]
-
-        return self.__post(args, 0)
+            "setData",
+            ('uuid', uuid),
+            ('data', data)
+            ) )
 
     def __buildQuery(self, query):
         """Builds a query from a list of args
@@ -442,8 +260,8 @@ class RamDaemonInterface( object ):
         if content is None:
             return False
 
-        if 'logged-in' in content:
-            ok = content['logged-in']
+        if 'uuid' in content:
+            ok = content['uuid'] != ""
         else:
             return False
             
