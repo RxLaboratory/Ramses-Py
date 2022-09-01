@@ -19,32 +19,11 @@
 
 from .ram_object import RamObject
 
-class RamFileType( RamObject ):
-    """A File type.
-    File types are typically used with RamPipe."""
+class RamSequence( RamObject ):
 
-    def extensions( self ):
-        """The extensions which can be used for this file type, including the “.”
-
-        Returns:
-            list of string
-        """
-        extensions = self.get('extensions', [])
-        shortName = self.shortName()
-        if not shortName in extensions:
-            extensions.insert(0, shortName)
-
-        return extensions
-
-    def check(self, filePath):
-        """Checks if the given file is of this type"""
-
-        fileBlocks = filePath.split('.')
-
-        if len(fileBlocks) < 2:
-            return False
-
-        if fileBlocks[-1] in self.extensions():
-            return True
-
-        return False
+    def project(self):
+        from .ram_project import RamProject
+        uuid = self.get("project", "")
+        if uuid != "":
+            return RamProject(uuid)
+        return None

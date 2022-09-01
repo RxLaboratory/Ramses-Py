@@ -17,43 +17,24 @@
 #
 #======================= END GPL LICENSE BLOCK ========================
 
+from .ram_object import RamObject
 from .ram_pipefile import RamPipeFile
+from .daemon_interface import RamDaemonInterface
 
-class RamPipe:
+DAEMON = RamDaemonInterface.instance()
+
+class RamPipe( RamObject ):
     """A pipe which connects two steps together in the production pipeline.
         The pipe goes from the output step (which exports data into a specific file type)
         to the input step (which imports that data)."""
 
-    @staticmethod
-    def fromDict( pipeDict ):
-        """Builds a RamPipe from dict like the ones returned by the RamDaemonInterface"""
+    def inputStep(self):
+        from .ram_step import RamStep
+        return RamStep( self.get("inputStep", ""))
 
-        pipeFiles = []
-
-        if 'pipeFiles' in pipeDict:
-            for pipe in pipeDict['pipeFiles']:
-                pipeFiles.append(
-                    RamPipeFile.fromDict(pipe)
-                )
-
-        return RamPipe(
-            pipeDict['inputStepShortName'],
-            pipeDict['outputStepShortName'],
-            pipeFiles
-        )
-
-    def __init__( self, inputStepShortName, outputStepShortName, pipeFiles ):
-        """
-
-        Args:
-            inputStepShortName (str)
-            outputStepShortName (str)
-            fileType (str)
-            colorSpace (str)
-        """
-        self._inputStepShortName = inputStepShortName
-        self._outputStepShortName = outputStepShortName
-        self._pipeFiles = pipeFiles
+    def outputStep(self):
+        from .ram_step import RamStep
+        return RamStep( self.get("outputStep", ""))
 
     def inputStepShortName( self ):
         """The short name of the input step
@@ -61,7 +42,10 @@ class RamPipe:
         Returns:
             str
         """
-        return self._inputStepShortName
+        step = self.inputStep()
+        if step:
+            return step.shortName()
+        return ""
 
     def outputStepShortName( self ):
         """The short name of the output step
@@ -69,10 +53,20 @@ class RamPipe:
         Returns:
             str
         """
-        return self._outputStepShortName
+        step = self.outputStep()
+        if step:
+            return step.shortName()
+        return ""
 
     def pipeFiles( self ):
-        return self._pipeFiles
+        pipeFileListUuid = self.get("pipeFiles")
+        pipeFileList = DAEMON.getData(pipeFileListUuid).get("list", [])
+        pipeFiles = []
+        for uuid in pipeFileList:
+            p = RamPipeFile( uuid )
+            if p:
+                pipeFiles.append(p)
+        return pipeFiles
 
     def __str__( self ):
         return self.outputStepShortName() + " -> " + self.inputStepShortName()

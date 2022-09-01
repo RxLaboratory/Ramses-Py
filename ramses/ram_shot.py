@@ -17,28 +17,19 @@
 #
 #======================= END GPL LICENSE BLOCK ========================
 
+from ramses.ram_sequence import RamSequence
 from .ram_item import RamItem
 from .daemon_interface import RamDaemonInterface
 from .constants import ItemType
 from .ramses import Ramses
+from .logger import log
+from .constants import LogLevel
 
 # Keep the daemon at hand
-daemon = RamDaemonInterface.instance()
+DAEMON = RamDaemonInterface.instance()
 
 class RamShot( RamItem ):
     """A shot"""
-
-    @staticmethod
-    def fromDict( shotDict ):
-        """Builds a RamShot from dict like the ones returned by the RamDaemonInterface"""
-
-        return RamShot(
-            shotDict['name'],
-            shotDict['shortName'],
-            shotDict['folder'],
-            shotDict['duration'],
-            shotDict['sequence']
-        )
 
     @staticmethod
     def fromPath( path ):
@@ -52,56 +43,27 @@ class RamShot( RamItem ):
         Returns:
             RamShot
         """
-        shot = RamItem.fromPath( path )
 
-        if not shot:
-            return None
+        reply = DAEMON.uuidFromPath( path, "RamShot" )
+        content = DAEMON.checkReply( reply )
+        uuid = content.get("uuid", "")
 
-        if not shot.itemType() == ItemType.SHOT:
-            return None
+        if uuid != "":
+            return RamShot(uuid)
+        
+        log( "The given path does not belong to a shot", LogLevel.Debug )
+        return None
 
-        return shot
-
-    def __init__( self, shotName, shotShortName, shotFolder="", duration=0.0, sequence="" ):
-        """
-        Args:
-            shotName (str)
-            shotShortName (str)
-        """
-        super(RamShot, self).__init__( shotName, shotShortName, shotFolder, ItemType.SHOT )
-        self._duration = duration
-
-    def __updateFromDaemon(self):
-        """Updates all info from what we get from the daemon"""
-
-        if not Ramses.instance().online():
-            return None
-
-        replyDict = super(RamShot, self).__updateFromDaemon()
-
-        if replyDict is None:
-            return None
-
-        self._duration = replyDict['content']['duration']
-
-        return replyDict
-
-    def duration( self ): # Mutable
+    def duration( self ):
         """The shot duration, in seconds
 
         Returns:
             float
         """
 
-        if Ramses.instance().online():
-            reply = daemon.getShot( self._shortName )
-            # check if successful
-            if RamDaemonInterface.checkReply( reply ):
-                self._duration = reply['content']['duration']
-                
-        return self._duration
+        return self.get("duration", 5)
 
-    def frames( self ): # Mutable
+    def frames( self ):
         """The shot duration, in frames
         
         Returns:
@@ -114,3 +76,9 @@ class RamShot( RamItem ):
         if project:
             fps = project.framerate()
         return int(duration * fps)
+
+    def sequence(self):
+        seqUuid = self.get("sequence", "")
+        if seqUuid != "":
+            return RamSequence( seqUuid )
+        return None

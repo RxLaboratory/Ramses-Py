@@ -17,54 +17,43 @@
 #
 #======================= END GPL LICENSE BLOCK ========================
 
-from . import Ramses
-from .logger import log
-from .ram_item import RamItem
-from .ram_assetgroup import RamAssetGroup
+from .ram_object import RamObject
 from .daemon_interface import RamDaemonInterface
 from .logger import log
 from .constants import LogLevel
 
-# Keep the daemon at hand
 DAEMON = RamDaemonInterface.instance()
 
-class RamAsset( RamItem ):
-    """A class representing an asset."""
+class RamAssetGroup( RamObject ):
 
     @staticmethod
     def fromPath( fileOrFolderPath ):
-        """Returns a RamAsset instance built using the given path.
-            The path can be any file or folder path from the asset
-            (a version file, a preview file, etc)
+        from .ram_shot import RamShot
+        from .ram_asset import RamAsset
+        """Returns a RamAssetGroup instance built using the given path.
+        The path can be any file or folder path from the asset 
+        (a version file, a preview file, etc)
 
         Args:
-            fileOrFolderPath (str)
+            path (str)
 
         Returns:
-            RamAsset
+            RamAssetGroup
         """
-        reply = DAEMON.uuidFromPath( fileOrFolderPath, "RamAsset" )
+
+        reply = DAEMON.uuidFromPath( fileOrFolderPath, "RamAssetGroup" )
         content = DAEMON.checkReply( reply )
         uuid = content.get("uuid", "")
 
         if uuid != "":
-            return RamAsset(uuid)
+            return RamAssetGroup(uuid)
         
-        log( "The given path does not belong to an asset", LogLevel.Debug )
+        log( "The given path does not belong to an item", LogLevel.Debug )
         return None
 
-    def tags( self ):
-        """Some tags describing the asset. An empty list if the Daemon is not available.
-
-        Returns:
-            list of str
-        """
-
-        return self.get("tags", [])
-
-    def assetGroup( self ):
-        agUuid = self.get("assetGroup", "")
-        if agUuid != "":
-            return RamAssetGroup( agUuid )
+    def project(self):
+        from .ram_project import RamProject
+        uuid = self.get("project", "")
+        if uuid != "":
+            return RamProject(uuid)
         return None
-

@@ -27,39 +27,22 @@ from .metadata_manager import RamMetaDataManager
 class RamPipeFile( RamObject ):
     """A file which goes through a RamPipe."""
 
-    @staticmethod
-    def fromDict( pipeFileDict ):
-        fileType = RamFileType.fromDict( pipeFileDict['fileType'])
-
-        return RamPipeFile(
-            pipeFileDict['shortName'],
-            fileType,
-            pipeFileDict['colorSpace'],
-            pipeFileDict['customSettings']
-        )
-
-    def __init__(self, shortName, fileType, colorSpace = '', customSettings = ''):
-        super(RamPipeFile, self).__init__( '', shortName )
-        self._fileType = fileType
-        self._colorSpace = colorSpace
-        self._customSettings = customSettings
-
     def fileType(self):
-        return self._fileType
+        return RamFileType( self.get("fileType", "") )
 
-    def colorSapce(self):
-        return self._colorSpace
+    def colorSpace(self): # TODO
+        return None
 
     def customSettings(self):
-        return self._customSettings
+        return self.get("customSettings", "")
 
     def check(self, filePath, checkFileType=False):
         """Checks if a file corresponds to this pipe.
         Note that the filename must end with the pipe shortname (it must be at the end of its resource)"""
 
         # It must be of the correct type
-        if not self._fileType.check( filePath ) and checkFileType:
-            return False 
+        if not self.fileType().check( filePath ) and checkFileType:
+            return False
 
         # Have the type in the metadata
         pipeType = RamMetaDataManager.getPipeType( filePath )

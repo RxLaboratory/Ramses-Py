@@ -27,8 +27,8 @@ from .constants import FolderNames, LogLevel, Log
 from .daemon_interface import RamDaemonInterface
 from .ram_settings import RamSettings
 
-settings = RamSettings.instance()
-daemon = RamDaemonInterface.instance()
+SETTINGS = RamSettings.instance()
+DAEMON = RamDaemonInterface.instance()
 
 class Ramses( object ):
     """The main class. One (and only one) instance globally available, instantiated during init time.
@@ -39,10 +39,10 @@ class Ramses( object ):
     """
 
     # API Settings
-    _version = settings.version
-    apiReferenceUrl = settings.apiReferenceUrl
-    addonsHelpUrl = settings.addonsHelpUrl
-    generalHelpUrl = settings.generalHelpUrl
+    _version = SETTINGS.version
+    apiReferenceUrl = SETTINGS.apiReferenceUrl
+    addonsHelpUrl = SETTINGS.addonsHelpUrl
+    generalHelpUrl = SETTINGS.generalHelpUrl
 
     _instance = None
 
@@ -62,7 +62,7 @@ class Ramses( object ):
         if cls._instance is None:
             cls._instance = cls.__new__(cls)
             cls._offline = True
-            cls._folderPath = ""
+            cls._folderPath = DAEMON.getRamsesFolderPath()
             cls._states = []
             cls._currentProject = None
             cls.publishScripts = []
@@ -71,7 +71,7 @@ class Ramses( object ):
             cls.replaceScripts = []
             cls.userScripts = {}
 
-            if settings.online:
+            if SETTINGS.online:
                 log("I'm trying to contact the Ramses Client.", LogLevel.Info)
                 cls._instance.connect()
 
@@ -96,7 +96,7 @@ class Ramses( object ):
         # If online, ask the daemon
         if not self._offline:
             # Ask (the daemon returns a dict)
-            reply = daemon.getCurrentProject()
+            reply = DAEMON.getCurrentProject()
             # Check if successful
             if RamDaemonInterface.checkReply(reply):     
                 return RamProject.fromDict( reply['content'] )  
@@ -111,7 +111,7 @@ class Ramses( object ):
         self._currentProject = project
 
         if not self._offline:
-            daemon.setCurrentProject( project.shortName() )
+            DAEMON.setCurrentProject( project.shortName() )
 
     def currentUser(self):
         from .ram_user import RamUser
@@ -124,7 +124,7 @@ class Ramses( object ):
         # If online, ask the daemon
         if not self._offline:
             # Ask (the daemon returns a dict)
-            reply = daemon.getCurrentUser()
+            reply = DAEMON.getCurrentUser()
 
             # Check if successful
             if RamDaemonInterface.checkReply(reply):
@@ -172,18 +172,18 @@ class Ramses( object ):
 
         if not self._offline:
             # Ask (the daemon returns a dict)
-            replyDict = daemon.getRamsesFolderPath()
+            replyDict = DAEMON.getRamsesFolderPath()
 
             # Check if successful
             if RamDaemonInterface.checkReply(replyDict):
                 self._folderPath = replyDict['content']['folder']
-                settings.ramsesFolderPath = self._folderPath
-                settings.save()
+                SETTINGS.ramsesFolderPath = self._folderPath
+                SETTINGS.save()
 
             return self._folderPath
 
         # if offline, get from settings
-        self._folderPath = settings.ramsesFolderPath
+        self._folderPath = SETTINGS.ramsesFolderPath
         return self._folderPath
 
     def projectsPath(self):
@@ -219,12 +219,12 @@ class Ramses( object ):
 
         # Check if already online
         self._offline = False
-        if daemon.online():
+        if DAEMON.online():
             user = self.currentUser()
             if user:
                 return True
             else:
-                daemon.raiseWindow()
+                DAEMON.raiseWindow()
                 log( Log.NoUser, LogLevel.Info )
         else:
             # Try to open the client
@@ -274,7 +274,7 @@ class Ramses( object ):
         projects = []
 
         if not self._offline:
-            reply = daemon.getProjects()
+            reply = DAEMON.getProjects()
             if RamDaemonInterface.checkReply(reply):
                 for projectDict in reply['content']['projects']:
                     p = RamProject.fromDict( projectDict )
@@ -312,7 +312,7 @@ class Ramses( object ):
 
         # If online, ask the daemon
         if not self._offline:
-            replyDict = daemon.getState( stateShortName )
+            replyDict = DAEMON.getState( stateShortName )
             # Check if successful
             if RamDaemonInterface.checkReply(replyDict):
                 return RamState.fromDict( replyDict['content'] )
@@ -339,7 +339,7 @@ class Ramses( object ):
         # If online, ask the daemon
         if not self._offline:
             # Ask (the daemon returns a dict)
-            replyDict = daemon.getStates()
+            replyDict = DAEMON.getStates()
 
             # Check if successful
             if RamDaemonInterface.checkReply(replyDict):
@@ -358,14 +358,14 @@ class Ramses( object ):
         """Raises the Ramses Client window, launches the client if it is not already running.
         """
 
-        if settings.ramsesClientPath == "":
+        if SETTINGS.ramsesClientPath == "":
             self._offline = True
             return False
 
         try:
-            p = Popen(settings.ramsesClientPath, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+            p = Popen(SETTINGS.ramsesClientPath, stdin=PIPE, stdout=PIPE, stderr=PIPE)
         except:
-            log("The Client is not available at " + settings.ramsesClientPath, LogLevel.Critical)
+            log("The Client is not available at " + SETTINGS.ramsesClientPath, LogLevel.Critical)
             return False
 
         if not p.poll(): del p
@@ -377,13 +377,13 @@ class Ramses( object ):
         numTries = 0
         self._offline = True
         while( self._offline and numTries < 3 ):
-            self._offline = not daemon.online()
+            self._offline = not DAEMON.online()
             sleep(1)
             numTries = numTries + 1
         
         # If the client opened
         if not self._offline:
-            daemon.raiseWindow()
+            DAEMON.raiseWindow()
             return True
         
         return False

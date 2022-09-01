@@ -15,15 +15,15 @@ from ramses import (
     Ramses,
     RamStep,
     RamPipeFile,
-    ItemType
+    ItemType,
+    RamDaemonInterface
     )
 
 settings = RamSettings.instance()
-settings.logLevel = LogLevel.Info
+settings.logLevel = LogLevel.DataReceived
 
 ramses = Ramses.instance()
-
-# daemon = RamDaemonInterface.instance()
+daemon = RamDaemonInterface.instance()
 
 testPaths = (
     'C:/Users/Duduf/Ramses/Projects/TEST/04-ASSETS/Main Characters/TEST_A_IS/TEST_A_IS_SET/_published/AllCharas_004_CHK/TEST_A_IS_SET_AllCharas-Set.mb',
@@ -38,21 +38,42 @@ def ram():
             print( step )
 
 def ramObjects():
-    o = RamObject("Object Name", "OSN")
-    log( o, LogLevel.Debug )
-    log( RamObject.getObjectShortName(o), LogLevel.Debug )
-    log( RamObject.getObjectShortName("SN"), LogLevel.Debug )
-    d = { 'name': "Dict Object", 'shortName': "DO" }
-    o = RamObject.fromDict( d )
-    log( o, LogLevel.Debug )
-
+    # Create an empty ramobject
+    o = RamObject()
+    # Print it
+    print(str(o) + " created with the UUID " + o.uuid())
+    # Create a non-empty ramobject
+    o = RamObject( data = {
+        "name": "Object Name",
+        "shortName": "ID",
+        "comment": "I'm something",
+        "color": "#a526c4"
+        })
+    # Print it
+    print(str(o) + " says " + o.comment())
+    
 def ramStates():
     s = RamState( "Test", "T", 50, [255,0,0] )
     log (s, LogLevel.Debug)
 
 def ramFileTypes():
-    ft = RamFileType("Jpeg", "jpg", ('.jpg', '.jpeg'))
-    log( ft )
+    ft = RamFileType(
+        data={
+            "name": "Blender scene",
+            "shortName": "blend",
+            "extensions": [
+                "blend1",
+                "blend2",
+                "blend3"
+            ]
+        },
+        create=True,
+        objectType = "RamFileType"
+        )
+    print( ft )
+    print( ft.extensions() )
+    print( ft.check("Nope.txt"))
+    print( ft.check("Yes.blend"))
 
 def ramUsers():
     u = RamUser.fromDict( {
@@ -174,10 +195,10 @@ def metaDataManager():
 
 # ramObjects()
 # ramStates()
-# ramFileTypes()
+ramFileTypes()
 # ramUsers()
 # ram()
-ramItem(1, "MOD")
+# ramItem(1, "MOD")
 # metadata()
 # project()
 # threadedCopy()

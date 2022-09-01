@@ -36,3 +36,4 @@ from .ram_step import RamStep
 from .file_manager import RamFileManager
 from .metadata_manager import RamMetaDataManager
 from .file_info import RamFileInfo
+from .daemon_interface import RamDaemonInterface

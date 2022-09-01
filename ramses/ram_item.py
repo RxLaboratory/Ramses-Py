@@ -28,7 +28,7 @@ from .logger import log
 from .constants import Log, LogLevel, ItemType, FolderNames
 
 # Keep the daemon at hand
-daemon = RamDaemonInterface.instance()
+DAEMON = RamDaemonInterface.instance()
 
 class RamItem( RamObject ):
     """
@@ -38,8 +38,6 @@ class RamItem( RamObject ):
 
     @staticmethod
     def fromPath( fileOrFolderPath ):
-        from .ram_shot import RamShot
-        from .ram_asset import RamAsset
         """Returns a RamAsset or RamShot instance built using the given path.
         The path can be any file or folder path from the asset 
         (a version file, a preview file, etc)
@@ -51,128 +49,31 @@ class RamItem( RamObject ):
             RamAsset or RamShot
         """
 
-        # Get info from the path
-        nm = RamFileInfo()
-        nm.setFilePath( fileOrFolderPath )
+        reply = DAEMON.uuidFromPath( fileOrFolderPath, "RamItem" )
+        content = DAEMON.checkReply( reply )
+        uuid = content.get("uuid", "")
 
-        if nm.project == '': # Wrong name, we can't do anything more
-            log (Log.MalformedName, LogLevel.Debug)
-            return None
-
-        # Try to find the folder
-        saveFilePath = RamFileManager.getSaveFilePath( fileOrFolderPath )
-        if saveFilePath == "":
-            log( Log.PathNotFound, LogLevel.Critical )
-            return None
-
-        saveFolder = os.path.dirname( saveFilePath )
-        itemFolder = saveFolder
-        itemFolderName = os.path.basename( itemFolder )
-
-        if not RamFileManager._isRamsesItemFoldername( itemFolderName ): # We're probably in a step subfolder
-            itemFolder = os.path.dirname( saveFolder )
-            itemFolderName = os.path.basename( itemFolder )
-            if not RamFileManager._isRamsesItemFoldername( itemFolderName ): # Still wrong: consider it's a general item 
-                return RamItem(
-                    '',
-                    nm.shortName,
-                    saveFolder,
-                    ItemType.GENERAL
-                )
-
-        if nm.ramType == ItemType.ASSET: 
-            # Get the group name
-            assetGroupFolder = os.path.dirname( itemFolder )
-            assetGroup = os.path.basename( assetGroupFolder )
-            return RamAsset(
-                '',
-                nm.shortName,
-                itemFolder,
-                assetGroup
-            )
-
-        if nm.ramType == ItemType.SHOT:
-            return RamShot(
-                '',
-                nm.shortName,
-                itemFolder,
-                0.0
-            )
-
-        if nm.ramType == ItemType.GENERAL:
-            return RamItem(
-                '',
-                nm.shortName,
-                saveFolder,
-                ItemType.GENERAL
-            )
-
-        log( "The given path does not belong to a shot nor an asset", LogLevel.Debug )
+        if uuid != "":
+            return RamItem(uuid)
+        
+        log( "The given path does not belong to an item", LogLevel.Debug )
         return None
 
-    @staticmethod
-    def fromString( itemString, itemType = ItemType.GENERAL ):
-        
-        obj = RamObject.fromString( itemString )
-        item = RamItem( obj.name(), obj.shortName() )
-
-        if itemType != ItemType.SHOT and itemType != ItemType.ASSET: return item
-
-        # try to get from current project
-        proj = Ramses.instance().currentProject()
-        if proj is None: return item
-        
-        if itemType == ItemType.ASSET:
-            i = proj.asset( item.shortName() )
-            if i is None: return item
-            return i
-        
-        if itemType == ItemType.SHOT:
-            i = proj.shot( item.shortName() )
-            if i is None: return item
-            return i
-
-    # Do not document Asset Group nor Type as its used by derived classes
-    def __init__( self, itemName, itemShortName, itemFolder="", itemType=ItemType.GENERAL, group="" ):
+    # Do not document itemType as it's used only by derived classes
+    def __init__( self, uuid="", data = None, create=False, objectType="RamObject" ):
         """
         Args:
-            itemName (str)
-            itemShortName (str)
-            itemFolder (str, optional): Defaults to "".
+            uuid (str)
         """
-        super(RamItem, self).__init__( itemName, itemShortName )
-        self._folderPath = itemFolder
-        self._itemType = itemType
-        self._group = group
-        self._project = None
-        self._projectShortName = ""
-
-    def __updateFromDaemon(self):
-        """Updates all info from what we get from the daemon"""
-
-        if not Ramses.instance().online():
-            return None
-
-        if self._itemType == ItemType.SHOT:
-            replyDict = daemon.getShot( self._shortName, self._name )
-            # check if successful
-            if daemon.checkReply( replyDict ):
-                self._folderPath = replyDict['content']['folder']
-                self._name = replyDict['content']['name']
-                self._group = replyDict['content']['sequence']
-                return replyDict
+        super(RamItem, self).__init__( uuid )
+        if objectType == "RamShot":
+            self.__itemType = ItemType.SHOT
+        elif objectType == "RamAsset":
+            self.__itemType = ItemType.ASSET
+        else:
+            self.__itemType = ItemType.GENERAL
                 
-        replyDict = daemon.getAsset( self._shortName, self._name )
-        # check if successful
-        if daemon.checkReply( replyDict ):
-            self._folderPath = replyDict['content']['folder']
-            self._name = replyDict['content']['name']
-            self._group = replyDict['content']['group']
-            return replyDict
-
-        return None
-                
-    def currentStatus( self, step="", resource="" ):
+    def currentStatus( self, step ):
         """The current status for the given step
 
         Args:
@@ -185,177 +86,38 @@ class RamItem( RamObject ):
 
         from .ram_status import RamStatus
 
-        # Check step, return shortName (str) or "" or raise TypeError:
-        step = RamObject.getObjectShortName( step )
-        if step == "":
-            return RamStatus(Ramses.instance().defaultState)
+        # The current status should be the last one
+        history = self.stepStatusHistory( step )
 
-        # If we're online, ask the client (return a dict)
-        if Ramses.instance().online():
-            replyDict = daemon.getCurrentStatus( self._shortName, self._name, step, self._itemType )
-            # check if successful
-            print(replyDict)
-            if daemon.checkReply( replyDict ):
-                return RamStatus.fromDict( replyDict['content'] )
-                
-        # If offline
-        currentVersionPath = self.latestVersionFilePath( resource, '', step )
-        if currentVersionPath == "":
-            log( "There was an error getting the latest version or none was found." )
+        if len(history) == 0:
             return None
 
-        return RamStatus.fromPath( currentVersionPath )
+        return RamStatus(history[-1])
 
-    # Override from RamObject to get from Daemon
-    def name( self ):
-        """
-        Returns:
-            str
-        """
-        if self._name != '':
-            return self._name
-
-        # If we're online, ask the client (return a dict)
-        self.__updateFromDaemon()
-
-        return self._name
-
-    # Do not document "assetGroup" argument, it should stay hidden
-    # (just automatically passed by RamAsset.folderPath())
-    def folderPath( self ):
-        """The absolute path to the folder containing the item, or to the step subfolder if provided
+    def isPublished( self, step="" ):
+        """Convenience function to check if there are published files in the publish folder.
+            Equivalent to len(self.publishedVersionFolderPaths(step, resource)) > 0
 
         Args:
-            step (RamStep or str, optional): Defaults to "".
+            step (RamStep)
+            resource (str, optional): Defaults to "".
 
         Returns:
-            str
+            bool
         """
+        result = self.publishedVersionFolderPaths( step )
+        return len( result ) > 0
+    
+    def itemType( self ):
+        """Returns the type of the item"""
+        return self.__itemType
 
-        if self._folderPath != '':
-            return self._folderPath
-
-        # If we're online, ask the client
-        self.__updateFromDaemon()
-
-        if self._folderPath != '':
-            return self._folderPath
-
-        # Project
-        project = Ramses.instance().currentProject()
-        if project is None:
-            return ""
-
-        nm = RamFileInfo()
-        nm.project = project.shortName()
-        nm.step = self.shortName()
-        nm.ramType = self.itemType()
-        itemFolderName = nm.fileName()
-
-        if self._itemType == ItemType.SHOT:
-            # Get the shot folder name
-            self._folderPath = RamFileManager.buildPath((
-                project.shotsPath(),
-                itemFolderName
-            ))
-            
-            return self._folderPath
-            
-        if self._itemType == ItemType.ASSET:
-            # add the group
-            self._folderPath = RamFileManager.buildPath((
-                    project.assetsPath(),
-                    self.group(),
-                    itemFolderName
-                ))
-
-            return self._folderPath
-            
-        return ""
-
-    def stepFolderPath(self, step=""):
-        # Check step, return shortName (str) or "" or raise TypeError:
-        step = RamObject.getObjectShortName( step )
-
-        folderPath = self.folderPath()
-        if folderPath == "" or step == "" or self.itemType() == ItemType.GENERAL:
-            return folderPath
-
-        project = self.projectShortName()
-
-        nm = RamFileInfo()
-        nm.project = project
-        nm.step = step
-        nm.ramType = self.itemType()
-        nm.shortName = self.shortName()
-        stepFolderName = nm.fileName()
-
-        stepFolderPath = RamFileManager.buildPath((
-            folderPath,
-            stepFolderName
-        ))
-
-        if not os.path.isdir(stepFolderPath):
-            os.makedirs( stepFolderPath )
-
-        return stepFolderPath
-
-    def stepFilePaths( self, step="" ):
-        """Returns the step files"""
-        step = RamObject.getObjectShortName( step )
-
-        stepFolder = self.stepFolderPath(step)
-        if stepFolder == '':
-            return []
+    def latestPublishedVersionFolderPath( self, step="", fileName='', resource=None ):
+        """Gets the latest published version folder for the given fileName. Returns the latest folder if the fileName is omitted or an empty string"""
+        versionFolders = self.publishedVersionFolderPaths(step, fileName, resource)
         
-        pShortName = self.projectShortName()
-        if pShortName == '':
-            return []
-
-        files = []
-
-        for file in os.listdir(stepFolder):
-            # check file
-            nm = RamFileInfo()
-            if not nm.setFileName( file ):
-                continue
-            if nm.project != pShortName or nm.step != step or nm.shortName != self.shortName() or nm.ramType != self.itemType():
-                continue
-            files.append(RamFileManager.buildPath((
-                stepFolder,
-                file
-            )))
-        return files
-
-    def stepFilePath(self, resource="", extension="", step="", ):
-        """Returns a specific step file"""
-        step = RamObject.getObjectShortName( step )
-
-        stepFolder = self.stepFolderPath(step)
-        if stepFolder == '':
-            return ''
-
-        pShortName = self.projectShortName()
-        if pShortName == '':
-            return ''
-
-        nm = RamFileInfo()
-        nm.project = pShortName
-        nm.step = step
-        nm.extension = extension
-        nm.ramType = self.itemType()
-        nm.shortName = self.shortName()
-        nm.resource = resource
-
-        fileName = nm.fileName()
-
-        filePath = RamFileManager.buildPath((
-            stepFolder,
-            fileName
-        ))
-        if os.path.isfile(filePath):
-            return filePath
-        return ""
+        if len(versionFolders) == 0: return ''
+        return versionFolders[-1]
 
     def latestVersion( self, resource="", state="", step=""):
         """Returns the highest version number for the given state (wip, pub…) (or all states if empty string).
@@ -369,8 +131,8 @@ class RamItem( RamObject ):
             int
         """
 
-        state = RamObject.getObjectShortName(state)
-        step = RamObject.getObjectShortName(step)
+        state = RamObject.getShortName(state)
+        step = RamObject.getShortName(step)
 
         highestVersion = -1
        
@@ -390,7 +152,45 @@ class RamItem( RamObject ):
                         highestVersion = nm.version
 
         return highestVersion
-        
+    
+    def latestVersionFilePath( self, resource="", state="", step="" ):
+        """Latest version file path
+
+        Args:
+            step (RamStep or str)
+            resource (str, optional): Defaults to "".
+
+        Returns:
+            str
+        """
+
+        step = RamObject.getShortName(step)
+
+        versionFolderPath = self.versionFolderPath(step )
+
+        if versionFolderPath == '':
+            return ''
+
+        versionFile = ''
+        highestVersion = -1
+
+        for file in os.listdir( versionFolderPath ):
+            nm = RamFileInfo()
+            if not nm.setFileName( file ):
+                continue
+            if nm.step != step and step != '':
+                continue
+            if nm.resource == resource:
+                if nm.state == state or state == '':
+                    if nm.version > highestVersion:
+                        highestVersion = nm.version
+                        versionFile = RamFileManager.buildPath((
+                            versionFolderPath,
+                            file
+                        ))
+
+        return versionFile
+
     def previewFolderPath( self, step="" ):
         """Gets the path to the preview folder.
             Paths are relative to the root of the item folder.
@@ -432,6 +232,34 @@ class RamItem( RamObject ):
         previewFolderPath = self.previewFolderPath(step)
 
         return RamFileManager.getFileWithResource( previewFolderPath, resource)
+
+    def project(self): # Immutable
+        """Returns the project this item belongs to"""
+        from .ram_project import RamProject
+
+        groupData = {}
+
+        if self.__itemType == ItemType.SHOT:
+            seqUuid = self.get("sequence", "")
+            if seqUuid:
+                groupData = DAEMON.getData( seqUuid )
+
+        elif self.__itemType == ItemType.ASSET:
+            agUuid = self.get("assetGroup", "")
+            if agUuid:
+                groupData = DAEMON.getData( agUuid )
+
+        projUuid = groupData.get("project", "")
+        return RamProject(projUuid)
+
+    def projectShortName(self): # Immutable
+        """Returns the short name of the project this item belongs to"""
+
+        proj = self.project()
+        if proj:
+            return proj.shortName()
+        else:
+            return ""
 
     def publishFolderPath( self, step=""): 
         """Gets the path to the publish folder.
@@ -503,80 +331,147 @@ class RamItem( RamObject ):
 
         return publishedFolders
 
-    def latestPublishedVersionFolderPath( self, step="", fileName='', resource=None ):
-        """Gets the latest published version folder for the given fileName. Returns the latest folder if the fileName is omitted or an empty string"""
-        versionFolders = self.publishedVersionFolderPaths(step, fileName, resource)
-        
-        if len(versionFolders) == 0: return ''
-        return versionFolders[-1]
-        
-    def versionFolderPath( self, step="" ): 
-        """Path to the version folder relative to the item root folder
+    def setStatus( self, status, step ):
+        """Sets the current status for the given step
 
         Args:
+            status (RamStatus)
             step (RamStep)
-
-        Returns:
-            str
         """
-        # Check step, return shortName (str) or "" or raise TypeError:
-        stepFolder = self.stepFolderPath( step )
+        stepUuid = RamObject.getUuid(step)
+        if stepUuid == "":
+            return
 
+        # Get the step history
+        statusHistory = self.statusHistory()
+        stepHistoryUuid = statusHistory.get(stepUuid, "")
+
+        data = DAEMON.getData(stepHistoryUuid)
+
+        statusList = data.get("list", [])
+        # Append the status
+        statusList.append(status)
+        data["list"] = statusList
+
+        # Re-set the data
+        DAEMON.setData(stepHistoryUuid, data)
+
+    def statusHistory( self ):
+        return self.get("statusHistory", {})
+
+    def stepFilePath(self, resource="", extension="", step="", ):
+        """Returns a specific step file"""
+        step = RamObject.getShortName( step )
+
+        stepFolder = self.stepFolderPath(step)
         if stepFolder == '':
             return ''
 
-        versionFolder = RamFileManager.buildPath(( 
-            stepFolder,
-            FolderNames.versions
-            ))
-
-        if not os.path.isdir(versionFolder):
-            os.makedirs( versionFolder )
-        
-        return versionFolder
-
-    def latestVersionFilePath( self, resource="", state="", step="" ):
-        """Latest version file path
-
-        Args:
-            step (RamStep or str)
-            resource (str, optional): Defaults to "".
-
-        Returns:
-            str
-        """
-
-        step = RamObject.getObjectShortName(step)
-
-        versionFolderPath = self.versionFolderPath(step )
-
-        if versionFolderPath == '':
+        pShortName = self.projectShortName()
+        if pShortName == '':
             return ''
 
-        versionFile = ''
-        highestVersion = -1
+        nm = RamFileInfo()
+        nm.project = pShortName
+        nm.step = step
+        nm.extension = extension
+        nm.ramType = self.itemType()
+        nm.shortName = self.shortName()
+        nm.resource = resource
 
-        for file in os.listdir( versionFolderPath ):
+        fileName = nm.fileName()
+
+        filePath = RamFileManager.buildPath((
+            stepFolder,
+            fileName
+        ))
+        if os.path.isfile(filePath):
+            return filePath
+        return ""
+    
+    def stepFilePaths( self, step="" ):
+        """Returns the step files"""
+        step = RamObject.getShortName( step )
+
+        stepFolder = self.stepFolderPath(step)
+        if stepFolder == '':
+            return []
+        
+        pShortName = self.projectShortName()
+        if pShortName == '':
+            return []
+
+        files = []
+
+        for file in os.listdir(stepFolder):
+            # check file
             nm = RamFileInfo()
             if not nm.setFileName( file ):
                 continue
-            if nm.step != step and step != '':
+            if nm.project != pShortName or nm.step != step or nm.shortName != self.shortName() or nm.ramType != self.itemType():
                 continue
-            if nm.resource == resource:
-                if nm.state == state or state == '':
-                    if nm.version > highestVersion:
-                        highestVersion = nm.version
-                        versionFile = RamFileManager.buildPath((
-                            versionFolderPath,
-                            file
-                        ))
+            files.append(RamFileManager.buildPath((
+                stepFolder,
+                file
+            )))
+        return files
 
-        return versionFile
+    def stepFolderPath(self, step=""):
+        # We need a short name
+        step = RamObject.getShortName( step )
+
+        folderPath = self.folderPath()
+        if folderPath == "" or step == "" or self.itemType() == ItemType.GENERAL:
+            return folderPath
+
+        project = self.projectShortName()
+
+        nm = RamFileInfo()
+        nm.project = project
+        nm.step = step
+        nm.ramType = self.itemType()
+        nm.shortName = self.shortName()
+        stepFolderName = nm.fileName()
+
+        stepFolderPath = RamFileManager.buildPath((
+            folderPath,
+            stepFolderName
+        ))
+
+        if not os.path.isdir(stepFolderPath):
+            os.makedirs( stepFolderPath )
+
+        return stepFolderPath
+
+    def steps( self ):
+        """Returns the steps used by this asset"""
+        from .ram_step import RamStep
+
+        statusHistory = self.statusHistory()
+        stepList = []
+        for stepUuid in statusHistory:
+            step = RamStep(stepUuid)
+            stepList.append( step )
+
+        return stepList
+
+    def stepStatusHistory( self, step ):
+        stepUuid = RamObject.getUuid(step)
+        if stepUuid == "":
+            return []
+
+        statusHistory = self.statusHistory()
+        stepHistoryUuid = statusHistory.get(stepUuid, "")
+        if stepHistoryUuid == "":
+            return []
+
+        data = DAEMON.getData(stepHistoryUuid)
+        return data.get("list", [])
 
     def versionFilePaths( self, resource="", step="" ):
         """Gets all version files for the given resource"""
 
-        step = RamObject.getObjectShortName( step )
+        step = RamObject.getShortName( step )
 
         versionFolderPath = self.versionFolderPath(step )
 
@@ -613,169 +508,49 @@ class RamItem( RamObject ):
         files.sort( key = RamFileManager._versionFilesSorter )
         return files
 
-    def isPublished( self, step="" ):
-        """Convenience function to check if there are published files in the publish folder.
-            Equivalent to len(self.publishedVersionFolderPaths(step, resource)) > 0
+    def versionFolderPath( self, step="" ): 
+        """Path to the version folder relative to the item root folder
 
         Args:
             step (RamStep)
-            resource (str, optional): Defaults to "".
 
         Returns:
-            bool
-        """
-        result = self.publishedVersionFolderPaths( step )
-        return len( result ) > 0
-
-    def setStatus( self, status, step ):
-        """Sets the current status for the given step
-
-        Args:
-            status (RamStatus)
-            step (RamStep)
+            str
         """
         # Check step, return shortName (str) or "" or raise TypeError:
-        step = RamObject.getObjectShortName( step )
+        stepFolder = self.stepFolderPath( step )
 
-        if not Ramses.instance().online():
-            return
+        if stepFolder == '':
+            return ''
 
-        if self.itemType() == ItemType.GENERAL:
-            return
+        versionFolder = RamFileManager.buildPath(( 
+            stepFolder,
+            FolderNames.versions
+            ))
 
-        step = RamObject.getObjectShortName( step )
-        if step == "":
-            return
-
-        daemon.setStatus(
-            self.shortName(),
-            self.name(),
-            step,
-            self.itemType(),
-            status.state.shortName(),
-            status.comment,
-            status.completionRatio,
-            status.version,
-            status.published,
-            status.user
-        )    
-
-    def status(self, step): #TODO
-        """Gets the current status for the given step"""
-        pass
-
-    def itemType( self ):
-        """Returns the type of the item"""
-        return self._itemType
-
-    def steps( self ):
-        """Returns the steps used by this asset"""
-        assetGroup = self.group()
-
-        project = self.project()
-        if project is None:
-            return []
-
-        stepsList = []
-
-        # If we're online, ask the client (return a dict)
-        if Ramses.instance().online():
-            replyDict = daemon.getCurrentStatuses( self._shortName, self._name, self._itemType )
-            # check if successful
-            if RamDaemonInterface.checkReply( replyDict ):
-                content = replyDict['content']
-                statusList = content['status']
-                for status in statusList:
-                    step = project.step(status['step'] )
-                    if step is not None:
-                        stepsList.append( step )
-
-                if len(stepsList) > 0:
-                    return stepsList
-
-        # Else check in the folder
-        folder = self.folderPath( assetGroup )
-        if folder == '':
-            return
-
-        for f in folder:
-            nm = RamFileInfo()
-            nm.setFileName( f )
-            if nm.step != "":
-                step = project.step( nm.step )
-                if step is not None:
-                    stepsList.append( step )
-
-        return stepsList
-
-    def project(self): # Immutable
-        """Returns the project this item belongs to"""
-        from .ram_project import RamProject
-
-        if self._project is not None:
-            return self._project
-
-        folderPath = self.folderPath()
-        if folderPath == '':
-            return None
-
-        self._project = RamProject.fromPath( folderPath )
-        return self._project
-
-    def projectShortName(self): # Immutable
-        """Returns the short name of the project this item belongs to"""
-
-        if self._projectShortName != "":
-            return self._projectShortName
-
-        if self._project is not None:
-            self._projectShortName = self._project.shortName()
-            return self._projectShortName
-
-        folderPath = self.folderPath()
-        if folderPath == '':
-            return self._projectShortName
-
-        nm = RamFileInfo()
-        nm.setFilePath( folderPath )
-        if nm.project == '':
-            return self._projectShortName
-
-        self._projectShortName = nm.project
-        return self._projectShortName
+        if not os.path.isdir(versionFolder):
+            os.makedirs( versionFolder )
+        
+        return versionFolder
 
     # Documented in RamAsset and RamShot
-    def group( self ): # Immutable
+    def group( self ):
         """The name of group containing this asset or shot. (e.g. 'Props' or 'Sequence01')
 
         Returns:
             str
         """
 
-        if self._group != "":
-            return self._group
+        groupData = {}
 
-        # If we're online, ask the client
-        self.__updateFromDaemon()
+        if self.__itemType == ItemType.SHOT:
+            seqUuid = self.get("sequence", "")
+            if seqUuid != "":
+                groupData = DAEMON.getData( seqUuid )
 
-        if self._group != "":
-            return self._group
+        elif self.__itemType == ItemType.ASSET:
+            agUuid = self.get("assetGroup", "")
+            if agUuid != "":
+                groupData = DAEMON.getData( agUuid )
 
-        # Else, check in the folders if it's an asset
-        if not self.itemType() == ItemType.ASSET: return ""
-
-        folderPath = self.folderPath()
-
-        if not os.path.isdir( folderPath ):
-            log( Log.PathNotFound + " " + folderPath, LogLevel.Critical )
-            return self._group
-
-        parentFolder = os.path.dirname( folderPath )
-        parentFolderName = os.path.basename( parentFolder )
-
-        if parentFolderName != FolderNames.assets:
-            self._group = parentFolderName
-        else:
-            self._group = ''
-            
-        return self._group
+        return groupData.get("name", "")

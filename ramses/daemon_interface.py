@@ -36,7 +36,9 @@ class RamDaemonInterface( object ):
 
     @staticmethod
     def checkReply( obj ):
-        return obj['accepted'] and obj['success'] and obj['content'] is not None
+        if obj['accepted'] and obj['success'] and obj['content'] is not None:
+            return obj['content']
+        return {}
 
     @classmethod
     def instance( cls ):
@@ -67,7 +69,7 @@ class RamDaemonInterface( object ):
         Returns: dict.
             Read http://ramses.rxlab.guide/dev/daemon-reference/ for more information.
         """
-        return self.__post('ping', 1024)
+        return self.__post('ping', 2048)
 
     def raiseWindow(self):
         """Raises the Ramses Client application main window.
@@ -77,7 +79,9 @@ class RamDaemonInterface( object ):
         self.__post('raise')
 
     def getRamsesFolderPath(self):
-        return self.__post( "getRamsesFolder", 1024 )
+        reply = self.__post( "getRamsesFolder", 2048 )
+        content = self.checkReply(reply)
+        return content.get("path", "")
 
     def getProjects(self):
         """Gets the list of the projects
@@ -87,8 +91,13 @@ class RamDaemonInterface( object ):
         Returns: dict.
         """
 
-        if not self.__checkUser(): return self.__noUserReply('getProjects')
-        return self.__post( "getProjects", 32768 )
+        if not self.__checkUser():
+            self.__noUserReply('getProjects')
+            return ()
+            
+        reply = self.__post( "getProjects", 8192 )
+        content = self.checkReply(reply)
+        return content.get("projects", ())
 
     def getCurrentProject(self):
         """Gets the current project
@@ -98,8 +107,24 @@ class RamDaemonInterface( object ):
         Returns: dict.
         """
 
-        if not self.__checkUser(): return self.__noUserReply('getCurrentProject')
-        return self.__post( "getCurrentProject", 1024 )
+        from .ram_project import RamProject
+
+        if not self.__checkUser():
+            self.__noUserReply('getCurrentProject')
+            return None
+
+        reply = self.__post( "getProjects", 8192 )
+        content = self.checkReply(reply)
+        uuid = content.get("uuid", "")
+        if uuid == "":
+            return None
+        data = content.get("data", {})
+        return RamProject(uuid, data)
+
+    def getCurrentUser(self):
+        from .ram_user import RamUser
+        content = self.checkReply( self.ping() )
+        return RamUser( content.get("userUuid", "") )
 
     def setCurrentProject(self, projectUuid):
         """Sets the current project.
@@ -113,7 +138,7 @@ class RamDaemonInterface( object ):
         return self.__post( (
             "setCurrentProject",
             ('uuid', projectUuid)
-            ) )
+            ), 2048 )
 
     def getData(self, uuid):
         """Gets the data for a specific RamObject.
@@ -122,11 +147,17 @@ class RamDaemonInterface( object ):
         
         Returns: dict.
         """
-        if not self.__checkUser(): return self.__noUserReply('getData')
-        return self.__post( (
+        
+        if not self.__checkUser():
+            self.__noUserReply('getData')
+            return {}
+
+        reply =  self.__post( (
             "getData",
             ('uuid', uuid)
-            ) )
+            ), 8192 )
+        content = self.checkReply(reply)
+        return content.get("data", {})
 
     def setData(self, uuid, data):
         """Sets the data of a specific RamObject.
@@ -139,12 +170,65 @@ class RamDaemonInterface( object ):
         if not isinstance(data, str):
             data = json.dumps(data)
 
-        if not self.__checkUser(): return self.__noUserReply('getData')
+        if not self.__checkUser(): return self.__noUserReply('setData')
         return self.__post( (
             "setData",
             ('uuid', uuid),
             ('data', data)
-            ) )
+            ), 2048 )
+
+    def getPath(self, uuid):
+        """Gets the path for a specific RamObject.
+
+        Read the Ramses Daemon reference at http://ramses.rxlab.guide/dev/daemon-reference/ for more information.
+        
+        Returns: dict.
+        """
+        
+        if not self.__checkUser():
+            self.__noUserReply('getPath')
+            return ""
+
+        reply =  self.__post( (
+            "getPath",
+            ('uuid', uuid)
+            ), 8192 )
+        content = self.checkReply(reply)
+        return content.get("path", "")
+
+    def uuidFromPath(self, path, type ):
+        """Gets the uuid of an Object using its path.
+
+        Read the Ramses Daemon reference at http://ramses.rxlab.guide/dev/daemon-reference/ for more information.
+        
+        Returns: dict.
+        """
+        
+        if not self.__checkUser():
+            self.__noUserReply('uuidFromPath')
+            return ""
+
+        reply = self.__post( (
+            "uuidFromPath",
+            ('path', path),
+            ('type', type),
+            ), 8192 )
+        content = self.checkReply(reply)
+        return content.get("uuid", "")
+
+    def create(self, uuid, data, objectType):
+        if not self.__checkUser():
+            return self.__noUserReply('uuidFromPath')
+
+        if not isinstance(data, str):
+            data = json.dumps(data)
+
+        return self.__post( (
+            "create",
+            ("uuid", uuid),
+            ('data', data),
+            ("type", objectType)
+            ), 2048)
 
     def __buildQuery(self, query):
         """Builds a query from a list of args

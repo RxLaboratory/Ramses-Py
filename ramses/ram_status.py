@@ -17,69 +17,19 @@
 #
 #======================= END GPL LICENSE BLOCK ========================
 
-import os
-from datetime import datetime
-from .file_info import RamFileInfo
-
-from .ramses import Ramses
-from .file_manager import RamFileManager
 from .logger import log
-from .constants import Log, LogLevel
+from .constants import LogLevel
+from .daemon_interface import RamDaemonInterface
+from .ram_object import RamObject
+from datetime import datetime
 
-class RamStatus:
+DAEMON = RamDaemonInterface.instance()
+
+class RamStatus( RamObject ):
     """A state associated to a comment, the user who changed the state, etc."""
 
     @staticmethod
-    def fromDict( statusDict ):
-        """Builds a RamStatus from dict like the ones returned by the RamDaemonInterface"""
-
-        state = Ramses.instance().state( statusDict['state'] )
-
-        return RamStatus(
-            state,
-            statusDict['comment'],
-            statusDict['completionRatio'],
-            statusDict['version'],
-            statusDict['user'],
-            statusDict['date'],
-        )
-
-    def __init__( self, state, comment="", completionRatio=-1, version=0, user=None, stateDate=None ):
-        """
-        Args:
-            state (RamState): The corresponding state.
-            user (RamUser, optional): The user who created this status. Defaults to None.
-            comment (str, optional): A user comment. Defaults to "".
-            version (int, optional): The version of the corresponding working file. Defaults to 0.
-            stateDate (datetime, optional): The date at which this status was created. Defaults to None.
-            completionRatio (float, optional): The ratio of completion of this status. Defaults to None.
-        """
-
-        self.state = state
-        if completionRatio >= 0:
-            self.completionRatio = completionRatio
-        else:
-            self.completionRatio = state.completionRatio()
-        self.comment = comment
-        self.version = version
-
-        # Get User
-        if user is None:
-            user = Ramses.instance().currentUser()
-        self.user = user
-
-        if stateDate is None:
-            stateDate = datetime(year = 2020, month = 1, day = 1)
-        if isinstance(stateDate, str):
-            stateDate = datetime.strptime(stateDate, '%Y-%m-%d %H:%M:%S')
-        self.date = stateDate
-
-        self.published = False
-
-    @staticmethod
     def fromPath( filePath ):
-        from .ram_asset import RamAsset
-        from .ram_shot import RamShot
 
         """Returns a RamStatus instance built using the given file path.
 
@@ -90,34 +40,86 @@ class RamStatus:
             RamStatus
         """
 
-        baseName = os.path.basename( filePath )
-        nm = RamFileInfo()
-        if not nm.setFileName( baseName ):
-            log( Log.MalformedName, LogLevel.Critical )
-            return None
+        reply = DAEMON.uuidFromPath( filePath, "RamStatus" )
+        content = DAEMON.checkReply( reply )
+        uuid = content.get("uuid", "")
 
-        version = 0
-        stateId = 'WIP'
+        if uuid != "":
+            return RamStatus(uuid)
+        
+        log( "The given path does not belong to an item", LogLevel.Debug )
+        return None
 
-        if nm.version >= 0: # The file is already a version: gets the version info directly from it
-            version = nm.version
-            if nm.state != '':
-                stateId = nm.state
+    def copy(self):
+        """Returns a new copy of this status"""
+        newData = self.data()
+        newData['date'] = datetime.now().strftime("%Y-%m-%d- %H:%M:%S")
+        newStatus = RamStatus( data=newData, create = True )
+        return newStatus
+
+    def date(self):
+        dateStr = self.get("date", "1818-05-05 00:00:00")
+        return datetime.strptime(dateStr, "%Y-%m-%d- %H:%M:%S")
+
+    def completionRatio(self):
+        return self.get("completionRatio", 50)
+
+    def setCompletionRatio(self, completion):
+        data = self.data()
+        data["completionRatio"] = completion
+        data["date"] = datetime.now().strftime("%Y-%m-%d- %H:%M:%S")
+        self.setData(data)
+
+    def published(self):
+        return self.get("published", False)
+
+    def setPublished(self, published=True):
+        data = self.data()
+        data["published"] = published
+        data["date"] = datetime.now().strftime("%Y-%m-%d- %H:%M:%S")
+        self.setData(data)
+
+    def state(self):
+        from .ram_state import RamState
+        return RamState( self.get("state", "") )
+
+    def setState(self, state):
+        data = self.data()
+        data["state"] = state.uuid()
+        data["date"] = datetime.now().strftime("%Y-%m-%d- %H:%M:%S")
+        self.setData(data)
+
+    def step(self):
+        from .ram_step import RamStep
+        return RamStep( self.get("step", "") )
+
+    def item(self):
+        from .ram_shot import RamShot
+        from .ram_asset import RamAsset
+        from .ram_item import RamItem
+        itemType = self.get("itemType", 'item')
+        if itemType == "shot":
+            return RamShot( self.get("item", "") )
+        elif itemType == "asset":
+            return RamAsset( self.get("item", "") )
         else:
-            latestStatus = RamFileManager.getLatestVersionInfo( filePath )
-            version = latestStatus[0]
-            stateId = latestStatus[1]
+            return RamItem( self.get("item", "") )
 
-        state = Ramses.instance().state( stateId )
+    def user(self):
+        from .ram_user import RamUser
+        return RamUser( self.get("user", "") )
 
-        dateTimeStamp = os.path.getmtime( filePath )
-        dateTime = datetime.fromtimestamp( dateTimeStamp )
+    def setUser(self, user):
+        data = self.data()
+        data["user"] = user.uuid()
+        data["date"] = datetime.now().strftime("%Y-%m-%d- %H:%M:%S")
+        self.setData(data)
 
-        return RamStatus(
-            state,
-            "",
-            state.completionRatio(),
-            version,
-            None,
-            dateTime
-            )
+    def version(self):
+        return self.get("version", 1)
+
+    def setVersion(self, version):
+        data = self.data()
+        data["version"] = version
+        data["date"] = datetime.now().strftime("%Y-%m-%d- %H:%M:%S")
+        self.setData(data)

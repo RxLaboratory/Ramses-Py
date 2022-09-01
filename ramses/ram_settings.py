@@ -23,7 +23,7 @@ import json
 from .constants import FolderNames, LogLevel
 from .logger import log
 
-theVersion = "0.2.11-alpha"
+theVersion = "0.5.0-alpha"
 
 class RamSettings( object ):
     """Gets and saves settings used by Ramses.
@@ -83,7 +83,7 @@ class RamSettings( object ):
             # API Settings
             cls.version = theVersion
             cls.apiReferenceUrl = "https://ramses.rxlab.guide/dev/"
-            cls.addonsHelpUrl = "https://ramses.rxlab.guide/components/addons/maya/"
+            cls.addonsHelpUrl = "https://ramses.rxlab.guide/components/addons/"
             cls.generalHelpUrl = "https://ramses.rxlab.guide"
 
             # Set the path to the settings file and temporary folder (os-specific)

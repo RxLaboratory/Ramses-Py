@@ -17,83 +17,148 @@
 #
 #======================= END GPL LICENSE BLOCK ========================
 
+import time
+import json
+import re
+import uuid as UUID
+from .daemon_interface import RamDaemonInterface
+from .logger import log, LogLevel
+
+DAEMON = RamDaemonInterface.instance()
+RE_UUID = re.compile("^[a-zA-Z0-9]+-[a-zA-Z0-9]+-[a-zA-Z0-9]+-[a-zA-Z0-9]+-[a-zA-Z0-9]+$")
+
 class RamObject(object):
     """The base class for most of Ramses objects."""
 
     @staticmethod
-    def fromDict( objectDict ):
-        """Builds a RamObject from dict like the ones returned by the RamDaemonInterface"""
-
-        obj = RamObject(
-            objectDict['name'],
-            objectDict['shortName']
-        )
-
-        if 'comment' in objectDict:
-            obj._comment = objectDict['comment']
+    def isUuid( string ):
+        if not isinstance(string, str):
+            return False
+        if RE_UUID.match(string):
+            return True
+        return False
 
     @staticmethod
-    def fromString( objStr ):
-        """Rebuilds an item from the string returned by str(item)"""
-
-        splitName = objStr.split(' | ')
-        shortName =  splitName[0]
-        name = shortName
-        if len(splitName) == 2:
-            name = splitName[1]
-
-        return RamObject(
-            name,
-            shortName 
-        )
-
-    @staticmethod
-    def getObjectShortName( obj ):
+    def getUuid( obj ):
         from .file_manager import RamFileManager
 
         if isinstance( obj, RamObject ):
-            shortName = obj.shortName()
+            uuid = obj.uuid()
         elif obj is None:
             return ''
         else:
-            shortName = obj
+            uuid = obj
 
-        return shortName
+        return uuid
 
-    def __init__( self, objectName, objectShortName ):
+    @staticmethod
+    def getShortName( obj ):
+        if RamObject.isUuid( obj ):
+            obj = RamObject(obj)
+        if isinstance(obj, RamObject):
+            return obj.shortName()
+        # Must already be a short name
+        return obj
+
+    def __init__( self, uuid="", data = None, create=False, objectType="RamObject" ):
         """
         Args:
-            objectName (str): May contain spaces, [a-z] ,[A-Z], [0-9], [+-], limited to 256 characters
-            objectShortName (str):  Used for compact display and folder names, limited to 10 characters,
-                must not contain spaces, may contain [a-z] ,[A-Z], [0-9], [+-].
+            uuid (str): The object's uuid
         """
+        
+        if uuid == "" and not create:
+            self.__virtual = True
+        else:
+            self.__virtual = False
+        
+        if uuid == "":
+            uuid = str(UUID.uuid4())
+        self.__uuid = uuid
+        if data:
+            self.__data = data
+            self.__cacheTime = time.time()
+        else:
+            self.__data = {}
+            self.__cacheTime = 0
 
-        from .file_manager import RamFileManager
+        if create:
+            reply = DAEMON.create( self.__uuid, self.__data, objectType )
+            if not DAEMON.checkReply(reply):
+                log("I can't create this object.")
 
-        self._name = objectName
-        self._shortName = objectShortName
-        self._comment = ""
-    
+    def uuid( self ):
+        return self.__uuid
+
+    def data( self ):
+
+        if self.__virtual:
+            return self.__data
+
+        # Check if the cached data is recent enough
+        # there's a 2-second timeout to not post too many queries
+        # and improve performance
+        cacheElapsed = time.time() - self.__cacheTime
+        if self.__data and cacheElapsed < 2:
+            return self.__data
+
+        # Get the data from the daemon
+        
+        data = DAEMON.getData( self.__uuid )
+
+        if data:
+            self.__data = data
+            self.__cacheTime = time.time()
+
+        return self.__data
+
+    def setData( self, data):
+
+        if isinstance(data, str):
+            data = json.loads(data)           
+
+        self.__data = data
+
+        if not self.__virtual:
+            DAEMON.setData( self.__uuid, data )
+            
+    def get(self, key, default = None):
+        data = self.data()
+        return data.get(key, default)
+
     def name( self ):
         """
         Returns:
             str
         """
-        return self._name
+        return self.get('name', 'Unknown Object')
 
     def shortName( self ):
         """
         Returns:
             str
         """
-        return self._shortName
+        return self.get('shortName', 'Unknown')
 
     def comment( self ):
         """
         Returns:
             str
         """
-        return self._comment
+        return self.get('comment', '')
+
+    def color( self ):
+        return self.get('color', '#e3e3e3')
+
+    def settings( self ):
+        return self.get('settings', {})
+
+    def folderPath( self ):
+        if self.__virtual:
+            return ""
+        return DAEMON.getPath( self.__uuid )
+
+    def virtual( self ):
+        return self.__virtual
 
     def __str__( self ):
         n = self.shortName()
@@ -104,6 +169,6 @@ class RamObject(object):
 
     def __eq__(self, other):
         try:
-            return self.shortName() == other.shortName()
+            return self.__uuid == other.uuid()
         except:
             return False
