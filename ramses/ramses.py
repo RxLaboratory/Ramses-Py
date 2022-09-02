@@ -90,7 +90,6 @@ class Ramses( object ):
     def setCurrentProject( self, project ):
         """Sets the current project (useful if offline)"""
         DAEMON.setCurrentProject( project.uuid() )
-            
 
     def currentUser(self):
         from .ram_user import RamUser
