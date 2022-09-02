@@ -57,8 +57,9 @@ class RamDaemonInterface( object ):
             port: int.
         """
         raise RuntimeError("RamDaemonInterface can't be initialized with `RamDaemonInterface()`, it is a singleton. Call RamDaemonInterface.instance() or Ramses.instance().daemonInterface() instead.")
-    
+
     def online(self):
+        """Checks if the daemon is available"""
         return self.__testConnection()
 
     def ping(self):
@@ -203,7 +204,10 @@ class RamDaemonInterface( object ):
         """Gets the current user"""
         from .ram_user import RamUser
         content = self.checkReply( self.ping() )
-        return RamUser( content.get("userUuid", "") )
+        uuid =  content.get("userUuid", "")
+        if uuid == "":
+            return None
+        return RamUser( uuid )
 
     def setCurrentProject(self, projectUuid):
         """Sets the current project.
@@ -226,15 +230,17 @@ class RamDaemonInterface( object ):
         
         Returns: dict.
         """
-        
+
         if not self.__checkUser():
             self.__noUserReply('getData')
             return {}
 
-        reply =  self.__post( (
-            "getData",
-            ('uuid', uuid)
-            ), 8192 )
+        reply =  self.__post(
+            (
+                "getData",
+                ('uuid', uuid)
+            ),
+            8192 )
         content = self.checkReply(reply)
         return content.get("data", {})
 
@@ -321,12 +327,13 @@ class RamDaemonInterface( object ):
             The query string in the form "key1&key2=value2&key3=value3"
         """
 
-        if type(query) is str: return query
+        if isinstance(query, str):
+            return query
 
         queryList = []
 
         for arg in query:
-            if type(arg) is str:
+            if isinstance(arg, str):
                 if arg:
                     queryList.append(arg)
             else:
@@ -404,8 +411,10 @@ class RamDaemonInterface( object ):
         if content is None:
             log("Daemon did not reply correctly")
             return False
-        if content['ramses'] == "Ramses": return True
-        if content['ramses'] == "Ramses-Client": return True
+        if content['ramses'] == "Ramses":
+            return True
+        if content['ramses'] == "Ramses-Client":
+            return True
 
         log("Invalid content in the Daemon reply", LogLevel.Critical)
         return False

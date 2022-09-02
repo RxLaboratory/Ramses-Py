@@ -92,7 +92,6 @@ class Ramses( object ):
         DAEMON.setCurrentProject( project.uuid() )
 
     def currentUser(self):
-        from .ram_user import RamUser
         """The current user.
 
         Returns:
