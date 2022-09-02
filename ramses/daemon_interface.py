@@ -83,13 +83,81 @@ class RamDaemonInterface( object ):
         content = self.checkReply(reply)
         return content.get("path", "")
 
+    def getObjects( self, objectType ):
+        """Gets the list of the objects
+
+        Read the Ramses Daemon reference at http://ramses.rxlab.guide/dev/daemon-reference/ for more information.
+        
+        Returns: list of RamObject.
+        """
+
+        from .ram_asset import RamAsset
+        from .ram_assetgroup import RamAssetGroup
+        from .ram_filetype import RamFileType
+        from .ram_item import RamItem
+        from .ram_object import RamObject
+        from .ram_pipe import RamPipe
+        from .ram_pipefile import RamPipeFile
+        from .ram_project import RamProject
+        from .ram_sequence import RamSequence
+        from .ram_shot import RamShot
+        from .ram_state import RamState
+        from .ram_status import RamStatus
+        from .ram_step import RamStep
+        from .ram_user import RamUser
+
+        if not self.__checkUser():
+            self.__noUserReply('getProjects')
+            return ()
+
+        reply = self.__post( "getObjects", 65536 )
+        content = self.checkReply(reply)
+        objs = content.get("objects", ())
+        objects = []
+        for obj in objs:
+            uuid = obj.get("uuid", "")
+            data = obj.get("data", {})
+            if objectType == "RamObject":
+                o = RamObject( uuid, data=data)
+            elif objectType == "RamAsset":
+                o = RamAsset( uuid, data=data)
+            elif objectType == "RamAssetGroup":
+                o = RamAssetGroup( uuid, data=data)
+            elif objectType == "RamFileType":
+                o = RamFileType( uuid, data=data)
+            elif objectType == "RamItem":
+                o = RamItem( uuid, data=data)
+            elif objectType == "RamPipe":
+                o = RamPipe( uuid, data=data)
+            elif objectType == "RamPipeFile":
+                o = RamPipeFile( uuid, data=data)
+            elif objectType == "RamProject":
+                o = RamProject( uuid, data=data)
+            elif objectType == "RamSequence":
+                o = RamSequence( uuid, data=data)
+            elif objectType == "RamShot":
+                o = RamShot( uuid, data=data)
+            elif objectType == "RamState":
+                o = RamState( uuid, data=data)
+            elif objectType == "RamStatus":
+                o = RamStatus( uuid, data=data)
+            elif objectType == "RamStep":
+                o = RamStep( uuid, data=data)
+            elif objectType == "RamUser":
+                o = RamUser( uuid, data=data)
+            if o:
+                objects.append(o)
+        return objects
+
     def getProjects(self):
         """Gets the list of the projects
 
         Read the Ramses Daemon reference at http://ramses.rxlab.guide/dev/daemon-reference/ for more information.
         
-        Returns: dict.
+        Returns: list of RamProject.
         """
+
+        from .ram_project import RamProject
 
         if not self.__checkUser():
             self.__noUserReply('getProjects')
@@ -97,14 +165,24 @@ class RamDaemonInterface( object ):
             
         reply = self.__post( "getProjects", 8192 )
         content = self.checkReply(reply)
-        return content.get("projects", ())
+        projectList = content.get("projects", ())
+        projects = []
+        for p in projectList:
+            pid = content.get("uuid", ""),
+            pdata = content.get("data", {})
+            projects.append( RamProject(
+                uuid = pid,
+                data = pdata
+            ))
+
+        return projects
 
     def getCurrentProject(self):
         """Gets the current project
 
         Read the Ramses Daemon reference at http://ramses.rxlab.guide/dev/daemon-reference/ for more information.
         
-        Returns: dict.
+        Returns: RamProject.
         """
 
         from .ram_project import RamProject

@@ -60,29 +60,21 @@ class Ramses( object ):
         from .ram_state import RamState
 
         if cls._instance is None:
+            
             cls._instance = cls.__new__(cls)
+
+            log("I'm trying to contact the Ramses Client.", LogLevel.Info)
+            cls._instance.connect()
+
             cls._offline = True
-            cls._folderPath = DAEMON.getRamsesFolderPath()
-            cls._states = []
-            cls._currentProject = None
             cls.publishScripts = []
             cls.statusScripts = []
             cls.importScripts = []
             cls.replaceScripts = []
             cls.userScripts = {}
 
-            if SETTINGS.online:
-                log("I'm trying to contact the Ramses Client.", LogLevel.Info)
-                cls._instance.connect()
-
-            # Not documented: the states to use offline
-            cls.defaultStates = [
-                RamState("No", "NO", 0, [25,25,25]), # Very dark gray
-                RamState("To Do", "TODO", 0, [85, 170, 255]), # Blue
-                RamState("Work in progress", "WIP", 50,  [255,255,127]), # Light Yellow
-                RamState("OK", "OK", 100, [0, 170, 0]), # Green
-            ]
-            cls.defaultState = cls.defaultStates[2]
+            # Get the default state (TO Do)
+            cls.defaultState = cls._instance.state("WIP")
 
         return cls._instance
 
@@ -93,25 +85,12 @@ class Ramses( object ):
         Returns:
             RamProject or None
         """
-        # If online, ask the daemon
-        if not self._offline:
-            # Ask (the daemon returns a dict)
-            reply = DAEMON.getCurrentProject()
-            # Check if successful
-            if RamDaemonInterface.checkReply(reply):     
-                return RamProject.fromDict( reply['content'] )  
-
-        return self._currentProject
+        return DAEMON.getCurrentProject()
 
     def setCurrentProject( self, project ):
         """Sets the current project (useful if offline)"""
-        if project is None:
-            return
+        DAEMON.setCurrentProject( project.uuid() )
             
-        self._currentProject = project
-
-        if not self._offline:
-            DAEMON.setCurrentProject( project.shortName() )
 
     def currentUser(self):
         from .ram_user import RamUser
@@ -120,17 +99,7 @@ class Ramses( object ):
         Returns:
             RamUser or None
         """
-
-        # If online, ask the daemon
-        if not self._offline:
-            # Ask (the daemon returns a dict)
-            reply = DAEMON.getCurrentUser()
-
-            # Check if successful
-            if RamDaemonInterface.checkReply(reply):
-                return RamUser.fromDict( reply['content'] )
-
-        return None
+        return DAEMON.getCurrentUser()
 
     def online(self):
         """True if connected to the Daemon and the Daemon is responding.
@@ -138,7 +107,6 @@ class Ramses( object ):
         Returns:
             bool
         """
-        print("Is Ramses online? " + str(not self._offline))
         return not self._offline
     
     def alternativeFolderPaths(self):  # TODO
@@ -166,25 +134,7 @@ class Ramses( object ):
         Returns:
             str
         """
-
-        if self._folderPath != "":
-            return self._folderPath
-
-        if not self._offline:
-            # Ask (the daemon returns a dict)
-            replyDict = DAEMON.getRamsesFolderPath()
-
-            # Check if successful
-            if RamDaemonInterface.checkReply(replyDict):
-                self._folderPath = replyDict['content']['folder']
-                SETTINGS.ramsesFolderPath = self._folderPath
-                SETTINGS.save()
-
-            return self._folderPath
-
-        # if offline, get from settings
-        self._folderPath = SETTINGS.ramsesFolderPath
-        return self._folderPath
+        return DAEMON.getRamsesFolderPath()
 
     def projectsPath(self):
         """Returns the default path for projects"""
@@ -195,7 +145,7 @@ class Ramses( object ):
 
         return RamFileManager.buildPath((
             folderPath,
-            FolderNames.projects
+            SETTINGS.folderNames.projects
         ))
 
     def usersPath(self):
@@ -207,7 +157,7 @@ class Ramses( object ):
 
         return RamFileManager.buildPath((
             folderPath,
-            FolderNames.users
+            SETTINGS.folderNames.users
         ))
 
     def connect(self):
@@ -247,21 +197,7 @@ class Ramses( object ):
         Returns:
             RamDaemonInterface
         """
-        return daemon
-
-    def project(self, projectShortName):
-        """Gets a specific project.
-
-        Args:
-            projectShortName (str): projectShortName
-
-        Returns:
-            RamProject
-        """
-        for project in self.projects():
-            if project.shortName() == projectShortName:
-                return project
-        return None
+        return DAEMON
 
     def projects(self):
         """The list of available projects.
@@ -271,32 +207,7 @@ class Ramses( object ):
         """
         from .ram_project import RamProject
 
-        projects = []
-
-        if not self._offline:
-            reply = DAEMON.getProjects()
-            if RamDaemonInterface.checkReply(reply):
-                for projectDict in reply['content']['projects']:
-                    p = RamProject.fromDict( projectDict )
-                    if p is not None:
-                        projects.append( p )
-                if len(projects) > 0:
-                    return projects
-
-        projectsPath = self.projectsPath()
-        if projectsPath == "":
-            return []
-
-        for projectName in os.listdir(projectsPath):
-            projectFolder = RamFileManager.buildPath((
-                    projectsPath,
-                    projectName
-                ))
-            p = RamProject.fromPath( projectFolder )
-            if p is not None:
-                projects.append( p )
-
-        return projects
+        return DAEMON.getProjects()
 
     def state(self, stateShortName="WIP"):
         """Gets a specific state.
@@ -308,22 +219,12 @@ class Ramses( object ):
             RamState
         """
 
-        from .ram_state import RamState
-
-        # If online, ask the daemon
         if not self._offline:
-            replyDict = DAEMON.getState( stateShortName )
-            # Check if successful
-            if RamDaemonInterface.checkReply(replyDict):
-                return RamState.fromDict( replyDict['content'] )
-
-        # Else get in the default list
-        for state in self.defaultStates:
-            if state.shortName() == stateShortName:
-                return state
-        
-        # Not found
-        return self.defaultState
+            stts = self.states()
+            for stt in stts:
+                if stt.shortName() == stateShortName:
+                    return stt
+        return None
 
     def states(self):
         """The list of available states.
@@ -333,26 +234,7 @@ class Ramses( object ):
         """
         from .ram_state import RamState
 
-        if len(self._states) > 0:
-            return self._states
-
-        # If online, ask the daemon
-        if not self._offline:
-            # Ask (the daemon returns a dict)
-            replyDict = DAEMON.getStates()
-
-            # Check if successful
-            if RamDaemonInterface.checkReply(replyDict):
-                contentDict = replyDict['content']
-                statesDict = contentDict['states']
-
-                for state in statesDict:
-                    newState = RamState.fromDict( state )
-                    self._states.append(newState)
-
-                return self._states
-
-        return self.defaultStates
+        return DAEMON.getObjects( "RamState" )
 
     def showClient(self):
         """Raises the Ramses Client window, launches the client if it is not already running.
@@ -394,7 +276,7 @@ class Ramses( object ):
         Args:
             (RamSettings): settings
         """
-        return settings
+        return SETTINGS
 
     @staticmethod
     def version():

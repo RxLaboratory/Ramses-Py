@@ -53,8 +53,6 @@ class RamSettings( object ):
 
             # Default Values
 
-            # Wether to always try to (re)connect to the Daemon if offline.
-            cls.online = cls.defaultOnline = True 
             # Location of the Ramses Client executable file (.exe on Windows, .app on MacOS, .appimage or binary on Linux)
             cls.ramsesClientPath =  cls.defaultRamsesClientPath = ""
             # Listening port of the Ramses Daemon
@@ -102,8 +100,6 @@ class RamSettings( object ):
                 with open(cls._filePath, 'r') as settingsFile:
                     settingsStr = settingsFile.read()
                     settingsDict = json.loads( settingsStr )
-                    if 'online' in settingsDict:
-                        cls.online = settingsDict['online']
                     if 'clientPath' in settingsDict:
                         cls.ramsesClientPath = settingsDict['clientPath']
                     if 'clientPort' in settingsDict:
@@ -134,7 +130,6 @@ class RamSettings( object ):
         log("I'm saving your settings...")
 
         settingsDict = {
-            'online': self.online,
             'clientPath': self.ramsesClientPath,
             'clientPort': self.ramsesClientPort,
             'logLevel': self.logLevel,
