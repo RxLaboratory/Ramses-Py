@@ -231,7 +231,7 @@ class RamProject( RamObject ):
         
         return thePath
 
-    def assets( self, groupName="" ):
+    def assets( self, assetGroup=None ):
         """Available assets in this project and group.
         If groupName is an empty string, returns all assets.
 
@@ -247,7 +247,12 @@ class RamProject( RamObject ):
         assetListUuid = self.get("assets", "")
         assetList = DAEMON.getData( assetListUuid ).get("list", [])
         for uuid in assetList:
-            assets.append( RamAsset(uuid) )
+            asset = RamAsset( uuid )
+            if assetGroup:
+                if assetGroup == asset.assetGroup():
+                    assets.append( asset )
+            else:
+                assets.append( asset )
         return assets
 
     def assetGroups( self ):
@@ -282,6 +287,7 @@ class RamProject( RamObject ):
         return shots
 
     def sequences( self ):
+        """The sequences of this project"""
         sequences = []
 
         sequenceListUuid = self.get("sequences", "")
@@ -289,7 +295,7 @@ class RamProject( RamObject ):
         for uuid in sequenceList:
             sequences.append( RamSequence(uuid) )
         return sequences
-    
+
     def step(self, shortName):
         """
         Gets a step using its shortName
@@ -331,7 +337,7 @@ class RamProject( RamObject ):
                 if st == StepType.SHOT_PRODUCTION or st == StepType.ASSET_PRODUCTION:
                     steps.append(step)
         return steps
-        
+
     def pipes( self ):
         """Available pipes in this project
 
@@ -345,7 +351,7 @@ class RamProject( RamObject ):
         for uuid in pipeList:
             pipes.append( RamPipe(uuid) )
         return pipes
-        
+
     def _getAssetsInFolder(self, folderPath, assetGroup=None ):
         """lists and returns all assets in the given folder"""
         assetList = []

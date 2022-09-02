@@ -216,8 +216,6 @@ class Ramses( object ):
         Returns:
             list of RamProject
         """
-        from .ram_project import RamProject
-
         return DAEMON.getProjects()
 
     def state(self, stateShortName="WIP"):

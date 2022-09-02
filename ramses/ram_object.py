@@ -90,7 +90,7 @@ class RamObject(object):
         return self.__uuid
 
     def data( self ):
-
+        """Gets the data for this object"""
         if self.__virtual:
             return self.__data
 
@@ -102,7 +102,6 @@ class RamObject(object):
             return self.__data
 
         # Get the data from the daemon
-        
         data = DAEMON.getData( self.__uuid )
 
         if data:
@@ -120,8 +119,9 @@ class RamObject(object):
 
         if not self.__virtual:
             DAEMON.setData( self.__uuid, data )
-            
+
     def get(self, key, default = None):
+        """Get a specific value in the data"""
         data = self.data()
         return data.get(key, default)
 

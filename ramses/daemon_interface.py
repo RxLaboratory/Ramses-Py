@@ -169,7 +169,7 @@ class RamDaemonInterface( object ):
         projectList = content.get("projects", ())
         projects = []
         for p in projectList:
-            pid = p.get("uuid", ""),
+            pid = p.get("uuid", "")
             pdata = p.get("data", {})
             projects.append( RamProject(
                 uuid = pid,
@@ -363,8 +363,9 @@ class RamDaemonInterface( object ):
 
         log( query, LogLevel.DataSent)
 
-        try: s.connect((self._address, self._port))
-        except Exception as e:
+        try:
+            s.connect((self._address, self._port))
+        except Exception as e: #pylint: disable=broad-except
             log("Daemon can't be reached", LogLevel.Debug)
             log(str(e), LogLevel.Critical)
             ramses = Ramses.instance()

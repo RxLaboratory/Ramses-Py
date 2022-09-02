@@ -61,8 +61,8 @@ class RamAsset( RamItem ):
         return self.get("tags", [])
 
     def assetGroup( self ):
+        """The asset group containing this asset"""
         agUuid = self.get("assetGroup", "")
         if agUuid != "":
             return RamAssetGroup( agUuid )
         return None
-
