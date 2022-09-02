@@ -241,8 +241,6 @@ class Ramses( object ):
         Returns:
             list of RamState
         """
-        from .ram_state import RamState
-
         return DAEMON.getObjects( "RamState" )
 
     def showClient(self):

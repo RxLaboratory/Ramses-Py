@@ -74,12 +74,13 @@ class RamDaemonInterface( object ):
 
     def raiseWindow(self):
         """Raises the Ramses Client application main window.
-        
+
         Read the Ramses Daemon reference at http://ramses.rxlab.guide/dev/daemon-reference/ for more information.
         """
         self.__post('raise')
 
     def getRamsesFolderPath(self):
+        """Gets the path of the main Ramses folder"""
         reply = self.__post( "getRamsesFolder", 2048 )
         content = self.checkReply(reply)
         return content.get("path", "")
@@ -88,7 +89,7 @@ class RamDaemonInterface( object ):
         """Gets the list of the objects
 
         Read the Ramses Daemon reference at http://ramses.rxlab.guide/dev/daemon-reference/ for more information.
-        
+
         Returns: list of RamObject.
         """
 
@@ -111,7 +112,12 @@ class RamDaemonInterface( object ):
             self.__noUserReply('getProjects')
             return ()
 
-        reply = self.__post( "getObjects", 65536 )
+        reply = self.__post(
+            (
+                "getObjects",
+                ("type", objectType)
+            ),
+            65536 )
         content = self.checkReply(reply)
         objs = content.get("objects", ())
         objects = []

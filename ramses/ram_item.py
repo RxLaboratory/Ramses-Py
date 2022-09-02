@@ -53,11 +53,17 @@ class RamItem( RamObject ):
         from .ram_asset import RamAsset
         from .ram_shot import RamShot
 
-        uuid = DAEMON.uuidFromPath( fileOrFolderPath, "RamItem" )
+        nm = RamFileInfo()
+        nm.setFilePath( fileOrFolderPath )
+
+        if nm.ramType == ItemType.ASSET:
+            uuid = DAEMON.uuidFromPath( fileOrFolderPath, "RamAsset" )
+        elif nm.ramType == ItemType.SHOT:
+            uuid = DAEMON.uuidFromPath( fileOrFolderPath, "RamShot" )
+        else:
+            uuid = DAEMON.uuidFromPath( fileOrFolderPath, "RamItem" )
 
         if uuid != "":
-            nm = RamFileInfo()
-            nm.setFilePath( fileOrFolderPath )
             if nm.ramType == ItemType.ASSET:
                 return RamAsset(uuid)
             elif nm.ramType == ItemType.SHOT:
@@ -397,7 +403,7 @@ class RamItem( RamObject ):
         if os.path.isfile(filePath):
             return filePath
         return ""
-    
+
     def stepFilePaths( self, step="" ):
         """Returns the step files"""
         step = RamObject.getShortName( step )

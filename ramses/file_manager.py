@@ -306,13 +306,13 @@ class RamFileManager():
     @staticmethod
     def copyToVersion( filePath, increment = False, stateShortName="" ):
         """Copies and increments a file into the version folder
-        
+
         Returns the filePath of the new file version"""
         from .metadata_manager import RamMetaDataManager
 
         if not os.path.isfile( filePath ):
             raise Exception( "Missing File: Cannot increment a file which does not exists: " + filePath )
-      
+
         log("Incrementing version for file: " + filePath, LogLevel.Debug)
 
         # Check File Name
@@ -321,9 +321,10 @@ class RamFileManager():
         if fileInfo.project == '':
             log( Log.MalformedName, LogLevel.Critical )
             return
-               
+
         # Look for the latest version to increment and save
         versioInfo = RamFileManager.getLatestVersionInfo( filePath, stateShortName )
+        
         fileInfo.version = versioInfo.version
         if stateShortName == "":
             fileInfo.state = versioInfo.state
@@ -355,11 +356,13 @@ class RamFileManager():
         latestVersionFilePath = RamFileManager.getLatestVersionFilePath( filePath, previous )
         versionInfo = RamFileInfo()
         versionInfo.setFilePath( latestVersionFilePath )
-        if versionInfo.state == '': versionInfo.state = defaultStateShortName
+        if versionInfo.state == '':
+            versionInfo.state = defaultStateShortName
         return versionInfo
 
     @staticmethod
     def getLatestVersionFilePath( filePath, previous=False ):
+        """Gets the file path of the latest version"""
         # Check File Name
         fileName = os.path.basename( filePath )
         nm = RamFileInfo()
@@ -375,7 +378,7 @@ class RamFileManager():
 
         versionFilePath = ''
         prevVersionFilePath = ''
-        
+
         for foundFile in foundFiles:
             if not os.path.isfile( versionsFolder + '/' + foundFile ): # This is in case the user has created folders in _versions
                 continue
