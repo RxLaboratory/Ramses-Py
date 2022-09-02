@@ -257,30 +257,18 @@ class Ramses( object ):
 
         try:
             p = Popen(SETTINGS.ramsesClientPath, stdin=PIPE, stdout=PIPE, stderr=PIPE)
-        except:
+        except: # pylint: disable=bare-except
             log("The Client is not available at " + SETTINGS.ramsesClientPath, LogLevel.Critical)
             return False
 
-        if not p.poll(): del p
+        if not p.poll():
+            del p
         else:
             log("The Client can't be launched correctly.", LogLevel.Critical)
             return False
-        
-        # Wait for the client to respond
-        numTries = 0
-        self._offline = True
-        while( self._offline and numTries < 3 ):
-            self._offline = not DAEMON.online()
-            sleep(1)
-            numTries = numTries + 1
-        
-        # If the client opened
-        if not self._offline:
-            DAEMON.raiseWindow()
-            return True
-        
-        return False
-            
+
+        return True
+
     def settings(self):
         """
 
