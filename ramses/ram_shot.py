@@ -32,7 +32,7 @@ class RamShot( RamItem ):
     """A shot"""
 
     @staticmethod
-    def fromPath( path ):
+    def fromPath( fileOrFolderPath ):
         """Returns a RamShot instance built using the given path.
             The path can be any file or folder path from the asset
             (a version file, a preview file, etc)
@@ -44,13 +44,11 @@ class RamShot( RamItem ):
             RamShot
         """
 
-        reply = DAEMON.uuidFromPath( path, "RamShot" )
-        content = DAEMON.checkReply( reply )
-        uuid = content.get("uuid", "")
+        uuid = DAEMON.uuidFromPath( fileOrFolderPath, "RamShot" )
 
         if uuid != "":
             return RamShot(uuid)
-        
+
         log( "The given path does not belong to a shot", LogLevel.Debug )
         return None
 
@@ -65,7 +63,7 @@ class RamShot( RamItem ):
 
     def frames( self ):
         """The shot duration, in frames
-        
+
         Returns:
             int
         """
@@ -78,6 +76,7 @@ class RamShot( RamItem ):
         return int(duration * fps)
 
     def sequence(self):
+        """The sequence containing this shot"""
         seqUuid = self.get("sequence", "")
         if seqUuid != "":
             return RamSequence( seqUuid )

@@ -162,14 +162,14 @@ class RamDaemonInterface( object ):
         if not self.__checkUser():
             self.__noUserReply('getProjects')
             return ()
-            
+
         reply = self.__post( "getProjects", 8192 )
         content = self.checkReply(reply)
         projectList = content.get("projects", ())
         projects = []
         for p in projectList:
-            pid = content.get("uuid", ""),
-            pdata = content.get("data", {})
+            pid = p.get("uuid", ""),
+            pdata = p.get("data", {})
             projects.append( RamProject(
                 uuid = pid,
                 data = pdata
@@ -200,6 +200,7 @@ class RamDaemonInterface( object ):
         return RamProject(uuid, data)
 
     def getCurrentUser(self):
+        """Gets the current user"""
         from .ram_user import RamUser
         content = self.checkReply( self.ping() )
         return RamUser( content.get("userUuid", "") )
@@ -411,9 +412,10 @@ class RamDaemonInterface( object ):
 
     def __checkUser(self):
         data = self.ping()
-        
-        if data is None: return False
-        
+
+        if data is None:
+            return False
+
         if 'content' in data:
             content = data['content']
         else:
@@ -422,11 +424,11 @@ class RamDaemonInterface( object ):
         if content is None:
             return False
 
-        if 'uuid' in content:
-            ok = content['uuid'] != ""
+        if 'userUuid' in content:
+            ok = content['userUuid'] != ""
         else:
             return False
-            
+
         return ok
 
     def __noUserReply(self, query):

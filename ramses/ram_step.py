@@ -18,12 +18,9 @@
 #======================= END GPL LICENSE BLOCK ========================
 
 import os
-from platform import version
-from .file_info import RamFileInfo
 from .ram_object import RamObject
-from .ramses import Ramses
 from .logger import log
-from .constants import ItemType, StepType, FolderNames, Log, LogLevel
+from .constants import StepType, FolderNames, LogLevel
 from .file_manager import RamFileManager
 from .daemon_interface import RamDaemonInterface
 
@@ -36,14 +33,12 @@ class RamStep( RamObject ):
     # project is undocumented and used to improve performance, when called from a RamProject
     @staticmethod
     def fromPath( path ):
-        from .ram_status import RamStatus
         """Creates a step from any path, if possible
         by extracting step info from the path"""
+        from .ram_status import RamStatus
 
         # First, try to see if this is the path of a step
-        reply = DAEMON.uuidFromPath( path, "RamStep" )
-        content = DAEMON.checkReply( reply )
-        uuid = content.get("uuid", "")
+        uuid = DAEMON.uuidFromPath( path, "RamStep" )
 
         if uuid != "":
             return RamStep(uuid)
@@ -52,7 +47,7 @@ class RamStep( RamObject ):
         status = RamStatus.fromPath( path )
         if status:
             return status.step()
-        
+
         log( "The given path does not belong to a step", LogLevel.Debug )
         return None
 

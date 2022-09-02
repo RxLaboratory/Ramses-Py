@@ -43,13 +43,11 @@ class RamAsset( RamItem ):
         Returns:
             RamAsset
         """
-        reply = DAEMON.uuidFromPath( fileOrFolderPath, "RamAsset" )
-        content = DAEMON.checkReply( reply )
-        uuid = content.get("uuid", "")
+        uuid = DAEMON.uuidFromPath( fileOrFolderPath, "RamAsset" )
 
         if uuid != "":
             return RamAsset(uuid)
-        
+
         log( "The given path does not belong to an asset", LogLevel.Debug )
         return None
 

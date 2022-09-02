@@ -25,11 +25,10 @@ from .constants import LogLevel
 DAEMON = RamDaemonInterface.instance()
 
 class RamAssetGroup( RamObject ):
+    """A group of assets"""
 
     @staticmethod
     def fromPath( fileOrFolderPath ):
-        from .ram_shot import RamShot
-        from .ram_asset import RamAsset
         """Returns a RamAssetGroup instance built using the given path.
         The path can be any file or folder path from the asset 
         (a version file, a preview file, etc)
@@ -40,20 +39,19 @@ class RamAssetGroup( RamObject ):
         Returns:
             RamAssetGroup
         """
-
-        reply = DAEMON.uuidFromPath( fileOrFolderPath, "RamAssetGroup" )
-        content = DAEMON.checkReply( reply )
-        uuid = content.get("uuid", "")
+        uuid = DAEMON.uuidFromPath( fileOrFolderPath, "RamAssetGroup" )
 
         if uuid != "":
             return RamAssetGroup(uuid)
-        
+
         log( "The given path does not belong to an item", LogLevel.Debug )
         return None
 
     def project(self):
+        """The project containing this group"""
         from .ram_project import RamProject
         uuid = self.get("project", "")
         if uuid != "":
             return RamProject(uuid)
         return None
+        

@@ -44,17 +44,15 @@ class RamProject( RamObject ):
     def fromPath( path ):
         """Creates a project object from any path, trying to get info from the given path"""
 
-        reply = DAEMON.uuidFromPath( path, "RamProject" )
-        content = DAEMON.checkReply( reply )
-        uuid = content.get("uuid", "")
+        uuid = DAEMON.uuidFromPath( path, "RamProject" )
 
         if uuid != "":
             return RamProject(uuid)
-        
+
         log( "The given path does not belong to a project", LogLevel.Debug )
         return None
 
-    def width( self ): 
+    def width( self ):
         """
         Returns:
             int
@@ -291,7 +289,20 @@ class RamProject( RamObject ):
         for uuid in sequenceList:
             sequences.append( RamSequence(uuid) )
         return sequences
+    
+    def step(self, shortName):
+        """
+        Gets a step using its shortName
         
+        return:
+            RamStep
+        """
+        stps = self.steps()
+        for s in stps:
+            if s.shortName() == shortName:
+                return s
+        return None
+
     def steps( self, stepType=StepType.ALL ):
         """Available steps in this project. Use type to filter the results.
             One of: RamStep.ALL, RamStep.ASSET_PODUCTION, RamStep.SHOT_PRODUCTION, RamStep.PRE_PRODUCTION, RamStep.PRODUCTION, RamStep.POST_PRODUCTION.
@@ -321,7 +332,6 @@ class RamProject( RamObject ):
                     steps.append(step)
         return steps
         
-
     def pipes( self ):
         """Available pipes in this project
 

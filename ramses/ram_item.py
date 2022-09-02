@@ -23,6 +23,7 @@ from .file_info import RamFileInfo
 from .ramses import Ramses
 from .ram_object import RamObject
 from .file_manager import RamFileManager
+from .file_info import RamFileInfo
 from .daemon_interface import RamDaemonInterface
 from .logger import log
 from .constants import Log, LogLevel, ItemType, FolderNames
@@ -49,13 +50,21 @@ class RamItem( RamObject ):
             RamAsset or RamShot
         """
 
-        reply = DAEMON.uuidFromPath( fileOrFolderPath, "RamItem" )
-        content = DAEMON.checkReply( reply )
-        uuid = content.get("uuid", "")
+        from .ram_asset import RamAsset
+        from .ram_shot import RamShot
+
+        uuid = DAEMON.uuidFromPath( fileOrFolderPath, "RamItem" )
 
         if uuid != "":
-            return RamItem(uuid)
-        
+            nm = RamFileInfo()
+            nm.setFilePath( fileOrFolderPath )
+            if nm.ramType == ItemType.ASSET:
+                return RamAsset(uuid)
+            elif nm.ramType == ItemType.SHOT:
+                return RamShot(uuid)
+            else:
+                return RamItem(uuid)
+
         log( "The given path does not belong to an item", LogLevel.Debug )
         return None
 

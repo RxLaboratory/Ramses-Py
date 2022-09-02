@@ -198,6 +198,19 @@ class Ramses( object ):
         """
         return DAEMON
 
+    def project(self, shortName):
+        """
+        Gets a project using its shortName
+        
+        return:
+            RamProject
+        """
+        projs = self.projects()
+        for p in projs:
+            if p.shortName() == shortName:
+                return p
+        return None
+
     def projects(self):
         """The list of available projects.
 

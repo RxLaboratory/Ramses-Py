@@ -17,11 +17,11 @@
 #
 #======================= END GPL LICENSE BLOCK ========================
 
+from datetime import datetime
 from .logger import log
 from .constants import LogLevel
 from .daemon_interface import RamDaemonInterface
 from .ram_object import RamObject
-from datetime import datetime
 
 DAEMON = RamDaemonInterface.instance()
 
@@ -30,7 +30,6 @@ class RamStatus( RamObject ):
 
     @staticmethod
     def fromPath( filePath ):
-
         """Returns a RamStatus instance built using the given file path.
 
         Args:
@@ -40,13 +39,11 @@ class RamStatus( RamObject ):
             RamStatus
         """
 
-        reply = DAEMON.uuidFromPath( filePath, "RamStatus" )
-        content = DAEMON.checkReply( reply )
-        uuid = content.get("uuid", "")
+        uuid = DAEMON.uuidFromPath( filePath, "RamStatus" )
 
         if uuid != "":
             return RamStatus(uuid)
-        
+
         log( "The given path does not belong to an item", LogLevel.Debug )
         return None
 
@@ -58,13 +55,16 @@ class RamStatus( RamObject ):
         return newStatus
 
     def date(self):
+        """The date of the latest modification"""
         dateStr = self.get("date", "1818-05-05 00:00:00")
         return datetime.strptime(dateStr, "%Y-%m-%d- %H:%M:%S")
 
     def completionRatio(self):
+        """The completion ratio"""
         return self.get("completionRatio", 50)
 
     def setCompletionRatio(self, completion):
+        """Sets a new completion ratio"""
         data = self.data()
         data["completionRatio"] = completion
         data["date"] = datetime.now().strftime("%Y-%m-%d- %H:%M:%S")
@@ -80,20 +80,24 @@ class RamStatus( RamObject ):
         self.setData(data)
 
     def state(self):
+        """The state"""
         from .ram_state import RamState
         return RamState( self.get("state", "") )
 
     def setState(self, state):
+        """Sets a new state"""
         data = self.data()
         data["state"] = state.uuid()
         data["date"] = datetime.now().strftime("%Y-%m-%d- %H:%M:%S")
         self.setData(data)
 
     def step(self):
+        """The step"""
         from .ram_step import RamStep
         return RamStep( self.get("step", "") )
 
     def item(self):
+        """The item"""
         from .ram_shot import RamShot
         from .ram_asset import RamAsset
         from .ram_item import RamItem
@@ -106,19 +110,23 @@ class RamStatus( RamObject ):
             return RamItem( self.get("item", "") )
 
     def user(self):
+        """The last user who've modified the status"""
         from .ram_user import RamUser
         return RamUser( self.get("user", "") )
 
     def setUser(self, user):
+        """Sets the user who's modifying the status"""
         data = self.data()
         data["user"] = user.uuid()
         data["date"] = datetime.now().strftime("%Y-%m-%d- %H:%M:%S")
         self.setData(data)
 
     def version(self):
+        """The version"""
         return self.get("version", 1)
 
     def setVersion(self, version):
+        """Sets the version"""
         data = self.data()
         data["version"] = version
         data["date"] = datetime.now().strftime("%Y-%m-%d- %H:%M:%S")
