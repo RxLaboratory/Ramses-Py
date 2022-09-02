@@ -61,17 +61,10 @@ class RamSettings( object ):
             cls.logLevel = cls.defaultLogLevel = LogLevel.Info
             # Timeout before auto incrementing a file, in minutes
             cls.autoIncrementTimeout = cls.defaultAutoIncrementTimeout = 120
-            # The folder containing all ramses files
-            cls.defaultRamsesFolderPath = os.path.expanduser("~/Ramses")
             # A Debug mode to throw errors
             cls.debugMode = cls.defaultDebugMode = False
             # The custom settings
             cls.userSettings = {}
-
-            # The default ramses folder may be in Documents (in Maya....), adjust
-            if cls.defaultRamsesFolderPath.endswith("Documents/Ramses"):
-                cls.defaultRamsesFolderPath = cls.defaultRamsesFolderPath.replace("Documents/Ramses", "Ramses")           
-            cls.ramsesFolderPath = cls.defaultRamsesFolderPath
 
             # Not Documented: these are not settings to be customized (yet)
 
@@ -108,8 +101,6 @@ class RamSettings( object ):
                         cls.logLevel = settingsDict['logLevel']
                     if 'autoIncrementTimeout' in settingsDict:
                         cls.autoIncrementTimeout = settingsDict['autoIncrementTimeout']
-                    if 'ramsesFolderPath' in settingsDict:
-                        cls.ramsesFolderPath = settingsDict['ramsesFolderPath']
                     if 'debugMode' in settingsDict:
                         cls.debugMode = settingsDict['debugMode']
                     if 'userSettings' in settingsDict:
@@ -134,7 +125,6 @@ class RamSettings( object ):
             'clientPort': self.ramsesClientPort,
             'logLevel': self.logLevel,
             'autoIncrementTimeout': self.autoIncrementTimeout,
-            'ramsesFolderPath': self.ramsesFolderPath,
             'userSettings': self.userSettings,
             'debugMode': self.debugMode,
         }
