@@ -103,7 +103,7 @@ class Ramses( object ):
             bool
         """
         return not self._offline
-    
+
     def alternativeFolderPaths(self):  # TODO
         """A list of alternative absolute paths to the main Ramses folder.
         Missing files will be looked for in these paths (and copied to the main path if available),
@@ -238,7 +238,11 @@ class Ramses( object ):
         Returns:
             list of RamState
         """
-        return DAEMON.getObjects( "RamState" )
+        from ramses.ram_state import RamState
+        states = DAEMON.getObjects( "RamState" )
+        # Order before returning
+        states.sort( key=RamState.stateSorter )
+        return states
 
     def showClient(self):
         """Raises the Ramses Client window, launches the client if it is not already running.

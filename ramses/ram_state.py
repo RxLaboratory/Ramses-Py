@@ -22,6 +22,11 @@ from .ram_object import RamObject
 class RamState( RamObject ):
     """Represents a state used in a status, like “CHK” (To be checked), “OK” (ok), “TO_DO”, etc."""
 
+    @staticmethod
+    def stateSorter( s ):
+        """Used to sort list of states"""
+        return s.completionRatio()
+
     def __init__( self, uuid="", data = None, create=False ):
         """
         Args:
