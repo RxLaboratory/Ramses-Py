@@ -52,7 +52,7 @@ class RamShot( RamItem ):
         log( "The given path does not belong to a shot", LogLevel.Debug )
         return None
 
-    def __init__( self, uuid="", data = None, create=False, objectType="RamShot" ):
+    def __init__( self, uuid="", data = None, create=False ):
         """
         Args:
             uuid (str)

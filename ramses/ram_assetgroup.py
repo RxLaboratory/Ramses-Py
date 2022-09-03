@@ -47,6 +47,13 @@ class RamAssetGroup( RamObject ):
         log( "The given path does not belong to an item", LogLevel.Debug )
         return None
 
+    def __init__( self, uuid="", data = None, create=False ):
+        """
+        Args:
+            uuid (str)
+        """
+        super(RamAssetGroup, self).__init__( uuid, data, create, "RamAssetGroup" )
+
     def project(self):
         """The project containing this group"""
         from .ram_project import RamProject

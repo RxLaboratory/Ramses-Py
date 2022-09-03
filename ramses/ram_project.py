@@ -52,6 +52,13 @@ class RamProject( RamObject ):
         log( "The given path does not belong to a project", LogLevel.Debug )
         return None
 
+    def __init__( self, uuid="", data = None, create=False ):
+        """
+        Args:
+            uuid (str)
+        """
+        super(RamProject, self).__init__( uuid, data, create, "RamProject" )
+
     def width( self ):
         """
         Returns:

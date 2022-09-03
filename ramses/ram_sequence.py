@@ -21,6 +21,13 @@ from .ram_object import RamObject
 
 class RamSequence( RamObject ):
 
+    def __init__( self, uuid="", data = None, create=False ):
+        """
+        Args:
+            uuid (str)
+        """
+        super(RamSequence, self).__init__( uuid, data, create, "RamSequence" )
+
     def project(self):
         from .ram_project import RamProject
         uuid = self.get("project", "")

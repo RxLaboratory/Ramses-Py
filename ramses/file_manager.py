@@ -187,9 +187,9 @@ class RamFileManager():
             name = os.path.basename(path)
 
         saveFileName = nm.fileName()
-        
+
         return RamFileManager.buildPath(( saveFolder, saveFileName ))
-        
+
     @staticmethod
     def restoreVersionFile( filePath, separateThread=True ):
         """Restores a file from a versions subfolder"""

@@ -51,6 +51,13 @@ class RamStep( RamObject ):
         log( "The given path does not belong to a step", LogLevel.Debug )
         return None
 
+    def __init__( self, uuid="", data = None, create=False ):
+        """
+        Args:
+            uuid (str)
+        """
+        super(RamStep, self).__init__( uuid, data, create, "RamStep" )
+
     def inputPipes( self ):
         """The pipes coming to this step"""
         project = self.project()

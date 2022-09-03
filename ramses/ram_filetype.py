@@ -23,6 +23,13 @@ class RamFileType( RamObject ):
     """A File type.
     File types are typically used with RamPipe."""
 
+    def __init__( self, uuid="", data = None, create=False ):
+        """
+        Args:
+            uuid (str)
+        """
+        super(RamFileType, self).__init__( uuid, data, create, "RamFileType" )
+
     def extensions( self ):
         """The extensions which can be used for this file type, including the “.”
 

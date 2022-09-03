@@ -47,6 +47,13 @@ class RamStatus( RamObject ):
         log( "The given path does not belong to an item", LogLevel.Debug )
         return None
 
+    def __init__( self, uuid="", data = None, create=False ):
+        """
+        Args:
+            uuid (str)
+        """
+        super(RamStatus, self).__init__( uuid, data, create, "RamStatus" )
+
     def copy(self):
         """Returns a new copy of this status"""
         newData = self.data()

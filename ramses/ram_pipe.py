@@ -28,6 +28,13 @@ class RamPipe( RamObject ):
         The pipe goes from the output step (which exports data into a specific file type)
         to the input step (which imports that data)."""
 
+    def __init__( self, uuid="", data = None, create=False ):
+        """
+        Args:
+            uuid (str)
+        """
+        super(RamPipe, self).__init__( uuid, data, create, "RamPipe" )
+
     def inputStep(self):
         from .ram_step import RamStep
         return RamStep( self.get("inputStep", ""))

@@ -18,7 +18,7 @@
 #======================= END GPL LICENSE BLOCK ========================
 
 from .ram_object import RamObject
-from .constants import UserRole, FolderNames
+from .constants import UserRole
 from .file_manager import RamFileManager
 from .ram_settings import RamSettings
 
@@ -26,6 +26,13 @@ SETTINGS = RamSettings.instance()
 
 class RamUser( RamObject ):
     """The class representing users."""
+
+    def __init__( self, uuid="", data = None, create=False ):
+        """
+        Args:
+            uuid (str)
+        """
+        super(RamUser, self).__init__( uuid, data, create, "RamUser" )
 
     def role( self ):
         """

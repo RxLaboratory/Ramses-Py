@@ -90,6 +90,7 @@ class RamObject(object):
                 log("I can't create this object.")
 
     def uuid( self ):
+        """Returns the uuid of the object"""
         return self.__uuid
 
     def data( self ):
@@ -114,11 +115,12 @@ class RamObject(object):
         return self.__data
 
     def setData( self, data):
-
+        """Saves the new data for the object"""
         if isinstance(data, str):
-            data = json.loads(data)           
+            data = json.loads(data)
 
         self.__data = data
+        self.__cacheTime = time.time()
 
         if not self.__virtual:
             DAEMON.setData( self.__uuid, data )
@@ -159,14 +161,17 @@ class RamObject(object):
         return self.get('color', '#e3e3e3')
 
     def settings( self ):
+        """Returns the settings of this object"""
         return self.get('settings', {})
 
     def folderPath( self ):
+        """Returns the folder corresponding to this object"""
         if self.__virtual:
-            return ""
+            return self.get("folderPath", "")
         return DAEMON.getPath( self.__uuid )
 
     def virtual( self ):
+        """Checks if this object is virtual"""
         return self.__virtual
 
     def __str__( self ):

@@ -27,6 +27,13 @@ from .metadata_manager import RamMetaDataManager
 class RamPipeFile( RamObject ):
     """A file which goes through a RamPipe."""
 
+    def __init__( self, uuid="", data = None, create=False ):
+        """
+        Args:
+            uuid (str)
+        """
+        super(RamPipeFile, self).__init__( uuid, data, create, "RamPipeFile" )
+
     def fileType(self):
         return RamFileType( self.get("fileType", "") )
 

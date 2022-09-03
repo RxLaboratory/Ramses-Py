@@ -22,6 +22,13 @@ from .ram_object import RamObject
 class RamState( RamObject ):
     """Represents a state used in a status, like “CHK” (To be checked), “OK” (ok), “TO_DO”, etc."""
 
+    def __init__( self, uuid="", data = None, create=False ):
+        """
+        Args:
+            uuid (str)
+        """
+        super(RamState, self).__init__( uuid, data, create, "RamState" )
+
     def completionRatio( self ):
         """The ratio of completion of this state in the range [0, 100].
 

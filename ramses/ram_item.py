@@ -77,13 +77,17 @@ class RamItem( RamObject ):
             # Get some info from the file name
             project = RAMSES.project( nm.project )
             projectUuid = ""
+            # Get the right folder
+            folderPath = RamFileManager.getSaveFilePath( fileOrFolderPath )
+            folderPath = os.path.dirname(folderPath)
             if project:
                 projectUuid = project.uuid()
 
             data = {
                 "name": nm.shortName,
                 "shortName": nm.shortName,
-                "project": projectUuid
+                "project": projectUuid,
+                "folderPath": folderPath
             }
 
             if nm.ramType == ItemType.ASSET:
@@ -97,7 +101,7 @@ class RamItem( RamObject ):
         return None
 
     # Do not document itemType as it's used only by derived classes
-    def __init__( self, uuid="", data = None, create=False, objectType="RamObject" ):
+    def __init__( self, uuid="", data = None, create=False, objectType="RamItem" ):
         """
         Args:
             uuid (str)
@@ -153,7 +157,8 @@ class RamItem( RamObject ):
         """Gets the latest published version folder for the given fileName. Returns the latest folder if the fileName is omitted or an empty string"""
         versionFolders = self.publishedVersionFolderPaths(step, fileName, resource)
         
-        if len(versionFolders) == 0: return ''
+        if len(versionFolders) == 0:
+            return ''
         return versionFolders[-1]
 
     def latestVersion( self, resource="", state="", step=""):
@@ -267,8 +272,7 @@ class RamItem( RamObject ):
         """
 
         previewFolderPath = self.previewFolderPath(step)
-
-        return RamFileManager.getFileWithResource( previewFolderPath, resource)
+        # return RamFileManager.getFileWithResource( previewFolderPath, resource)
 
     def project(self):
         """Returns the project this item belongs to"""
@@ -298,7 +302,7 @@ class RamItem( RamObject ):
         else:
             return ""
 
-    def publishFolderPath( self, step=""): 
+    def publishFolderPath( self, step=""):
         """Gets the path to the publish folder.
         Paths are relative to the root of the item folder.
 
@@ -387,7 +391,7 @@ class RamItem( RamObject ):
 
         statusList = data.get("list", [])
         # Append the status
-        statusList.append(status)
+        statusList.append(status.uuid())
         data["list"] = statusList
 
         # Re-set the data
@@ -454,6 +458,11 @@ class RamItem( RamObject ):
         return files
 
     def stepFolderPath(self, step=""):
+        """Returns the working folder for the given step"""
+        # General items don't have subfolders for steps
+        if self.itemType() == ItemType.GENERAL:
+            return self.folderPath()
+            
         # We need a short name
         step = RamObject.getShortName( step )
 
