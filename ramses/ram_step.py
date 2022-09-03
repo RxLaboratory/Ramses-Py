@@ -64,7 +64,7 @@ class RamStep( RamObject ):
             if pipe.inputStep() == self:
                 inputPipes.append(pipe)
 
-        inputPipes
+        return inputPipes
 
     def outputPipes( self ):
         """The pipes going out of this step"""
@@ -79,14 +79,14 @@ class RamStep( RamObject ):
             if pipe.outputStep() == self:
                 outputPipes.append(pipe)
 
-        outputPipes
+        return outputPipes
 
     def templatesFolderPath( self ):
         """The path to the template files of this step
         Returns:
             str
         """
-     
+
         templatesFolder = ""
 
         stepFolder = self.folderPath()
@@ -159,11 +159,12 @@ class RamStep( RamObject ):
         from .ram_project import RamProject
         return RamProject( self.get("project", ""))
 
-    def projectShortName(self): 
+    def projectShortName(self):
         """Returns the short name of the step this item belongs to"""
         p = self.project()
         if p:
             return p.shortName()
+        return ""
 
     def publishSettings(self):
         """Returns the publish settings, as a string,
