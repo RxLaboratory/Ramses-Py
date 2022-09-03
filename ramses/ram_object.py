@@ -150,6 +150,12 @@ class RamObject(object):
         return self.get('comment', '')
 
     def color( self ):
+        """Returns the color as (R,G,B)"""
+        colorName = self.colorName().lstrip("#")
+        return tuple(int(colorName[i:i+2], 16) for i in (0, 2, 4))
+
+    def colorName(self):
+        """Returns the color as #000000"""
         return self.get('color', '#e3e3e3')
 
     def settings( self ):
