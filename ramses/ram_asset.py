@@ -17,12 +17,10 @@
 #
 #======================= END GPL LICENSE BLOCK ========================
 
-from . import Ramses
 from .logger import log
 from .ram_item import RamItem
 from .ram_assetgroup import RamAssetGroup
 from .daemon_interface import RamDaemonInterface
-from .logger import log
 from .constants import LogLevel
 
 # Keep the daemon at hand
@@ -57,7 +55,6 @@ class RamAsset( RamItem ):
             uuid (str)
         """
         super(RamAsset, self).__init__( uuid, data, create, "RamAsset" )
-
 
     def tags( self ):
         """Some tags describing the asset. An empty list if the Daemon is not available.

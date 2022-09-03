@@ -283,7 +283,6 @@ class RamItem( RamObject ):
 
         elif self.__itemType == ItemType.ASSET:
             agUuid = self.get("assetGroup", "")
-            print("group UUID: " + agUuid)
             if agUuid:
                 groupData = DAEMON.getData( agUuid )
 
