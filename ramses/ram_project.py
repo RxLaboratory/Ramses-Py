@@ -249,10 +249,9 @@ class RamProject( RamObject ):
         for uuid in assetList:
             asset = RamAsset( uuid )
             if assetGroup:
-                if assetGroup == asset.assetGroup():
-                    assets.append( asset )
-            else:
-                assets.append( asset )
+                if assetGroup != asset.assetGroup():
+                    continue
+            assets.append( asset )
         return assets
 
     def assetGroups( self ):
@@ -269,7 +268,7 @@ class RamProject( RamObject ):
             assetGroups.append( RamAssetGroup(uuid) )
         return assetGroups
 
-    def shots( self, nameFilter = "*", sequence = "" ):
+    def shots( self, nameFilter = "*", sequence = None ):
         """Available shots in this project
 
         Args:
@@ -283,7 +282,14 @@ class RamProject( RamObject ):
         shotListUuid = self.get("shots", "")
         shotList = DAEMON.getData( shotListUuid ).get("list", [])
         for uuid in shotList:
-            shots.append( RamShot(uuid) )
+            shot = RamShot(uuid)
+            if sequence:
+                if sequence != shot.sequence():
+                    continue
+            if nameFilter != "*" and nameFilter != "":
+                if not nameFilter in shot.name() and not nameFilter in shot.shortName():
+                    continue
+            shots.append( shot )
         return shots
 
     def sequences( self ):

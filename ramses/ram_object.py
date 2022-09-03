@@ -65,15 +65,18 @@ class RamObject(object):
         Args:
             uuid (str): The object's uuid
         """
-        
+
         if uuid == "" and not create:
             self.__virtual = True
         else:
             self.__virtual = False
-        
+
         if uuid == "":
             uuid = str(UUID.uuid4())
         self.__uuid = uuid
+
+        if isinstance(data, str):
+            data = json.loads(data)   
         if data:
             self.__data = data
             self.__cacheTime = time.time()

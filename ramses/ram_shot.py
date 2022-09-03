@@ -32,7 +32,7 @@ class RamShot( RamItem ):
     """A shot"""
 
     @staticmethod
-    def fromPath( fileOrFolderPath ):
+    def fromPath( fileOrFolderPath, virtualIfNotFound=False ):
         """Returns a RamShot instance built using the given path.
             The path can be any file or folder path from the asset
             (a version file, a preview file, etc)
@@ -51,6 +51,13 @@ class RamShot( RamItem ):
 
         log( "The given path does not belong to a shot", LogLevel.Debug )
         return None
+
+    def __init__( self, uuid="", data = None, create=False, objectType="RamShot" ):
+        """
+        Args:
+            uuid (str)
+        """
+        super(RamShot, self).__init__( uuid, data, create, "RamShot" )
 
     def duration( self ):
         """The shot duration, in seconds

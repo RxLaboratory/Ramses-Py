@@ -20,7 +20,6 @@
 import os
 from platform import version
 from .file_info import RamFileInfo
-from .ramses import Ramses
 from .ram_object import RamObject
 from .file_manager import RamFileManager
 from .file_info import RamFileInfo
@@ -38,7 +37,7 @@ class RamItem( RamObject ):
     """
 
     @staticmethod
-    def fromPath( fileOrFolderPath ):
+    def fromPath( fileOrFolderPath, virtualIfNotFound = False ):
         """Returns a RamAsset or RamShot instance built using the given path.
         The path can be any file or folder path from the asset 
         (a version file, a preview file, etc)
@@ -52,6 +51,9 @@ class RamItem( RamObject ):
 
         from .ram_asset import RamAsset
         from .ram_shot import RamShot
+        from .ramses import Ramses
+
+        RAMSES = Ramses.instance()
 
         nm = RamFileInfo()
         nm.setFilePath( fileOrFolderPath )
@@ -71,6 +73,26 @@ class RamItem( RamObject ):
             else:
                 return RamItem(uuid)
 
+        if virtualIfNotFound:
+            # Get some info from the file name
+            project = RAMSES.project( nm.project )
+            projectUuid = ""
+            if project:
+                projectUuid = project.uuid()
+
+            data = {
+                "name": nm.shortName,
+                "shortName": nm.shortName,
+                "project": projectUuid
+            }
+
+            if nm.ramType == ItemType.ASSET:
+                return RamAsset(data=data, create=False)
+            elif nm.ramType == ItemType.SHOT:
+                return RamShot(data=data, create=False)
+            else:
+                return RamItem(data=data, create=False)
+
         log( "The given path does not belong to an item", LogLevel.Debug )
         return None
 
@@ -80,14 +102,14 @@ class RamItem( RamObject ):
         Args:
             uuid (str)
         """
-        super(RamItem, self).__init__( uuid )
+        super(RamItem, self).__init__( uuid, data, create, objectType )
         if objectType == "RamShot":
             self.__itemType = ItemType.SHOT
         elif objectType == "RamAsset":
             self.__itemType = ItemType.ASSET
         else:
             self.__itemType = ItemType.GENERAL
-                
+
     def currentStatus( self, step ):
         """The current status for the given step
 
@@ -122,7 +144,7 @@ class RamItem( RamObject ):
         """
         result = self.publishedVersionFolderPaths( step )
         return len( result ) > 0
-    
+
     def itemType( self ):
         """Returns the type of the item"""
         return self.__itemType
@@ -167,7 +189,7 @@ class RamItem( RamObject ):
                         highestVersion = nm.version
 
         return highestVersion
-    
+
     def latestVersionFilePath( self, resource="", state="", step="" ):
         """Latest version file path
 
@@ -248,7 +270,7 @@ class RamItem( RamObject ):
 
         return RamFileManager.getFileWithResource( previewFolderPath, resource)
 
-    def project(self): # Immutable
+    def project(self):
         """Returns the project this item belongs to"""
         from .ram_project import RamProject
 
@@ -261,13 +283,14 @@ class RamItem( RamObject ):
 
         elif self.__itemType == ItemType.ASSET:
             agUuid = self.get("assetGroup", "")
+            print("group UUID: " + agUuid)
             if agUuid:
                 groupData = DAEMON.getData( agUuid )
 
         projUuid = groupData.get("project", "")
         return RamProject(projUuid)
 
-    def projectShortName(self): # Immutable
+    def projectShortName(self):
         """Returns the short name of the project this item belongs to"""
 
         proj = self.project()
@@ -411,7 +434,7 @@ class RamItem( RamObject ):
         stepFolder = self.stepFolderPath(step)
         if stepFolder == '':
             return []
-        
+
         pShortName = self.projectShortName()
         if pShortName == '':
             return []

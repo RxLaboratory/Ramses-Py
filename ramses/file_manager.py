@@ -191,7 +191,8 @@ class RamFileManager():
         return RamFileManager.buildPath(( saveFolder, saveFileName ))
         
     @staticmethod
-    def restoreVersionFile( filePath ):
+    def restoreVersionFile( filePath, separateThread=True ):
+        """Restores a file from a versions subfolder"""
         if not RamFileManager.inVersionsFolder( filePath ):
             log( "This version can't be restored, it is not in a Ramses version subfolder.", LogLevel.Critical )
             return
@@ -215,7 +216,7 @@ class RamFileManager():
         saveFolder = os.path.dirname( versionFolder )
 
         restoredFilePath = saveFolder + '/' + restoredFileName
-        RamFileManager.copy( filePath, restoredFilePath )
+        RamFileManager.copy( filePath, restoredFilePath,separateThread )
         RamMetaDataManager.appendHistoryDate( restoredFilePath )
         return restoredFilePath
 

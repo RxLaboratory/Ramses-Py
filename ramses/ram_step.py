@@ -52,6 +52,7 @@ class RamStep( RamObject ):
         return None
 
     def inputPipes( self ):
+        """The pipes coming to this step"""
         project = self.project()
         if project is None:
             return ()
@@ -64,8 +65,9 @@ class RamStep( RamObject ):
                 inputPipes.append(pipe)
 
         inputPipes
-    
-    def outputPipes( self ): 
+
+    def outputPipes( self ):
+        """The pipes going out of this step"""
         project = self.project()
         if project is None:
             return ()
@@ -119,8 +121,9 @@ class RamStep( RamObject ):
         return folder
 
     def templatesPublishedVersionFolderPaths( self ):
+        """The published folders for the templates of this step"""
         templatesPublishPath = self.templatesPublishPath()
-        
+
         versionFolders = []
 
         for f in os.listdir(templatesPublishPath):
@@ -169,6 +172,7 @@ class RamStep( RamObject ):
         return self.get("publishSettings", "")
 
     def setPublishSettings(self, settings):
+        """Sets new publish settings for this step"""
         data = self.data()
         data["publishSettings"] = settings
         self.setData(data)
