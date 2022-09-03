@@ -198,7 +198,7 @@ class RamDaemonInterface( object ):
             self.__noUserReply('getCurrentProject')
             return None
 
-        reply = self.__post( "getProjects", 8192 )
+        reply = self.__post( "getCurrentProject", 2048 )
         content = self.checkReply(reply)
         uuid = content.get("uuid", "")
         if uuid == "":

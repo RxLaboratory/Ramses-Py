@@ -17,13 +17,11 @@
 #
 #======================= END GPL LICENSE BLOCK ========================
 
-import os
 from subprocess import Popen, PIPE
-from time import sleep
 
 from .file_manager import RamFileManager
 from .logger import log
-from .constants import FolderNames, LogLevel, Log
+from .constants import LogLevel, Log
 from .daemon_interface import RamDaemonInterface
 from .ram_settings import RamSettings
 
@@ -79,7 +77,6 @@ class Ramses( object ):
         return cls._instance
 
     def currentProject(self):
-        from .ram_project import RamProject
         """The current project.
 
         Returns:
