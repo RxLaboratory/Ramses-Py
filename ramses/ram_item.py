@@ -462,7 +462,7 @@ class RamItem( RamObject ):
         # General items don't have subfolders for steps
         if self.itemType() == ItemType.GENERAL:
             return self.folderPath()
-            
+
         # We need a short name
         step = RamObject.getShortName( step )
 
