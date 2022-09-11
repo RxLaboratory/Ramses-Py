@@ -252,8 +252,8 @@ class RamProject( RamObject ):
         assets = []
 
         assetListUuid = self.get("assets", "")
-        assetList = DAEMON.getData( assetListUuid ).get("list", [])
-        for uuid in assetList:
+        #assetList = DAEMON.getData( assetListUuid ).get("list", [])
+        for uuid in assetListUuid:
             asset = RamAsset( uuid )
             if assetGroup:
                 if assetGroup != asset.assetGroup():
@@ -270,8 +270,8 @@ class RamProject( RamObject ):
         assetGroups = []
 
         assetGroupListUuid = self.get("assetGroups", "")
-        assetGroupList = DAEMON.getData( assetGroupListUuid ).get("list", [])
-        for uuid in assetGroupList:
+        #assetGroupList = DAEMON.getData( assetGroupListUuid ).get("list", [])
+        for uuid in assetGroupListUuid:
             assetGroups.append( RamAssetGroup(uuid) )
         return assetGroups
 
@@ -287,8 +287,8 @@ class RamProject( RamObject ):
         shots = []
 
         shotListUuid = self.get("shots", "")
-        shotList = DAEMON.getData( shotListUuid ).get("list", [])
-        for uuid in shotList:
+        #shotList = DAEMON.getData( shotListUuid ).get("list", [])
+        for uuid in shotListUuid:
             shot = RamShot(uuid)
             if sequence:
                 if sequence != shot.sequence():
@@ -304,8 +304,8 @@ class RamProject( RamObject ):
         sequences = []
 
         sequenceListUuid = self.get("sequences", "")
-        sequenceList = DAEMON.getData( sequenceListUuid ).get("list", [])
-        for uuid in sequenceList:
+        #sequenceList = DAEMON.getData( sequenceListUuid ).get("list", [])
+        for uuid in sequenceListUuid:
             sequences.append( RamSequence(uuid) )
         return sequences
 
@@ -336,8 +336,8 @@ class RamProject( RamObject ):
         steps = []
 
         stepListUuid = self.get("steps", "")
-        stepList = DAEMON.getData( stepListUuid ).get("list", [])
-        for uuid in stepList:
+        #stepList = DAEMON.getData( stepListUuid ).get("list", [])
+        for uuid in stepListUuid:
             step = RamStep(uuid)
             st = step.stepType()
             if stepType == StepType.ALL:
@@ -360,8 +360,8 @@ class RamProject( RamObject ):
         pipes = []
 
         pipeListUuid = self.get("pipeline", "")
-        pipeList = DAEMON.getData( pipeListUuid ).get("list", [])
-        for uuid in pipeList:
+        #pipeList = DAEMON.getData( pipeListUuid ).get("list", [])
+        for uuid in pipeListUuid:
             pipes.append( RamPipe(uuid) )
         return pipes
 
