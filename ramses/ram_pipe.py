@@ -67,9 +67,8 @@ class RamPipe( RamObject ):
 
     def pipeFiles( self ):
         pipeFileListUuid = self.get("pipeFiles")
-        pipeFileList = DAEMON.getData(pipeFileListUuid).get("list", [])
         pipeFiles = []
-        for uuid in pipeFileList:
+        for uuid in pipeFileListUuid:
             p = RamPipeFile( uuid )
             if p:
                 pipeFiles.append(p)

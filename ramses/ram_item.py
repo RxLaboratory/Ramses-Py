@@ -384,21 +384,13 @@ class RamItem( RamObject ):
             return
 
         # Get the step history
-        statusHistory = self.statusHistory()
-        stepHistoryUuid = statusHistory.get(stepUuid, "")
+        statusHistory = self.stepStatusHistory(step)
 
-        data = DAEMON.getData(stepHistoryUuid)
-
-        statusList = data.get("list", [])
         # Append the status
-        statusList.append(status.uuid())
-        data["list"] = statusList
+        statusHistory.append(status.uuid())
 
         # Re-set the data
-        DAEMON.setData(stepHistoryUuid, data)
-
-    def statusHistory( self ):
-        return self.get("statusHistory", {})
+        self.set("statusHistory-" + stepUuid, statusHistory)
 
     def stepFilePath(self, resource="", extension="", step="", ):
         """Returns a specific step file"""
@@ -506,13 +498,7 @@ class RamItem( RamObject ):
         if stepUuid == "":
             return []
 
-        statusHistory = self.statusHistory()
-        stepHistoryUuid = statusHistory.get(stepUuid, "")
-        if stepHistoryUuid == "":
-            return []
-
-        data = DAEMON.getData(stepHistoryUuid)
-        return data.get("list", [])
+        return self.get("statusHistory-" + stepUuid)
 
     def versionFilePaths( self, resource="", step="" ):
         """Gets all version files for the given resource"""
