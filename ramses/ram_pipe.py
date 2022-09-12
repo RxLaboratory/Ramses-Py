@@ -68,6 +68,8 @@ class RamPipe( RamObject ):
     def pipeFiles( self ):
         pipeFileListUuid = self.get("pipeFiles")
         pipeFiles = []
+        if not pipeFileListUuid:
+            return pipeFiles
         for uuid in pipeFileListUuid:
             p = RamPipeFile( uuid )
             if p:
