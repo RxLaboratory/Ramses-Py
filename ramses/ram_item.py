@@ -481,18 +481,6 @@ class RamItem( RamObject ):
 
         return stepFolderPath
 
-    def steps( self ):
-        """Returns the steps used by this asset"""
-        from .ram_step import RamStep
-
-        statusHistory = self.statusHistory()
-        stepList = []
-        for stepUuid in statusHistory:
-            step = RamStep(stepUuid)
-            stepList.append( step )
-
-        return stepList
-
     def stepStatusHistory( self, step ):
         stepUuid = RamObject.getUuid(step)
         if stepUuid == "":
