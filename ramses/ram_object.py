@@ -20,6 +20,7 @@
 import time
 import json
 import re
+import os
 import uuid as UUID
 from .daemon_interface import RamDaemonInterface
 from .logger import log, LogLevel
@@ -168,7 +169,13 @@ class RamObject(object):
         """Returns the folder corresponding to this object"""
         if self.__virtual:
             return self.get("folderPath", "")
-        return DAEMON.getPath( self.__uuid )
+        p = DAEMON.getPath( self.__uuid )
+        if p != "":
+            try:
+                os.makedirs( p )
+            except:
+                return ""
+        return p
 
     def virtual( self ):
         """Checks if this object is virtual"""
