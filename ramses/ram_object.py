@@ -170,7 +170,7 @@ class RamObject(object):
         if self.__virtual:
             return self.get("folderPath", "")
         p = DAEMON.getPath( self.__uuid )
-        if p != "":
+        if p != "" and not os.path.isdir( p ):
             try:
                 os.makedirs( p )
             except:
