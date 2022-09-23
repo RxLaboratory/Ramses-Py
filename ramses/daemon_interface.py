@@ -70,7 +70,7 @@ class RamDaemonInterface( object ):
         Returns: dict.
             Read http://ramses.rxlab.guide/dev/daemon-reference/ for more information.
         """
-        return self.__post('ping', 2048)
+        return self.__post('ping', 65536)
 
     def raiseWindow(self):
         """Raises the Ramses Client application main window.
@@ -81,7 +81,7 @@ class RamDaemonInterface( object ):
 
     def getRamsesFolderPath(self):
         """Gets the path of the main Ramses folder"""
-        reply = self.__post( "getRamsesFolder", 2048 )
+        reply = self.__post( "getRamsesFolder", 65536 )
         content = self.checkReply(reply)
         return content.get("path", "")
 
@@ -170,7 +170,8 @@ class RamDaemonInterface( object ):
             self.__noUserReply('getProjects')
             return ()
 
-        reply = self.__post( "getProjects", 8192 )
+        reply = self.__post( "getProjects", 65536 )
+        print(reply)
         content = self.checkReply(reply)
         projectList = content.get("projects", ())
         projects = []
@@ -198,7 +199,7 @@ class RamDaemonInterface( object ):
             self.__noUserReply('getCurrentProject')
             return None
 
-        reply = self.__post( "getCurrentProject", 2048 )
+        reply = self.__post( "getCurrentProject", 65536 )
         content = self.checkReply(reply)
         uuid = content.get("uuid", "")
         if uuid == "":
@@ -227,7 +228,7 @@ class RamDaemonInterface( object ):
         return self.__post( (
             "setCurrentProject",
             ('uuid', projectUuid)
-            ), 2048 )
+            ), 65536 )
 
     def getData(self, uuid):
         """Gets the data for a specific RamObject.
@@ -246,7 +247,7 @@ class RamDaemonInterface( object ):
                 "getData",
                 ('uuid', uuid)
             ),
-            8192 )
+            65536 )
         content = self.checkReply(reply)
         return content.get("data", {})
 
@@ -266,7 +267,7 @@ class RamDaemonInterface( object ):
             "setData",
             ('uuid', uuid),
             ('data', data)
-            ), 2048 )
+            ), 65536 )
 
     def getPath(self, uuid):
         """Gets the path for a specific RamObject.
@@ -283,7 +284,7 @@ class RamDaemonInterface( object ):
         reply =  self.__post( (
             "getPath",
             ('uuid', uuid)
-            ), 8192 )
+            ), 65536 )
         content = self.checkReply(reply)
         return content.get("path", "")
 
@@ -303,7 +304,7 @@ class RamDaemonInterface( object ):
             "uuidFromPath",
             ('path', path),
             ('type', type),
-            ), 8192 )
+            ), 65536 )
         content = self.checkReply(reply)
         return content.get("uuid", "")
 
@@ -319,7 +320,7 @@ class RamDaemonInterface( object ):
             ("uuid", uuid),
             ('data', data),
             ("type", objectType)
-            ), 2048)
+            ), 65536)
 
     def __buildQuery(self, query):
         """Builds a query from a list of args

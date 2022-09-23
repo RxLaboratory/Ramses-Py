@@ -195,7 +195,7 @@ def metaDataManager():
 
 # ramObjects()
 # ramStates()
-ramFileTypes()
+# ramFileTypes()
 # ramUsers()
 # ram()
 # ramItem(1, "MOD")
@@ -205,3 +205,5 @@ ramFileTypes()
 # fileManager()
 # metaDataManager()
 # ramStep()
+
+daemon.getProjects()
