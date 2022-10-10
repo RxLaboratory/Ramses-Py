@@ -179,8 +179,20 @@ class RamStep( RamObject ):
         But this string is user-defined and can be anything set in the Ramses Client."""
         return self.get("publishSettings", "")
 
+    def generalSettings(self):
+        """Returns the step custom settings, as a string,
+        which should be a yaml document, according to the Ramses guidelines.
+        But this string is user-defined and can be anything set in the Ramses Client."""
+        return self.get("customSettings", "")
+
     def setPublishSettings(self, settings):
         """Sets new publish settings for this step"""
         data = self.data()
         data["publishSettings"] = settings
+        self.setData(data)
+
+    def setGeneralSettings(self, settings):
+        """Sets new general settings for this step"""
+        data = self.data()
+        data["customSettings"] = settings
         self.setData(data)
