@@ -23,7 +23,7 @@ import json
 from .constants import FolderNames, LogLevel
 from .logger import log
 
-theVersion = "0.5.0-Beta1"
+theVersion = "0.5.0-Beta2"
 
 class RamSettings( object ):
     """Gets and saves settings used by Ramses.
