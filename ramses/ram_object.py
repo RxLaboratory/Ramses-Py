@@ -131,6 +131,12 @@ class RamObject(object):
         data = self.data()
         return data.get(key, default)
 
+    def set(self, key, value):
+        """Sets a new value in the object data"""
+        data = self.data()
+        data[key] = value
+        self.setData(data)
+
     def name( self ):
         """
         Returns:

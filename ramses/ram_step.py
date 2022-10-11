@@ -187,12 +187,8 @@ class RamStep( RamObject ):
 
     def setPublishSettings(self, settings):
         """Sets new publish settings for this step"""
-        data = self.data()
-        data["publishSettings"] = settings
-        self.setData(data)
+        self.set("publishSettings", settings)
 
     def setGeneralSettings(self, settings):
         """Sets new general settings for this step"""
-        data = self.data()
-        data["customSettings"] = settings
-        self.setData(data)
+        self.set("customSettings", settings)
