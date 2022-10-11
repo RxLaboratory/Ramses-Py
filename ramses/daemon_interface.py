@@ -170,8 +170,7 @@ class RamDaemonInterface( object ):
             self.__noUserReply('getProjects')
             return ()
 
-        reply = self.__post( "getProjects", 65536 )
-        print(reply)
+        reply = self.__post( "getProjects", 262144 )
         content = self.checkReply(reply)
         projectList = content.get("projects", ())
         projects = []
