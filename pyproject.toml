@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools", "wheel"]  # PEP 508 specifications.
+
+[project]
+name = "ramses"
+version = "0.6.0-Beta"
+authors = [
+    {name = "Nicolas Dufresne", email = "duduf@rxlaboratory.org"},
+]
+description = "The Rx Asset Management System Python API."
+readme = "README.md"
+requires-python = ">=3.0"
+classifiers = [
+    "Development Status :: Beta",
+    "License :: GNU GPLv3",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python"
+]
+dependencies = [
+    
+]
