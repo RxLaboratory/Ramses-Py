@@ -63,4 +63,3 @@ class RamUser( RamObject ):
             self.folderPath(),
             path
         ))
-

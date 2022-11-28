@@ -321,6 +321,39 @@ class RamDaemonInterface( object ):
             ("type", objectType)
             ), 65536)
 
+    def getStatus(self, itemUuid, stepUuid):
+        """Gets the status of an item & step"""
+        if not self.__checkUser():
+            self.__noUserReply('getStatus')
+            return {}
+
+        reply =  self.__post(
+            (
+                "getStatus",
+                ('itemUuid', itemUuid),
+                ('stepUuid', stepUuid)
+            ),
+            65536 )
+        content = self.checkReply(reply)
+        return content.get("data", {})
+
+    def setStatusModifiedBy(self, uuid, userUuid = "current"):
+        """Sets the user who's modified the status.
+        
+        If userUuid is 'current', it will be the current user in the Ramses Client
+        """
+        if not self.__checkUser():
+            self.__noUserReply('getStatus')
+            return {}
+
+        return self.__post(
+            (
+                "setStatusModifiedBy",
+                ('uuid', uuid),
+                ('userUuid', userUuid)
+            ),
+            65536 )
+
     def __buildQuery(self, query):
         """Builds a query from a list of args
 

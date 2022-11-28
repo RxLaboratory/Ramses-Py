@@ -127,13 +127,19 @@ class RamItem( RamObject ):
 
         from .ram_status import RamStatus
 
-        # The current status should be the last one
-        history = self.stepStatusHistory( step )
-
-        if len(history) == 0:
+        # Check Step
+        stepUuid = RamObject.getUuid( step )
+        if (stepUuid == ""):
             return None
 
-        return RamStatus(history[-1])
+        # Ask Daemon
+        statusObj = DAEMON.getStatus( self.uuid(), stepUuid )
+
+        statusUuid = statusObj.get("uuid", "")
+        if (statusUuid == ""):
+            return None
+
+        return RamStatus( statusUuid, statusObj.get("data", {}))
 
     def isPublished( self, step="" ):
         """Convenience function to check if there are published files in the publish folder.
@@ -372,26 +378,6 @@ class RamItem( RamObject ):
 
         return publishedFolders
 
-    def setStatus( self, status, step ):
-        """Sets the current status for the given step
-
-        Args:
-            status (RamStatus)
-            step (RamStep)
-        """
-        stepUuid = RamObject.getUuid(step)
-        if stepUuid == "":
-            return
-
-        # Get the step history
-        statusHistory = self.stepStatusHistory(step)
-
-        # Append the status
-        statusHistory.append(status.uuid())
-
-        # Re-set the data
-        self.set("statusHistory-" + stepUuid, statusHistory)
-
     def stepFilePath(self, resource="", extension="", step="", ):
         """Returns a specific step file"""
         step = RamObject.getShortName( step )
@@ -480,13 +466,6 @@ class RamItem( RamObject ):
             os.makedirs( stepFolderPath )
 
         return stepFolderPath
-
-    def stepStatusHistory( self, step ):
-        stepUuid = RamObject.getUuid(step)
-        if stepUuid == "":
-            return []
-
-        return self.get("statusHistory-" + stepUuid)
 
     def versionFilePaths( self, resource="", step="" ):
         """Gets all version files for the given resource"""

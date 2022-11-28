@@ -117,16 +117,21 @@ class RamStatus( RamObject ):
             return RamItem( self.get("item", "") )
 
     def user(self):
-        """The last user who've modified the status"""
+        """The last user who's modified the status"""
         from .ram_user import RamUser
         return RamUser( self.get("user", "") )
 
-    def setUser(self, user):
-        """Sets the user who's modifying the status"""
-        data = self.data()
-        data["user"] = user.uuid()
-        data["date"] = datetime.now().strftime("%Y-%m-%d- %H:%M:%S")
-        self.setData(data)
+    def setUser(self, user=None):
+        """Sets the user who's modifying the status
+        
+        If the user is not specified, will be the current user.
+        """
+
+        userUuid = RamObject.getUuid(user)
+        if (userUuid == ""):
+            userUuid = "current"
+
+        DAEMON.setStatusModifiedBy( self.uuid(), userUuid)
 
     def version(self):
         """The version"""

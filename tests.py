@@ -206,4 +206,12 @@ def metaDataManager():
 # metaDataManager()
 # ramStep()
 
-daemon.getProjects()
+proj = ramses.currentProject()
+print(proj)
+assets = proj.assets()
+steps = proj.steps()
+
+for asset in assets:
+    for step in steps:
+        status = asset.currentStatus(step)
+        print(status)
