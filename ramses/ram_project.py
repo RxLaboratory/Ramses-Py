@@ -249,16 +249,8 @@ class RamProject( RamObject ):
             list of RamAsset
         """
 
-        assets = []
-
-        assetListUuid = self.get("assets", "")
-        for uuid in assetListUuid:
-            asset = RamAsset( uuid )
-            if assetGroup:
-                if assetGroup != asset.assetGroup():
-                    continue
-            assets.append( asset )
-        return assets
+        groupUuid = RamObject.getUuid(assetGroup)
+        return DAEMON.getAssets(self.uuid(), groupUuid)
 
     def assetGroups( self ):
         """Available asset groups in this project
@@ -266,12 +258,8 @@ class RamProject( RamObject ):
         Returns:
             list of RamAssetGroup
         """
-        assetGroups = []
-
-        assetGroupListUuid = self.get("assetGroups", "")
-        for uuid in assetGroupListUuid:
-            assetGroups.append( RamAssetGroup(uuid) )
-        return assetGroups
+        
+        return DAEMON.getAssetGroups(self.uuid())
 
     def shots( self, nameFilter = "*", sequence = None ):
         """Available shots in this project
@@ -282,28 +270,28 @@ class RamProject( RamObject ):
         Returns:
             list of RamShot
         """
-        shots = []
 
-        shotListUuid = self.get("shots", "")
-        for uuid in shotListUuid:
-            shot = RamShot(uuid)
-            if sequence:
-                if sequence != shot.sequence():
-                    continue
-            if nameFilter != "*" and nameFilter != "":
-                if not nameFilter in shot.name() and not nameFilter in shot.shortName():
-                    continue
-            shots.append( shot )
-        return shots
+        groupUuid = RamObject.getUuid(sequence)
+        shots = DAEMON.getShots(self.uuid(), groupUuid)
+
+        if nameFilter == "*" or nameFilter == "":
+            return shots
+
+        result = []
+        
+        for shot in shots:
+            if not nameFilter in shot.name():
+                continue
+            if not nameFilter in shot.shortName():
+                continue
+            result.append( shot )
+
+        return result
 
     def sequences( self ):
         """The sequences of this project"""
-        sequences = []
-
-        sequenceListUuid = self.get("sequences", "")
-        for uuid in sequenceListUuid:
-            sequences.append( RamSequence(uuid) )
-        return sequences
+        
+        return DAEMON.getSequences(self.uuid())
 
     def step(self, shortName):
         """
@@ -329,22 +317,8 @@ class RamProject( RamObject ):
         Returns:
             list of RamStep
         """
-        steps = []
-
-        stepListUuid = self.get("steps", "")
-        for uuid in stepListUuid:
-            step = RamStep(uuid)
-            st = step.stepType()
-            if stepType == StepType.ALL:
-                steps.append(step)
-                continue
-            if st == stepType:
-                steps.append(step)
-                continue
-            if stepType == StepType.PRODUCTION:
-                if st == StepType.SHOT_PRODUCTION or st == StepType.ASSET_PRODUCTION:
-                    steps.append(step)
-        return steps
+        
+        return DAEMON.getSteps(self.uuid(), stepType)
 
     def pipes( self ):
         """Available pipes in this project
@@ -352,12 +326,8 @@ class RamProject( RamObject ):
         Returns:
             list of RamPipe
         """
-        pipes = []
-
-        pipeListUuid = self.get("pipeline", "")
-        for uuid in pipeListUuid:
-            pipes.append( RamPipe(uuid) )
-        return pipes
+        
+        return DAEMON.getPipes(self.uuid())
 
     def _getAssetsInFolder(self, folderPath, assetGroup=None ):
         """lists and returns all assets in the given folder"""

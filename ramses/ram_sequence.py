@@ -18,6 +18,9 @@
 #======================= END GPL LICENSE BLOCK ========================
 
 from .ram_object import RamObject
+from .daemon_interface import RamDaemonInterface
+
+DAEMON = RamDaemonInterface.instance()
 
 class RamSequence( RamObject ):
 
@@ -34,3 +37,8 @@ class RamSequence( RamObject ):
         if uuid != "":
             return RamProject(uuid)
         return None
+
+    def shots(self):
+        """Gets the list of shots contained in this sequence"""
+
+        return DAEMON.getShots("", self.uuid())

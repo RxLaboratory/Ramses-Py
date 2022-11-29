@@ -20,7 +20,7 @@
 import socket, json
 
 from .logger import log
-from .constants import ItemType, LogLevel, Log
+from .constants import ItemType, LogLevel, Log, StepType
 
 class RamDaemonInterface( object ):
     """The Class used to communicate with the Ramses Daemon
@@ -184,6 +184,159 @@ class RamDaemonInterface( object ):
 
         return projects
 
+    def getShots(self, projectUuid, sequenceUuid=""):
+        """Gets the list of shots for this project"""
+
+        from .ram_shot import RamShot
+
+        if not self.__checkUser():
+            self.__noUserReply('getAssets')
+            return ()
+        
+        shots = []
+
+        reply =  self.__post(
+            (
+                "getShots",
+                ('projectUuid', projectUuid),
+                ('sequenceUuid', sequenceUuid)
+            ),
+            65536 )
+
+        content = self.checkReply(reply)
+        shotListUuid = content.get("shots", ())
+        for uuid in shotListUuid:
+            shot = RamShot( uuid )
+            shots.append( shot )
+        return shots
+
+    def getAssetGroups(self, projectUuid):
+        """Gets the list of asset groups for this project"""
+
+        from .ram_assetgroup import RamAssetGroup
+
+        if not self.__checkUser():
+            self.__noUserReply('getAssets')
+            return ()
+        
+        assetGroups = []
+
+        reply =  self.__post(
+            (
+                "getAssetGroups",
+                ('projectUuid', projectUuid)
+            ),
+            65536 )
+
+        content = self.checkReply(reply)
+        agListUuid = content.get("assetGroups", ())
+        for uuid in agListUuid:
+            ag = RamAssetGroup( uuid )
+            assetGroups.append( ag )
+        return assetGroups
+
+    def getSequences(self, projectUuid):
+        """Gets the list of sequences for this project"""
+
+        from .ram_sequence import RamSequence
+
+        if not self.__checkUser():
+            self.__noUserReply('getAssets')
+            return ()
+        
+        sequences = []
+
+        reply =  self.__post(
+            (
+                "getSequences",
+                ('projectUuid', projectUuid)
+            ),
+            65536 )
+
+        content = self.checkReply(reply)
+        seqListUuid = content.get("sequences", ())
+        for uuid in seqListUuid:
+            seq = RamSequence( uuid )
+            sequences.append( seq )
+        return sequences
+
+    def getAssets(self, projectUuid, groupUuid=""):
+        """Gets the list of assets for this project"""
+
+        from .ram_asset import RamAsset
+
+        if not self.__checkUser():
+            self.__noUserReply('getAssets')
+            return ()
+        
+        assets = []
+
+        reply =  self.__post(
+            (
+                "getAssets",
+                ('projectUuid', projectUuid),
+                ('groupUuid', groupUuid)
+            ),
+            65536 )
+
+        content = self.checkReply(reply)
+        assetListUuid = content.get("assets", ())
+        for uuid in assetListUuid:
+            asset = RamAsset( uuid )
+            assets.append( asset )
+        return assets
+
+    def getPipes(self, projectUuid):
+        """Gets the list of pipes for this project"""
+
+        from .ram_pipe import RamPipe
+
+        if not self.__checkUser():
+            self.__noUserReply('getAssets')
+            return ()
+        
+        pipes = []
+
+        reply =  self.__post(
+            (
+                "getPipes",
+                ('projectUuid', projectUuid)
+            ),
+            65536 )
+
+        content = self.checkReply(reply)
+        pipeListUuid = content.get("pipes", ())
+        for uuid in pipeListUuid:
+            pipe = RamPipe( uuid )
+            pipes.append( pipe )
+        return pipes
+
+    def getSteps(self, projectUuid, stepType=StepType.ALL):
+        """Gets the list of steps for this project"""
+
+        from .ram_step import RamStep
+
+        if not self.__checkUser():
+            self.__noUserReply('getAssets')
+            return ()
+        
+        steps = []
+
+        reply =  self.__post(
+            (
+                "getSteps",
+                ('projectUuid', projectUuid),
+                ('type', stepType)
+            ),
+            65536 )
+
+        content = self.checkReply(reply)
+        stepListUuid = content.get("steps", ())
+        for uuid in stepListUuid:
+            step = RamStep( uuid )
+            steps.append( step )
+        return steps
+
     def getCurrentProject(self):
         """Gets the current project
 
@@ -323,6 +476,9 @@ class RamDaemonInterface( object ):
 
     def getStatus(self, itemUuid, stepUuid):
         """Gets the status of an item & step"""
+
+        from .ram_status import RamStatus
+
         if not self.__checkUser():
             self.__noUserReply('getStatus')
             return {}
@@ -335,7 +491,10 @@ class RamDaemonInterface( object ):
             ),
             65536 )
         content = self.checkReply(reply)
-        return content.get("data", {})
+        uuid = content.get("uuid", "")
+        if (uuid == ""):
+            return None
+        return RamStatus(uuid, content.get("data", {}))
 
     def setStatusModifiedBy(self, uuid, userUuid = "current"):
         """Sets the user who's modified the status.

@@ -133,13 +133,7 @@ class RamItem( RamObject ):
             return None
 
         # Ask Daemon
-        statusObj = DAEMON.getStatus( self.uuid(), stepUuid )
-
-        statusUuid = statusObj.get("uuid", "")
-        if (statusUuid == ""):
-            return None
-
-        return RamStatus( statusUuid, statusObj.get("data", {}))
+        return DAEMON.getStatus( self.uuid(), stepUuid )
 
     def isPublished( self, step="" ):
         """Convenience function to check if there are published files in the publish folder.

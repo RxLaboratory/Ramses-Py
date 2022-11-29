@@ -16,11 +16,12 @@ from ramses import (
     RamStep,
     RamPipeFile,
     ItemType,
-    RamDaemonInterface
+    RamDaemonInterface,
+    StepType
     )
 
 settings = RamSettings.instance()
-settings.logLevel = LogLevel.DataReceived
+settings.logLevel = LogLevel.Debug
 
 ramses = Ramses.instance()
 daemon = RamDaemonInterface.instance()
@@ -207,11 +208,15 @@ def metaDataManager():
 # ramStep()
 
 proj = ramses.currentProject()
-print(proj)
 assets = proj.assets()
+shots = proj.shots()
+assetGroups = proj.assetGroups()
+sequences = proj.sequences()
 steps = proj.steps()
+assetsteps = proj.steps(StepType.ASSET_PRODUCTION)
+pipes = proj.pipes()
 
 for asset in assets:
-    for step in steps:
+    for step in assetsteps:
         status = asset.currentStatus(step)
         print(status)

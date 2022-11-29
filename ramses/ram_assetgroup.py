@@ -61,4 +61,8 @@ class RamAssetGroup( RamObject ):
         if uuid != "":
             return RamProject(uuid)
         return None
-        
+    
+    def assets(self):
+        """Gets the list of assets contained in this group"""
+
+        return DAEMON.getAssets("", self.uuid())
