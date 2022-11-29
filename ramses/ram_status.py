@@ -94,7 +94,7 @@ class RamStatus( RamObject ):
     def setState(self, state):
         """Sets a new state"""
         data = self.data()
-        data["state"] = state.uuid()
+        data["state"] = RamObject.getUuid(state)
         data["date"] = datetime.now().strftime("%Y-%m-%d- %H:%M:%S")
         self.setData(data)
 
