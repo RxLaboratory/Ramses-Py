@@ -158,6 +158,10 @@ class RamObject(object):
         """
         return self.get('comment', '')
 
+    def setComment( self, comment ):
+        """Sets a new comment"""
+        self.set("comment", comment)
+
     def color( self ):
         """Returns the color as (R,G,B)"""
         colorName = self.colorName().lstrip("#")
