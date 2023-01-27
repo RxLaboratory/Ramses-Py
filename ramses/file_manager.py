@@ -631,11 +631,23 @@ class RamFileManager():
         folderNameList = folderName.split('_')
         numBlocks = len(folderNameList)
         # Invalid, return the lowest value
-        if numBlocks == 0 or numBlocks > 3: return float('-inf')
+        if numBlocks == 0 or numBlocks > 3:
+            return float('-inf')
         # Single or dual block, should be a number
-        if numBlocks == 1 or numBlocks == 2: return int(folderNameList[0])
+        if numBlocks == 1 or numBlocks == 2:
+            # naming could be faulty
+            try:
+                n = int(folderNameList[0])
+            except ValueError:
+                n = float('-inf')
+            return n
         # Triple block, there's a resource, we return the version
         # -resourceId + version
         resourceBytes = folderNameList[0].encode('utf_8', 'replace')
         resourceInt = - int( codecs.encode( resourceBytes, 'hex' ), 16 ) * 1000
-        return resourceInt + int( folderNameList[1] )
+        # naming could be faulty
+        try:
+            n = int(folderNameList[1])
+        except ValueError:
+            n = float('-inf')
+        return resourceInt + n
