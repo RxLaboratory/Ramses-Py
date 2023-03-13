@@ -24,6 +24,7 @@ from .logger import log
 from .constants import LogLevel, Log
 from .daemon_interface import RamDaemonInterface
 from .ram_settings import RamSettings
+from .utils import load_module_from_path
 
 SETTINGS = RamSettings.instance()
 DAEMON = RamDaemonInterface.instance()
@@ -287,11 +288,21 @@ class Ramses( object ):
         """Publishes the item; runs the list of scripts Ramses.publishScripts"""
         for script in self.publishScripts:
             script(item, step, filePath, publishOptions, showPublishOptions)
+        # Load user scripts
+        for s in SETTINGS.userScripts:
+            m = load_module_from_path(s)
+            if "on_publish" in dir(m):
+                m.on_publish(item, step, filePath, publishOptions, showPublishOptions)
 
     def updateStatus(self, item, status, step=None):
         """Runs the scripts in Ramses.instance().statusScripts."""
         for script in self.statusScripts:
             script( item, status, step)
+        # Load user scripts
+        for s in SETTINGS.userScripts:
+            m = load_module_from_path(s)
+            if "on_update_status" in dir(m):
+                m.on_update_status(item, status, step)
 
     def openFile( self, filePath, item=None, step=None ):
         """Runs the scripts in Ramses.instance().openScripts."""
@@ -310,12 +321,27 @@ class Ramses( object ):
         for script in self.openScripts:
             script( item, filePath, step )
 
+        for s in SETTINGS.userScripts:
+            m = load_module_from_path(s)
+            if "on_open" in dir(m):
+                m.on_open( item, filePath, step )
+
     def importItem(self, item, file_paths, step=None, importOptions=None, showImportOptions=False ):
         """Runs the scripts in Ramses.instance().importScripts."""
         for script in self.importScripts:
             script( item, file_paths, step, importOptions, showImportOptions )
 
+        for s in SETTINGS.userScripts:
+            m = load_module_from_path(s)
+            if "on_import_item" in dir(m):
+                m.on_import_item( item, file_paths, step, importOptions, showImportOptions )
+
     def replaceItem(self, item, filePath, step=None, importOptions=None, showImportOptions=False):
         """Runs the scripts in Ramses.instance().replaceScripts."""
         for script in self.replaceScripts:
             script( item, filePath, step, importOptions, showImportOptions )
+
+        for s in SETTINGS.userScripts:
+            m = load_module_from_path(s)
+            if "on_replace_item" in dir(m):
+                m.on_replace_item( item, filePath, step, importOptions, showImportOptions )

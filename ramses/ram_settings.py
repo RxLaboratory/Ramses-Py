@@ -64,6 +64,8 @@ class RamSettings( object ):
             cls.autoIncrementTimeout = cls.defaultAutoIncrementTimeout = 120
             # A Debug mode to throw errors
             cls.debugMode = cls.defaultDebugMode = False
+            # User Scripts
+            cls.userScripts = []
             # The custom settings
             cls.userSettings = {}
 
@@ -106,6 +108,8 @@ class RamSettings( object ):
                         cls.debugMode = settingsDict['debugMode']
                     if 'userSettings' in settingsDict:
                         cls.userSettings = settingsDict['userSettings']
+                    if 'userScripts' in settingsDict:
+                        cls.userScripts = settingsDict['userScripts']
 
         return cls._instance
 
@@ -128,11 +132,12 @@ class RamSettings( object ):
             'autoIncrementTimeout': self.autoIncrementTimeout,
             'userSettings': self.userSettings,
             'debugMode': self.debugMode,
+            'userScripts': self.userScripts,
         }
 
         if self._filePath == '':
             raise ("Invalid path for the settings, I can't save them, sorry.")
-        
+
         with open(self._filePath, 'w', encoding="utf8") as settingsFile:
             settingsFile.write( json.dumps( settingsDict, indent=4 ) )
 
