@@ -55,10 +55,9 @@ class Ramses( object ):
 
     @classmethod
     def instance( cls ):
-        from .ram_state import RamState
-
+        """Returns the unique Ramses instance"""
         if cls._instance is None:
-            
+
             cls._instance = cls.__new__(cls)
 
             log("I'm trying to contact the Ramses Client.", LogLevel.Info)
@@ -69,6 +68,7 @@ class Ramses( object ):
             cls.statusScripts = []
             cls.importScripts = []
             cls.replaceScripts = []
+            cls.openScripts = []
             cls.userScripts = {}
 
             # Get the default state (TO Do)
@@ -289,13 +289,33 @@ class Ramses( object ):
             script(item, step, filePath, publishOptions, showPublishOptions)
 
     def updateStatus(self, item, status, step=None):
+        """Runs the scripts in Ramses.instance().statusScripts."""
         for script in self.statusScripts:
             script( item, status, step)
 
-    def importItem(self, item, filePath, step=None, importOptions=None, showImportOptions=False ):
+    def openFile( self, filePath, item=None, step=None ):
+        """Runs the scripts in Ramses.instance().openScripts."""
+
+        # Restore the file if it's a version
+        if RamFileManager.inVersionsFolder( filePath ):
+            filePath = RamFileManager.restoreVersionFile( filePath, False )
+
+        if not item:
+            from .ram_item import RamItem
+            item = RamItem.fromPath( filePath )
+        if not step:
+            from .ram_step import RamStep
+            step = RamStep.fromPath( filePath )
+
+        for script in self.openScripts:
+            script( item, filePath, step )
+
+    def importItem(self, item, file_paths, step=None, importOptions=None, showImportOptions=False ):
+        """Runs the scripts in Ramses.instance().importScripts."""
         for script in self.importScripts:
-            script( item, filePath, step, importOptions, showImportOptions )
+            script( item, file_paths, step, importOptions, showImportOptions )
 
     def replaceItem(self, item, filePath, step=None, importOptions=None, showImportOptions=False):
+        """Runs the scripts in Ramses.instance().replaceScripts."""
         for script in self.replaceScripts:
             script( item, filePath, step, importOptions, showImportOptions )

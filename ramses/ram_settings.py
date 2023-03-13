@@ -23,7 +23,7 @@ import json
 from .constants import FolderNames, LogLevel
 from .logger import log
 
-theVersion = "0.8.1-Beta"
+theVersion = "0.8.2-Beta"
 
 class RamSettings( object ):
     """Gets and saves settings used by Ramses.
@@ -42,12 +42,13 @@ class RamSettings( object ):
     """
 
     _instance = None
-    
+
     def __init__( self ):
         raise RuntimeError("RamSettings can't be initialized with `RamSettings()`, it is a singleton. Call `Ramses.instance().settings()` or `RamSettings.instance()` instead.")
 
     @classmethod
     def instance( cls ):
+        """Returns the unique RamSettings instance"""
         if cls._instance is None:
             cls._instance = cls.__new__(cls)
 
@@ -90,7 +91,7 @@ class RamSettings( object ):
 
             # Get settings from file
             if os.path.isfile( cls._filePath ):
-                with open(cls._filePath, 'r') as settingsFile:
+                with open(cls._filePath, 'r', encoding="utf8") as settingsFile:
                     settingsStr = settingsFile.read()
                     settingsDict = json.loads( settingsStr )
                     if 'clientPath' in settingsDict:
@@ -132,7 +133,7 @@ class RamSettings( object ):
         if self._filePath == '':
             raise ("Invalid path for the settings, I can't save them, sorry.")
         
-        with open(self._filePath, 'w') as settingsFile:
+        with open(self._filePath, 'w', encoding="utf8") as settingsFile:
             settingsFile.write( json.dumps( settingsDict, indent=4 ) )
 
         log("Settings saved!")
