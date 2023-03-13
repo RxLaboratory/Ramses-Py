@@ -17,6 +17,7 @@
 #
 #======================= END GPL LICENSE BLOCK ========================
 
+import os
 from subprocess import Popen, PIPE
 
 from .file_manager import RamFileManager
@@ -290,6 +291,9 @@ class Ramses( object ):
             script(item, step, filePath, publishOptions, showPublishOptions)
         # Load user scripts
         for s in SETTINGS.userScripts:
+            if not os.path.isfile(s):
+                log("Sorry, I can't find and run this user script: " + s, LogLevel.Critical)
+                continue
             m = load_module_from_path(s)
             if "on_publish" in dir(m):
                 m.on_publish(item, step, filePath, publishOptions, showPublishOptions)
@@ -300,6 +304,9 @@ class Ramses( object ):
             script( item, status, step)
         # Load user scripts
         for s in SETTINGS.userScripts:
+            if not os.path.isfile(s):
+                log("Sorry, I can't find and run this user script: " + s, LogLevel.Critical)
+                continue
             m = load_module_from_path(s)
             if "on_update_status" in dir(m):
                 m.on_update_status(item, status, step)
@@ -322,6 +329,9 @@ class Ramses( object ):
             script( item, filePath, step )
 
         for s in SETTINGS.userScripts:
+            if not os.path.isfile(s):
+                log("Sorry, I can't find and run this user script: " + s, LogLevel.Critical)
+                continue
             m = load_module_from_path(s)
             if "on_open" in dir(m):
                 m.on_open( item, filePath, step )
@@ -332,6 +342,9 @@ class Ramses( object ):
             script( item, file_paths, step, importOptions, showImportOptions )
 
         for s in SETTINGS.userScripts:
+            if not os.path.isfile(s):
+                log("Sorry, I can't find and run this user script: " + s, LogLevel.Critical)
+                continue
             m = load_module_from_path(s)
             if "on_import_item" in dir(m):
                 m.on_import_item( item, file_paths, step, importOptions, showImportOptions )
@@ -342,6 +355,9 @@ class Ramses( object ):
             script( item, filePath, step, importOptions, showImportOptions )
 
         for s in SETTINGS.userScripts:
+            if not os.path.isfile(s):
+                log("Sorry, I can't find and run this user script: " + s, LogLevel.Critical)
+                continue
             m = load_module_from_path(s)
             if "on_replace_item" in dir(m):
                 m.on_replace_item( item, filePath, step, importOptions, showImportOptions )
