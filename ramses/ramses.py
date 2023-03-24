@@ -69,12 +69,14 @@ class Ramses( object ):
             cls._instance.connect()
 
             cls._offline = True
+
             cls.publishScripts = []
             cls.statusScripts = []
             cls.importScripts = []
             cls.replaceScripts = []
             cls.openScripts = []
             cls.saveScripts = []
+
             cls.userScripts = {}
 
             # Get the default state (TO Do)
@@ -289,10 +291,30 @@ class Ramses( object ):
         """
         return Ramses._version
 
+    # === EVENTS and HANDLERS ===
+
     def publish(self, item, step, filePath, publishOptions=None, showPublishOptions=False ):
         """Publishes the item; runs the list of scripts Ramses.publishScripts"""
+
+        okToContinue = True
+
+        # Load user scripts
+        for s in SETTINGS.userScripts:
+            if not os.path.isfile(s):
+                log("Sorry, I can't find and run this user script: " + s, LogLevel.Critical)
+                continue
+            m = load_module_from_path(s)
+            if "before_publish" in dir(m):
+                okToContinue = m.before_publish(item, step, filePath, publishOptions, showPublishOptions)
+                if okToContinue is False:
+                    log("A Script interrupted the publish process before it was run: " + s, LogLevel.Info)
+                    return -1
+
         for script in self.publishScripts:
-            script(item, step, filePath, publishOptions, showPublishOptions)
+            okToContinue = script(item, step, filePath, publishOptions, showPublishOptions)
+            if okToContinue is False:
+                    return -1
+
         # Load user scripts
         for s in SETTINGS.userScripts:
             if not os.path.isfile(s):
@@ -300,12 +322,35 @@ class Ramses( object ):
                 continue
             m = load_module_from_path(s)
             if "on_publish" in dir(m):
-                m.on_publish(item, step, filePath, publishOptions, showPublishOptions)
+                okToContinue = m.on_publish(item, step, filePath, publishOptions, showPublishOptions)
+                if okToContinue is False:
+                    log("A Script interrupted the publish process: " + s, LogLevel.Info)
+                    return -1
+
+        return 0
 
     def updateStatus(self, item, status, step=None):
         """Runs the scripts in Ramses.instance().statusScripts."""
+
+        okToContinue = True
+
+        # Load user scripts
+        for s in SETTINGS.userScripts:
+            if not os.path.isfile(s):
+                log("Sorry, I can't find and run this user script: " + s, LogLevel.Critical)
+                continue
+            m = load_module_from_path(s)
+            if "before_update_status" in dir(m):
+                okToContinue = m.before_update_status(item, status, step)
+                if okToContinue is False:
+                    log("A Script interrupted the update process before it was run: " + s, LogLevel.Info)
+                    return -1
+
         for script in self.statusScripts:
-            script( item, status, step)
+            okToContinue = script( item, status, step)
+            if okToContinue is False:
+                    return -1
+
         # Load user scripts
         for s in SETTINGS.userScripts:
             if not os.path.isfile(s):
@@ -313,24 +358,47 @@ class Ramses( object ):
                 continue
             m = load_module_from_path(s)
             if "on_update_status" in dir(m):
-                m.on_update_status(item, status, step)
+                okToContinue = m.on_update_status(item, status, step)
+                if okToContinue is False:
+                    log("A Script interrupted the update process: " + s, LogLevel.Info)
+                    return -1
 
     def openFile( self, filePath, item=None, step=None ):
         """Runs the scripts in Ramses.instance().openScripts."""
+        from .ram_item import RamItem
+        from .ram_step import RamStep
+
+        okToContinue = True
+
+        if not item:
+            item = RamItem.fromPath( filePath )
+        if not step:
+            step = RamStep.fromPath( filePath )
+
+        for s in SETTINGS.userScripts:
+            if not os.path.isfile(s):
+                log("Sorry, I can't find and run this user script: " + s, LogLevel.Critical)
+                continue
+            m = load_module_from_path(s)
+            if "before_open" in dir(m):
+                okToContinue = m.before_open( item, filePath, step )
+                if okToContinue is False:
+                    log("A Script interrupted the open file process: " + s, LogLevel.Info)
+                    return -1
 
         # Restore the file if it's a version
         if RamFileManager.inVersionsFolder( filePath ):
             filePath = RamFileManager.restoreVersionFile( filePath, False )
 
         if not item:
-            from .ram_item import RamItem
             item = RamItem.fromPath( filePath )
         if not step:
-            from .ram_step import RamStep
             step = RamStep.fromPath( filePath )
 
         for script in self.openScripts:
-            script( item, filePath, step )
+            okToContinue = script( item, filePath, step )
+            if okToContinue is False:
+                    return -1
 
         for s in SETTINGS.userScripts:
             if not os.path.isfile(s):
@@ -338,12 +406,31 @@ class Ramses( object ):
                 continue
             m = load_module_from_path(s)
             if "on_open" in dir(m):
-                m.on_open( item, filePath, step )
+                okToContinue = m.on_open( item, filePath, step )
+                if okToContinue is False:
+                    log("A Script interrupted the open file process: " + s, LogLevel.Info)
+                    return -1
 
     def importItem(self, item, file_paths, step=None, importOptions=None, showImportOptions=False ):
         """Runs the scripts in Ramses.instance().importScripts."""
+
+        okToContinue = True
+
+        for s in SETTINGS.userScripts:
+            if not os.path.isfile(s):
+                log("Sorry, I can't find and run this user script: " + s, LogLevel.Critical)
+                continue
+            m = load_module_from_path(s)
+            if "before_import_item" in dir(m):
+                okToContinue = m.before_import_item( item, file_paths, step, importOptions, showImportOptions )
+                if okToContinue is False:
+                    log("A Script interrupted the import process before it was run: " + s, LogLevel.Info)
+                    return -1
+
         for script in self.importScripts:
-            script( item, file_paths, step, importOptions, showImportOptions )
+            okToContinue = script( item, file_paths, step, importOptions, showImportOptions )
+            if okToContinue is False:
+                    return -1
 
         for s in SETTINGS.userScripts:
             if not os.path.isfile(s):
@@ -351,12 +438,31 @@ class Ramses( object ):
                 continue
             m = load_module_from_path(s)
             if "on_import_item" in dir(m):
-                m.on_import_item( item, file_paths, step, importOptions, showImportOptions )
+                okToContinue = m.on_import_item( item, file_paths, step, importOptions, showImportOptions )
+                if okToContinue is False:
+                    log("A Script interrupted the import process: " + s, LogLevel.Info)
+                    return -1
 
     def replaceItem(self, item, filePath, step=None, importOptions=None, showImportOptions=False):
         """Runs the scripts in Ramses.instance().replaceScripts."""
+
+        okToContinue = True
+
+        for s in SETTINGS.userScripts:
+            if not os.path.isfile(s):
+                log("Sorry, I can't find and run this user script: " + s, LogLevel.Critical)
+                continue
+            m = load_module_from_path(s)
+            if "before_replace_item" in dir(m):
+                okToContinue = m.before_replace_item( item, filePath, step, importOptions, showImportOptions )
+                if okToContinue is False:
+                    log("A Script interrupted the replace process before it was run: " + s, LogLevel.Info)
+                    return -1
+
         for script in self.replaceScripts:
-            script( item, filePath, step, importOptions, showImportOptions )
+            okToContinue = script( item, filePath, step, importOptions, showImportOptions )
+            if okToContinue is False:
+                    return -1
 
         for s in SETTINGS.userScripts:
             if not os.path.isfile(s):
@@ -364,7 +470,10 @@ class Ramses( object ):
                 continue
             m = load_module_from_path(s)
             if "on_replace_item" in dir(m):
-                m.on_replace_item( item, filePath, step, importOptions, showImportOptions )
+                okToContinue = m.on_replace_item( item, filePath, step, importOptions, showImportOptions )
+                if okToContinue is False:
+                    log("A Script interrupted the replace process: " + s, LogLevel.Info)
+                    return -1
 
     def saveFile( self, filePath, item=None, step=None, incrementVersion=False, comment=None, newStateShortName=None ):
         """Runs the scripts in Ramses.instance().saveScripts.
@@ -437,9 +546,22 @@ class Ramses( object ):
 
         okToContinue = True
 
+        # Load user before scripts
+        for s in SETTINGS.userScripts:
+            if not os.path.isfile(s):
+                log("Sorry, I can't find and run this user script: " + s, LogLevel.Critical)
+                continue
+            m = load_module_from_path(s)
+            if "before_save" in dir(m):
+                okToContinue = m.before_save( item, saveFilePath, step, version, comment, incrementVersion )
+                if okToContinue is False:
+                    log("A Script interrupted the save process: " + s, LogLevel.Info)
+                    return -1
+
+        # Add-on registered scripts
         for script in self.saveScripts:
             okToContinue = script( item, saveFilePath, step, version, comment, incrementVersion )
-            if not okToContinue:
+            if okToContinue is False:
                 return -1
 
         # Load user scripts
@@ -451,6 +573,7 @@ class Ramses( object ):
             if "on_save" in dir(m):
                 okToContinue = m.on_save( item, saveFilePath, step, version, comment, incrementVersion )
                 if okToContinue is False:
+                    log("A Script interrupted the save process: " + s, LogLevel.Info)
                     return -1
 
         # Backup / Increment
