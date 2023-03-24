@@ -19,8 +19,11 @@
 
 import os
 from subprocess import Popen, PIPE
+from datetime import datetime, timedelta
 
 from .file_manager import RamFileManager
+from .file_info import RamFileInfo
+from .metadata_manager import RamMetaDataManager
 from .logger import log
 from .constants import LogLevel, Log
 from .daemon_interface import RamDaemonInterface
@@ -71,6 +74,7 @@ class Ramses( object ):
             cls.importScripts = []
             cls.replaceScripts = []
             cls.openScripts = []
+            cls.saveScripts = []
             cls.userScripts = {}
 
             # Get the default state (TO Do)
@@ -361,3 +365,104 @@ class Ramses( object ):
             m = load_module_from_path(s)
             if "on_replace_item" in dir(m):
                 m.on_replace_item( item, filePath, step, importOptions, showImportOptions )
+
+    def saveFile( self, filePath, item=None, step=None, incrementVersion=False, comment=None, newStateShortName=None ):
+        """Runs the scripts in Ramses.instance().saveScripts.
+        Returns an error code:
+            - -1: One of the scripts interrupted the process
+            - 0: Saved
+            - 1: Malformed file name, can't get the item or step from the file. The file was not saved.
+            - 2: The file was a restored version, it's been incremented then saved as a working file.
+            - 3: The file was misplaced (in a reserved folder), and was incremented and saved in the right place.
+            - 4: The file was too old (according to RamSettings.autoIncrementTimeout) and was incremented and saved."""
+
+        returnCode = 0
+        incrementReason = ""
+
+        # Check if this is a restored version
+        nm = RamFileInfo()
+        nm.setFilePath( filePath )
+        if nm.isRestoredVersion:
+            incrementVersion = True
+            incrementReason = "we're restoring the older version " + str(nm.restoredVersion) + "."
+            returnCode = 2
+
+        # If the current file is inside a preview/publish/version subfolder, we're going to increment
+        # to be sure to not lose the previous working file.
+        if RamFileManager.inReservedFolder( filePath ) and not incrementVersion:
+            incrementVersion = True
+            incrementReason = "the file was misplaced."
+            returnCode = 3
+
+        # Make sure we have the correct save file path
+        saveFilePath = RamFileManager.getSaveFilePath( filePath )
+        if saveFilePath == '':
+            return 1
+
+        # If the timeout has expired, we're also incrementing
+        prevVersionInfo = RamFileManager.getLatestVersionInfo( saveFilePath, previous=True )
+        modified = prevVersionInfo.date
+        now = datetime.today()
+        timeout = timedelta(seconds = SETTINGS.autoIncrementTimeout * 60 )
+        if  timeout < now - modified and not incrementVersion:
+            incrementReason = "the file was too old."
+            incrementVersion = True
+            returnCode = 4
+
+        # Get the RamItem and RamStep
+        if not item:
+            from .ram_item import RamItem
+            item = RamItem.fromPath( filePath )
+        if not step:
+            from .ram_step import RamStep
+            step = RamStep.fromPath( filePath )
+
+        # Get the version
+        versionInfo = RamFileManager.getLatestVersionInfo( saveFilePath )
+        version = versionInfo.version
+        if incrementVersion:
+            version += 1
+
+        # Update the comment
+        if incrementReason != "":
+            comment = "Auto-Increment because " + incrementReason
+
+        # Check the state
+        if newStateShortName is None:
+            newStateShortName = 'v'
+            if self.defaultState:
+                newStateShortName = self.defaultState.shortName()
+        if not incrementVersion:
+            newStateShortName = ""
+
+        okToContinue = True
+
+        for script in self.saveScripts:
+            okToContinue = script( item, saveFilePath, step, version, comment, incrementVersion )
+            if not okToContinue:
+                return -1
+
+        # Load user scripts
+        for s in SETTINGS.userScripts:
+            if not os.path.isfile(s):
+                log("Sorry, I can't find and run this user script: " + s, LogLevel.Critical)
+                continue
+            m = load_module_from_path(s)
+            if "on_save" in dir(m):
+                okToContinue = m.on_save( item, saveFilePath, step, version, comment, incrementVersion )
+                if okToContinue is False:
+                    return -1
+
+        # Backup / Increment
+        backupFilePath = RamFileManager.copyToVersion( saveFilePath, incrementVersion, newStateShortName )
+
+        # Write the comment
+        RamMetaDataManager.setComment( backupFilePath, comment )
+        if comment is not None and incrementReason == "":
+            log( "I've added this comment to the current version: " + comment )
+        elif incrementReason != "":
+            log("I've incremented the version for you because " + incrementReason)
+
+        log( "File saved! The version is now: " + str(version) )
+
+        return returnCode

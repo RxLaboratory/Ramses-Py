@@ -325,7 +325,7 @@ class RamFileManager():
 
         # Look for the latest version to increment and save
         versioInfo = RamFileManager.getLatestVersionInfo( filePath, stateShortName )
-        
+
         fileInfo.version = versioInfo.version
         if stateShortName == "":
             fileInfo.state = versioInfo.state
@@ -349,10 +349,7 @@ class RamFileManager():
 
     @staticmethod
     def getLatestVersionInfo( filePath, defaultStateShortName="v", previous = False ):
-        """Gets the latest version number and state of a file
-        
-        Returns RamFileInfo
-        """
+        """Gets the RamFileInfo for the latest version file"""
 
         latestVersionFilePath = RamFileManager.getLatestVersionFilePath( filePath, previous )
         versionInfo = RamFileInfo()

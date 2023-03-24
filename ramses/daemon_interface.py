@@ -372,7 +372,7 @@ class RamDaemonInterface( object ):
         """Sets the current project.
 
         Read the Ramses Daemon reference at http://ramses.rxlab.guide/dev/daemon-reference/ for more information.
-        
+
         Returns: dict.
         """
 
