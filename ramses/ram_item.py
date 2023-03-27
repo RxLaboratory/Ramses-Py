@@ -432,14 +432,15 @@ class RamItem( RamObject ):
     def stepFolderPath(self, step=""):
         """Returns the working folder for the given step"""
         # General items don't have subfolders for steps
+        # Return the step path
         if self.itemType() == ItemType.GENERAL:
-            return self.folderPath()
+            return step.folderPath()
 
         # We need a short name
         step = RamObject.getShortName( step )
 
         folderPath = self.folderPath()
-        if folderPath == "" or step == "" or self.itemType() == ItemType.GENERAL:
+        if folderPath == "" or step == "":
             return folderPath
 
         project = self.projectShortName()

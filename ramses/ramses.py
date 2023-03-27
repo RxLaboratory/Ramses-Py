@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""The main Ramses class"""
 
 #====================== BEGIN GPL LICENSE BLOCK ======================
 #
@@ -613,12 +614,85 @@ class Ramses( object ):
 
         return returnCode
 
+    def saveFileAs(self, currentFilePath, fileExtension, item, step, resource):
+        """Runs the scripts in Ramses.instance().saveAsScripts
+         Returns an error code:
+            - -1: One of the scripts interrupted the process
+            - 0: Saved file
+            - 1: Saved as a new version because the file already exists"""
+        
+        returnCode = 0
+
+        # Get the file path
+        folderPath = item.stepFolderPath( step )
+        nm = RamFileInfo()
+        nm.project = step.project().shortName()
+        nm.ramType = item.itemType()
+        nm.shortName = item.shortName()
+        nm.step = step.shortName()
+        nm.extension = fileExtension
+        nm.resource = resource
+        fileName = nm.fileName()
+
+        if not os.path.isdir(folderPath):
+            os.makedirs(folderPath)
+
+        filePath = os.path.join(folderPath, fileName)
+        # Check if file exists
+        if os.path.isfile( filePath ):
+            # Backup
+            backupFilePath = RamFileManager.copyToVersion( filePath, increment=True )
+            # Be kind, set a comment
+            RamMetaDataManager.setComment( backupFilePath, "Overwritten by an external file." )
+            log( 'I\'ve added this comment for you: "Overwritten by an external file."' )
+            returnCode = 1
+
+        # Load user before scripts
+        for s in SETTINGS.userScripts:
+            if not os.path.isfile(s):
+                log("Sorry, I can't find and run this user script: " + s, LogLevel.Critical)
+                continue
+            m = load_module_from_path(s)
+            if "before_save_as" in dir(m):
+                okToContinue = m.before_save_as( filePath, item, step, resource )
+                if okToContinue is False:
+                    log("A Script interrupted the save as process: " + s, LogLevel.Info)
+                    return -1
+
+        # Add-on registered scripts
+        for script in self.saveTemplateScripts:
+            okToContinue = script( filePath, item, step, resource )
+            if okToContinue is False:
+                return -1
+
+        # Load user scripts
+        for s in SETTINGS.userScripts:
+            if not os.path.isfile(s):
+                log("Sorry, I can't find and run this user script: " + s, LogLevel.Critical)
+                continue
+            m = load_module_from_path(s)
+            if "on_save_as" in dir(m):
+                okToContinue = m.on_save_as( filePath, item, step, resource )
+                if okToContinue is False:
+                    log("A Script interrupted the save as process: " + s, LogLevel.Info)
+                    return -1
+
+        # Create the first version ( or increment existing )
+        RamFileManager.copyToVersion( filePath, increment=True )
+
+        log( "Scene saved as: " + filePath )
+        self.addToRecentFiles( filePath )
+
+        return returnCode
+
     def saveTemplate( self, fileExtension, step, templateName="Template" ):
         """Runs the scripts in Ramses.instance().saveTemplateScripts
          Returns an error code:
             - -1: One of the scripts interrupted the process
-            - 0: Save"""
+            - 0: Saved template"""
         
+        from .ram_item import RamItem
+
         log("Saving as template...")
 
         # Get the folder and filename
@@ -645,6 +719,8 @@ class Ramses( object ):
             saveName
         ))
 
+        item = RamItem.fromPath(saveFilePath)
+
         # Load user before scripts
         for s in SETTINGS.userScripts:
             if not os.path.isfile(s):
@@ -652,14 +728,14 @@ class Ramses( object ):
                 continue
             m = load_module_from_path(s)
             if "before_save_template" in dir(m):
-                okToContinue = m.before_save_template( saveFilePath, step, templateName )
+                okToContinue = m.before_save_template( saveFilePath, item, step, templateName )
                 if okToContinue is False:
                     log("A Script interrupted the save template process: " + s, LogLevel.Info)
                     return -1
 
         # Add-on registered scripts
         for script in self.saveTemplateScripts:
-            okToContinue = script( saveFilePath, step, templateName )
+            okToContinue = script( saveFilePath, item, step, templateName )
             if okToContinue is False:
                 return -1
 
@@ -670,7 +746,7 @@ class Ramses( object ):
                 continue
             m = load_module_from_path(s)
             if "on_save_template" in dir(m):
-                okToContinue = m.on_save_template( saveFilePath, step, templateName )
+                okToContinue = m.on_save_template( saveFilePath, item, step, templateName )
                 if okToContinue is False:
                     log("A Script interrupted the save template process: " + s, LogLevel.Info)
                     return -1
