@@ -29,6 +29,7 @@ from .constants import LogLevel, Log
 from .daemon_interface import RamDaemonInterface
 from .ram_settings import RamSettings
 from .utils import load_module_from_path
+from .constants import ItemType
 
 SETTINGS = RamSettings.instance()
 DAEMON = RamDaemonInterface.instance()
@@ -76,6 +77,8 @@ class Ramses( object ):
             cls.replaceScripts = []
             cls.openScripts = []
             cls.saveScripts = []
+            cls.saveAsScripts = []
+            cls.saveTemplateScripts = []
 
             cls.userScripts = {}
 
@@ -370,8 +373,10 @@ class Ramses( object ):
                 if okToContinue is False:
                     log("A Script interrupted the update process: " + s, LogLevel.Info)
                     return -1
+                
+        return 0
 
-    def openFile( self, filePath, item=None, step=None ):
+    def openFile( self, filePath ):
         """Runs the scripts in Ramses.instance().openScripts."""
         from .ram_item import RamItem
         from .ram_step import RamStep
@@ -418,8 +423,10 @@ class Ramses( object ):
                 if okToContinue is False:
                     log("A Script interrupted the open file process: " + s, LogLevel.Info)
                     return -1
-        
+
         self.addToRecentFiles( filePath )
+
+        return 0
 
     def importItem(self, item, file_paths, step=None, importOptions=None, showImportOptions=False ):
         """Runs the scripts in Ramses.instance().importScripts."""
@@ -453,6 +460,8 @@ class Ramses( object ):
                     log("A Script interrupted the import process: " + s, LogLevel.Info)
                     return -1
 
+        return 0
+
     def replaceItem(self, item, filePath, step=None, importOptions=None, showImportOptions=False):
         """Runs the scripts in Ramses.instance().replaceScripts."""
 
@@ -484,8 +493,10 @@ class Ramses( object ):
                 if okToContinue is False:
                     log("A Script interrupted the replace process: " + s, LogLevel.Info)
                     return -1
+                
+        return 0
 
-    def saveFile( self, filePath, item=None, step=None, incrementVersion=False, comment=None, newStateShortName=None ):
+    def saveFile( self, filePath, incrementVersion=False, comment=None, newStateShortName=None ):
         """Runs the scripts in Ramses.instance().saveScripts.
         Returns an error code:
             - -1: One of the scripts interrupted the process
@@ -601,3 +612,69 @@ class Ramses( object ):
         self.addToRecentFiles( saveFilePath )
 
         return returnCode
+
+    def saveTemplate( self, fileExtension, step, templateName="Template" ):
+        """Runs the scripts in Ramses.instance().saveTemplateScripts
+         Returns an error code:
+            - -1: One of the scripts interrupted the process
+            - 0: Save"""
+        
+        log("Saving as template...")
+
+        # Get the folder and filename
+        projectShortName = step.project().shortName()
+        stepShortName = step.shortName()
+        nm = RamFileInfo()
+        nm.project = projectShortName
+        nm.step = stepShortName
+        nm.ramType = ItemType.GENERAL
+        nm.shortName = templateName
+
+        saveFolder = os.path.join(
+            step.templatesFolderPath(),
+            nm.fileName()
+        )
+
+        nm.extension = fileExtension
+        saveName = nm.fileName()
+
+        if not os.path.isdir( saveFolder ):
+            os.makedirs(saveFolder)
+        saveFilePath = RamFileManager.buildPath((
+            saveFolder,
+            saveName
+        ))
+
+        # Load user before scripts
+        for s in SETTINGS.userScripts:
+            if not os.path.isfile(s):
+                log("Sorry, I can't find and run this user script: " + s, LogLevel.Critical)
+                continue
+            m = load_module_from_path(s)
+            if "before_save_template" in dir(m):
+                okToContinue = m.before_save_template( saveFilePath, step, templateName )
+                if okToContinue is False:
+                    log("A Script interrupted the save template process: " + s, LogLevel.Info)
+                    return -1
+
+        # Add-on registered scripts
+        for script in self.saveTemplateScripts:
+            okToContinue = script( saveFilePath, step, templateName )
+            if okToContinue is False:
+                return -1
+
+        # Load user scripts
+        for s in SETTINGS.userScripts:
+            if not os.path.isfile(s):
+                log("Sorry, I can't find and run this user script: " + s, LogLevel.Critical)
+                continue
+            m = load_module_from_path(s)
+            if "on_save_template" in dir(m):
+                okToContinue = m.on_save_template( saveFilePath, step, templateName )
+                if okToContinue is False:
+                    log("A Script interrupted the save template process: " + s, LogLevel.Info)
+                    return -1
+
+        log('Template saved as: ' + saveName + ' in ' + saveFolder)
+        self.addToRecentFiles( saveFilePath )
+        return 0
