@@ -291,6 +291,14 @@ class Ramses( object ):
         """
         return Ramses._version
 
+    def addToRecentFiles( self, file ):
+        """Adds the file to the recent file list"""
+        if file in SETTINGS.recentFiles:
+            SETTINGS.recentFiles.pop( SETTINGS.recentFiles.index(file) )
+        SETTINGS.recentFiles.insert(0, file)
+        SETTINGS.recentFiles = SETTINGS.recentFiles[0:20]
+        SETTINGS.save()
+
     # === EVENTS and HANDLERS ===
 
     def publish(self, item, step, filePath, publishOptions=None, showPublishOptions=False ):
@@ -410,6 +418,8 @@ class Ramses( object ):
                 if okToContinue is False:
                     log("A Script interrupted the open file process: " + s, LogLevel.Info)
                     return -1
+        
+        self.addToRecentFiles( filePath )
 
     def importItem(self, item, file_paths, step=None, importOptions=None, showImportOptions=False ):
         """Runs the scripts in Ramses.instance().importScripts."""
@@ -587,5 +597,7 @@ class Ramses( object ):
             log("I've incremented the version for you because " + incrementReason)
 
         log( "File saved! The version is now: " + str(version) )
+
+        self.addToRecentFiles( saveFilePath )
 
         return returnCode

@@ -66,6 +66,8 @@ class RamSettings( object ):
             cls.debugMode = cls.defaultDebugMode = False
             # User Scripts
             cls.userScripts = []
+            # Recent files
+            cls.recentFiles = []
             # The custom settings
             cls.userSettings = {}
 
@@ -110,6 +112,8 @@ class RamSettings( object ):
                         cls.userSettings = settingsDict['userSettings']
                     if 'userScripts' in settingsDict:
                         cls.userScripts = settingsDict['userScripts']
+                    if 'recentFiles' in settingsDict:
+                        cls.recentFiles = settingsDict['recentFiles']
 
         return cls._instance
 
@@ -133,6 +137,7 @@ class RamSettings( object ):
             'userSettings': self.userSettings,
             'debugMode': self.debugMode,
             'userScripts': self.userScripts,
+            'recentFiles': self.recentFiles
         }
 
         if self._filePath == '':
