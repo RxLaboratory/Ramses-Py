@@ -671,7 +671,7 @@ class Ramses( object ):
 
         return returnCode
 
-    def saveFileAs(self, currentFilePath, fileExtension, item, step, resource):
+    def saveFileAs(self, currentFilePath, fileExtension, item, step, resource=""):
         """Runs the scripts in Ramses.instance().saveAsScripts
          Returns an error code:
             - -1: One of the scripts interrupted the process
@@ -717,7 +717,7 @@ class Ramses( object ):
                     return -1
 
         # Add-on registered scripts
-        for script in self.saveTemplateScripts:
+        for script in self.saveAsScripts:
             okToContinue = script( filePath, item, step, resource )
             if okToContinue is False:
                 return -1
