@@ -19,6 +19,7 @@
 #======================= END GPL LICENSE BLOCK ========================
 
 import os
+import yaml
 from subprocess import Popen, PIPE
 from datetime import datetime, timedelta
 
@@ -305,10 +306,30 @@ class Ramses( object ):
 
     # === EVENTS and HANDLERS ===
 
-    def publish(self, filePath, item, step, publishOptions=None, showPublishOptions=False ):
-        """Publishes the item; runs the list of scripts Ramses.publishScripts"""
+    def publish(self, filePath, publishOptions=None, showPublishOptions=False ):
+        """Publishes the item; runs the list of scripts Ramses.publishScripts
+        Returns an error code:
+            - -1: One of the scripts interrupted the process
+            - 0: Published file
+            - 1: Invalid item or step, did not publish"""
+        from .ram_item import RamItem
+        from .ram_step import RamStep
 
         okToContinue = True
+
+        # Load item and step
+        item = RamItem.fromPath( filePath )
+        step = RamStep.fromPath( filePath )
+
+        if not item or not step:
+            return 1
+
+        if not publishOptions:
+            publishOptionsStr = step.publishSettings()
+            if publishOptionsStr != "":
+                publishOptions = yaml.safe_load( publishOptionsStr )
+
+        log("Publishing " + str(item) + " for " + str(step))
 
         # Load user scripts
         for s in SETTINGS.userScripts:
@@ -325,7 +346,7 @@ class Ramses( object ):
         for script in self.publishScripts:
             okToContinue = script(filePath, item, step, publishOptions, showPublishOptions)
             if okToContinue is False:
-                    return -1
+                return -1
 
         # Load user scripts
         for s in SETTINGS.userScripts:
@@ -361,7 +382,7 @@ class Ramses( object ):
         for script in self.statusScripts:
             okToContinue = script( item, status, step)
             if okToContinue is False:
-                    return -1
+                return -1
 
         # Load user scripts
         for s in SETTINGS.userScripts:
@@ -384,10 +405,8 @@ class Ramses( object ):
 
         okToContinue = True
 
-        if not item:
-            item = RamItem.fromPath( filePath )
-        if not step:
-            step = RamStep.fromPath( filePath )
+        item = RamItem.fromPath( filePath )
+        step = RamStep.fromPath( filePath )
 
         for s in SETTINGS.userScripts:
             if not os.path.isfile(s):
@@ -412,7 +431,7 @@ class Ramses( object ):
         for script in self.openScripts:
             okToContinue = script( item, filePath, step )
             if okToContinue is False:
-                    return -1
+                return -1
 
         for s in SETTINGS.userScripts:
             if not os.path.isfile(s):
@@ -448,7 +467,7 @@ class Ramses( object ):
         for script in self.importScripts:
             okToContinue = script( file_paths, item, step, importOptions, showImportOptions )
             if okToContinue is False:
-                    return -1
+                return -1
 
         for s in SETTINGS.userScripts:
             if not os.path.isfile(s):
@@ -482,7 +501,7 @@ class Ramses( object ):
         for script in self.replaceScripts:
             okToContinue = script( filePath, item, step, importOptions, showImportOptions )
             if okToContinue is False:
-                    return -1
+                return -1
 
         for s in SETTINGS.userScripts:
             if not os.path.isfile(s):
@@ -575,14 +594,14 @@ class Ramses( object ):
                 continue
             m = load_module_from_path(s)
             if "before_save" in dir(m):
-                okToContinue = m.before_save( item, saveFilePath, step, version, comment, incrementVersion )
+                okToContinue = m.before_save( saveFilePath, item, step, version, comment, incrementVersion )
                 if okToContinue is False:
                     log("A Script interrupted the save process: " + s, LogLevel.Info)
                     return -1
 
         # Add-on registered scripts
         for script in self.saveScripts:
-            okToContinue = script( item, saveFilePath, step, version, comment, incrementVersion )
+            okToContinue = script( saveFilePath, item, step, version, comment, incrementVersion )
             if okToContinue is False:
                 return -1
 
@@ -593,7 +612,7 @@ class Ramses( object ):
                 continue
             m = load_module_from_path(s)
             if "on_save" in dir(m):
-                okToContinue = m.on_save( item, saveFilePath, step, version, comment, incrementVersion )
+                okToContinue = m.on_save( saveFilePath, item, step, version, comment, incrementVersion )
                 if okToContinue is False:
                     log("A Script interrupted the save process: " + s, LogLevel.Info)
                     return -1
@@ -620,7 +639,7 @@ class Ramses( object ):
             - -1: One of the scripts interrupted the process
             - 0: Saved file
             - 1: Saved as a new version because the file already exists"""
-        
+
         returnCode = 0
 
         # Get the file path
