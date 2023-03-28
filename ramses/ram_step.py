@@ -22,6 +22,7 @@ from .ram_object import RamObject
 from .logger import log
 from .constants import StepType, FolderNames, LogLevel
 from .file_manager import RamFileManager
+from .file_info import RamFileInfo
 from .daemon_interface import RamDaemonInterface
 
 # Keep the daemon at hand
@@ -36,6 +37,8 @@ class RamStep( RamObject ):
         """Creates a step from any path, if possible
         by extracting step info from the path"""
         from .ram_status import RamStatus
+        from .ramses import Ramses
+        RAMSES = Ramses.instance()
 
         # First, try to see if this is the path of a step
         uuid = DAEMON.uuidFromPath( path, "RamStep" )
@@ -47,6 +50,16 @@ class RamStep( RamObject ):
         status = RamStatus.fromPath( path )
         if status:
             return status.step()
+        
+        # Let's use the file name
+        nm = RamFileInfo()
+        nm.setFilePath(path)
+        # Get the project
+        project = None
+        if nm.project != '' and nm.step !="":
+            project = RAMSES.project(nm.project)
+        if project is not None:
+            return project.step( nm.step )
 
         log( "The given path does not belong to a step", LogLevel.Debug )
         return None

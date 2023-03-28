@@ -17,22 +17,16 @@
 #
 #======================= END GPL LICENSE BLOCK ========================
 
-import os, re
+import os
 from .file_info import RamFileInfo
 from .daemon_interface import RamDaemonInterface
 from .file_manager import RamFileManager
 from .logger import log
-from .ramses import Ramses
-from .utils import escapeRegEx, removeDuplicateObjectsFromList
+from .utils import removeDuplicateObjectsFromList
 from .ram_settings import RamSettings
 from .ram_object import RamObject
 from .ram_asset import RamAsset
-from .ram_assetgroup import RamAssetGroup
-from .ram_sequence import RamSequence
-from .ram_shot import RamShot
-from .ram_step import RamStep
-from .ram_pipe import RamPipe
-from .constants import StepType, ItemType, LogLevel
+from .constants import StepType, LogLevel
 
 DAEMON = RamDaemonInterface.instance()
 SETTINGS = RamSettings.instance()
@@ -43,11 +37,19 @@ class RamProject( RamObject ):
     @staticmethod
     def fromPath( path ):
         """Creates a project object from any path, trying to get info from the given path"""
+        from .ramses import Ramses
+        RAMSES = Ramses.instance()
 
         uuid = DAEMON.uuidFromPath( path, "RamProject" )
 
         if uuid != "":
             return RamProject(uuid)
+
+        # Try from the file name
+        nm = RamFileInfo()
+        nm.setFilePath( path )
+        if nm.project != '':
+            return RAMSES.project( nm.project )
 
         log( "The given path does not belong to a project", LogLevel.Debug )
         return None
