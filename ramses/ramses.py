@@ -305,7 +305,7 @@ class Ramses( object ):
 
     # === EVENTS and HANDLERS ===
 
-    def publish(self, item, step, filePath, publishOptions=None, showPublishOptions=False ):
+    def publish(self, filePath, item, step, publishOptions=None, showPublishOptions=False ):
         """Publishes the item; runs the list of scripts Ramses.publishScripts"""
 
         okToContinue = True
@@ -317,13 +317,13 @@ class Ramses( object ):
                 continue
             m = load_module_from_path(s)
             if "before_publish" in dir(m):
-                okToContinue = m.before_publish(item, step, filePath, publishOptions, showPublishOptions)
+                okToContinue = m.before_publish(filePath, item, step, publishOptions, showPublishOptions)
                 if okToContinue is False:
                     log("A Script interrupted the publish process before it was run: " + s, LogLevel.Info)
                     return -1
 
         for script in self.publishScripts:
-            okToContinue = script(item, step, filePath, publishOptions, showPublishOptions)
+            okToContinue = script(filePath, item, step, publishOptions, showPublishOptions)
             if okToContinue is False:
                     return -1
 
@@ -334,7 +334,7 @@ class Ramses( object ):
                 continue
             m = load_module_from_path(s)
             if "on_publish" in dir(m):
-                okToContinue = m.on_publish(item, step, filePath, publishOptions, showPublishOptions)
+                okToContinue = m.on_publish(filePath, item, step, publishOptions, showPublishOptions)
                 if okToContinue is False:
                     log("A Script interrupted the publish process: " + s, LogLevel.Info)
                     return -1
@@ -429,7 +429,7 @@ class Ramses( object ):
 
         return 0
 
-    def importItem(self, item, file_paths, step=None, importOptions=None, showImportOptions=False ):
+    def importItem(self, file_paths, item, step=None, importOptions=None, showImportOptions=False ):
         """Runs the scripts in Ramses.instance().importScripts."""
 
         okToContinue = True
@@ -440,13 +440,13 @@ class Ramses( object ):
                 continue
             m = load_module_from_path(s)
             if "before_import_item" in dir(m):
-                okToContinue = m.before_import_item( item, file_paths, step, importOptions, showImportOptions )
+                okToContinue = m.before_import_item( file_paths, item, step, importOptions, showImportOptions )
                 if okToContinue is False:
                     log("A Script interrupted the import process before it was run: " + s, LogLevel.Info)
                     return -1
 
         for script in self.importScripts:
-            okToContinue = script( item, file_paths, step, importOptions, showImportOptions )
+            okToContinue = script( file_paths, item, step, importOptions, showImportOptions )
             if okToContinue is False:
                     return -1
 
@@ -456,14 +456,14 @@ class Ramses( object ):
                 continue
             m = load_module_from_path(s)
             if "on_import_item" in dir(m):
-                okToContinue = m.on_import_item( item, file_paths, step, importOptions, showImportOptions )
+                okToContinue = m.on_import_item( file_paths, item, step, importOptions, showImportOptions )
                 if okToContinue is False:
                     log("A Script interrupted the import process: " + s, LogLevel.Info)
                     return -1
 
         return 0
 
-    def replaceItem(self, item, filePath, step=None, importOptions=None, showImportOptions=False):
+    def replaceItem(self, filePath, item, step=None, importOptions=None, showImportOptions=False):
         """Runs the scripts in Ramses.instance().replaceScripts."""
 
         okToContinue = True
@@ -474,13 +474,13 @@ class Ramses( object ):
                 continue
             m = load_module_from_path(s)
             if "before_replace_item" in dir(m):
-                okToContinue = m.before_replace_item( item, filePath, step, importOptions, showImportOptions )
+                okToContinue = m.before_replace_item( filePath, item, step, importOptions, showImportOptions )
                 if okToContinue is False:
                     log("A Script interrupted the replace process before it was run: " + s, LogLevel.Info)
                     return -1
 
         for script in self.replaceScripts:
-            okToContinue = script( item, filePath, step, importOptions, showImportOptions )
+            okToContinue = script( filePath, item, step, importOptions, showImportOptions )
             if okToContinue is False:
                     return -1
 
@@ -490,7 +490,7 @@ class Ramses( object ):
                 continue
             m = load_module_from_path(s)
             if "on_replace_item" in dir(m):
-                okToContinue = m.on_replace_item( item, filePath, step, importOptions, showImportOptions )
+                okToContinue = m.on_replace_item(  filePath, item,step, importOptions, showImportOptions )
                 if okToContinue is False:
                     log("A Script interrupted the replace process: " + s, LogLevel.Info)
                     return -1
