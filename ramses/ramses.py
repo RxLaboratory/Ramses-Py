@@ -414,7 +414,7 @@ class Ramses( object ):
                 continue
             m = load_module_from_path(s)
             if "before_open" in dir(m):
-                okToContinue = m.before_open( item, filePath, step )
+                okToContinue = m.before_open(  filePath, item,step )
                 if okToContinue is False:
                     log("A Script interrupted the open file process: " + s, LogLevel.Info)
                     return -1
@@ -429,7 +429,7 @@ class Ramses( object ):
             step = RamStep.fromPath( filePath )
 
         for script in self.openScripts:
-            okToContinue = script( item, filePath, step )
+            okToContinue = script( filePath, item, step )
             if okToContinue is False:
                 return -1
 
@@ -439,7 +439,7 @@ class Ramses( object ):
                 continue
             m = load_module_from_path(s)
             if "on_open" in dir(m):
-                okToContinue = m.on_open( item, filePath, step )
+                okToContinue = m.on_open( filePath, item, step )
                 if okToContinue is False:
                     log("A Script interrupted the open file process: " + s, LogLevel.Info)
                     return -1
@@ -448,10 +448,26 @@ class Ramses( object ):
 
         return 0
 
-    def importItem(self, file_paths, item, step=None, importOptions=None, showImportOptions=False ):
+    def importItem(self, current_file_path, import_file_paths, item, step=None, importOptions=None, showImportOptions=False ):
         """Runs the scripts in Ramses.instance().importScripts."""
+        from .ram_step import RamStep
 
         okToContinue = True
+
+        # Get the current step
+        currentStep = RamStep.fromPath( current_file_path )
+        # Get the import options
+        if not importOptions and step is not None:
+            importOptions = { "formats": [] }
+            for p in step.outputPipes():
+                log("Checking pipe: " + str(p), LogLevel.Debug)
+                if currentStep is None or currentStep.shortName() == p.inputStepShortName():
+                    for f in p.pipeFiles():
+                        optionsStr = f.customSettings()
+                        log("Found options:\n" + optionsStr, LogLevel.Debug)
+                        if optionsStr != "":
+                            options = yaml.safe_load( optionsStr )
+                            importOptions['formats'].append( options )
 
         for s in SETTINGS.userScripts:
             if not os.path.isfile(s):
@@ -459,13 +475,13 @@ class Ramses( object ):
                 continue
             m = load_module_from_path(s)
             if "before_import_item" in dir(m):
-                okToContinue = m.before_import_item( file_paths, item, step, importOptions, showImportOptions )
+                okToContinue = m.before_import_item( import_file_paths, item, step, importOptions, showImportOptions )
                 if okToContinue is False:
                     log("A Script interrupted the import process before it was run: " + s, LogLevel.Info)
                     return -1
 
         for script in self.importScripts:
-            okToContinue = script( file_paths, item, step, importOptions, showImportOptions )
+            okToContinue = script( import_file_paths, item, step, importOptions, showImportOptions )
             if okToContinue is False:
                 return -1
 
@@ -475,17 +491,39 @@ class Ramses( object ):
                 continue
             m = load_module_from_path(s)
             if "on_import_item" in dir(m):
-                okToContinue = m.on_import_item( file_paths, item, step, importOptions, showImportOptions )
+                okToContinue = m.on_import_item( import_file_paths, item, step, importOptions, showImportOptions )
                 if okToContinue is False:
                     log("A Script interrupted the import process: " + s, LogLevel.Info)
                     return -1
 
         return 0
 
-    def replaceItem(self, filePath, item, step=None, importOptions=None, showImportOptions=False):
+    def replaceItem(self, current_file_path, filePath, item, step=None, importOptions=None, showImportOptions=False):
         """Runs the scripts in Ramses.instance().replaceScripts."""
+        from .ram_step import RamStep
 
         okToContinue = True
+
+         # Get the current step
+        currentStep = RamStep.fromPath( current_file_path )
+        extension = os.path.splitext(filePath)[1][1:]
+
+        # Get options
+        if not importOptions:
+            importOptions = { "formats": [] }
+            for p in step.outputPipes():
+                if currentStep is None or currentStep.shortName() == p.inputStepShortName():
+                    for f in p.pipeFiles():
+                        optionStr = f.customSettings()
+                        if optionStr != "":
+                            options = yaml.safe_load( optionStr )
+                            if options['format'] == extension:
+                                importOptions['formats'].append( options )
+                                break
+                    break
+
+        if 'formats' not in importOptions:
+            importOptions['formats'] = ()
 
         for s in SETTINGS.userScripts:
             if not os.path.isfile(s):
