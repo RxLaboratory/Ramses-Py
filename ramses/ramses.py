@@ -563,6 +563,9 @@ class Ramses( object ):
             - 2: The file was a restored version, it's been incremented then saved as a working file.
             - 3: The file was misplaced (in a reserved folder), and was incremented and saved in the right place.
             - 4: The file was too old (according to RamSettings.autoIncrementTimeout) and was incremented and saved."""
+        
+        from .ram_item import RamItem
+        from .ram_step import RamStep
 
         returnCode = 0
         incrementReason = ""
@@ -598,12 +601,8 @@ class Ramses( object ):
             returnCode = 4
 
         # Get the RamItem and RamStep
-        if not item:
-            from .ram_item import RamItem
-            item = RamItem.fromPath( filePath )
-        if not step:
-            from .ram_step import RamStep
-            step = RamStep.fromPath( filePath )
+        item = RamItem.fromPath( filePath )
+        step = RamStep.fromPath( filePath )
 
         # Get the version
         versionInfo = RamFileManager.getLatestVersionInfo( saveFilePath )
@@ -747,7 +746,7 @@ class Ramses( object ):
          Returns an error code:
             - -1: One of the scripts interrupted the process
             - 0: Saved template"""
-        
+
         from .ram_item import RamItem
 
         log("Saving as template...")
