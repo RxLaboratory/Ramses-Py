@@ -517,6 +517,8 @@ class Ramses( object ):
                         optionStr = f.customSettings()
                         if optionStr != "":
                             options = yaml.safe_load( optionStr )
+                            if 'formats' not in importOptions:
+                                continue
                             if options['format'] == extension:
                                 importOptions['formats'].append( options )
                                 break
