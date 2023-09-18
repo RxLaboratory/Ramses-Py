@@ -565,7 +565,7 @@ class Ramses( object ):
             - 2: The file was a restored version, it's been incremented then saved as a working file.
             - 3: The file was misplaced (in a reserved folder), and was incremented and saved in the right place.
             - 4: The file was too old (according to RamSettings.autoIncrementTimeout) and was incremented and saved."""
-        
+
         from .ram_item import RamItem
         from .ram_step import RamStep
 

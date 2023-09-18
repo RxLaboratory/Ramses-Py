@@ -34,7 +34,7 @@ class RamFileInfo():
     __nameRe = None # The regexp to handle names. Initialized the first time it's needed
 
     def __init__(self):
-        
+
         self.__init()
 
         self.__stateShortNames = () # The list of state short names. Initialized the first time it's needed
@@ -157,7 +157,7 @@ class RamFileInfo():
 
         splitRamsesName = re.match(self.__getRamsesNameRegEx(), name)
 
-        if splitRamsesName == None:
+        if splitRamsesName is None:
             return False
 
         self.project = splitRamsesName.group(1)
@@ -179,7 +179,7 @@ class RamFileInfo():
                 self.isRestoredVersion = True
                 self.restoredVersion = int( restoredInfo.group(1) )
                 self.resource = re.sub( '\\+restored-v\\d+\\+', "", self.resource)
-        
+
         if splitRamsesName.group(6) is not None:
             self.state = splitRamsesName.group(6)
 
@@ -218,23 +218,23 @@ class RamFileInfo():
         path = os.path.dirname(path)
         name = os.path.basename(path)
 
-         # Move up the tree until we've found something which can be decomposed
+        # Move up the tree until we've found something which can be decomposed
         while name != '':
             # If we've found all the info, we can return
             if self.project != '' and self.ramType != '' and self.shortName != '' and self.step != '':
                 return
 
             # Try to get more info from the folder name
-            nm = RamFileInfo()
-            if nm.setFileName( name ):
+            sub_nm = RamFileInfo()
+            if sub_nm.setFileName( name ):
                 if self.project == '':
-                    self.project = nm.project
+                    self.project = sub_nm.project
                 if self.ramType == '':
-                    self.ramType = nm.ramType
+                    self.ramType = sub_nm.ramType
                 if self.shortName == '':
-                    self.shortName = nm.shortName
+                    self.shortName = sub_nm.shortName
                 if self.step == '':
-                    self.step = nm.step
+                    self.step = sub_nm.step
 
             # We got to the project folder, no need to continue
             if RamFileManager.isProjectFolder( path ):
