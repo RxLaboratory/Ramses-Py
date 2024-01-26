@@ -42,3 +42,25 @@ class RamSequence( RamObject ):
         """Gets the list of shots contained in this sequence"""
 
         return DAEMON.getShots("", self.uuid())
+    
+    def width( self ):
+        """The sequence width in pixels
+        Returns:
+            int"""
+        
+        return self.get("width", 1920)
+    
+    def height( self ):
+        """The sequence height in pixels
+        Returns:
+            int"""
+        
+        return self.get("width", 1080)
+    
+    def framerate( self ):
+        """The sequence framerate
+        Returns:
+            float
+        """
+
+        return self.get("framerate", 24.0)
