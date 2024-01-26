@@ -110,7 +110,7 @@ class RamDaemonInterface( object ):
 
         if not self.__checkUser():
             self.__noUserReply('getProjects')
-            return ()
+            return []
 
         reply = self.__post(
             (
