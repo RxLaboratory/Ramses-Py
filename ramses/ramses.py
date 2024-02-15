@@ -504,7 +504,7 @@ class Ramses( object ):
 
         okToContinue = True
 
-         # Get the current step
+        # Get the current step
         currentStep = RamStep.fromPath( current_file_path )
         extension = os.path.splitext(filePath)[1][1:]
 
