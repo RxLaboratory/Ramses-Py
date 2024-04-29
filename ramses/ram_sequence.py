@@ -66,7 +66,7 @@ class RamSequence( RamObject ):
             int"""
         
         if self.get("overrideResolution"):
-            return self.get("height", 1920)
+            return self.get("height", 1080)
         project = self.project()
         if project:
             return project.height()
