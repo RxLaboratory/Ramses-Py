@@ -3,7 +3,7 @@ requires = ["setuptools", "wheel"]  # PEP 508 specifications.
 
 [project]
 name = "ramses"
-version = "0.6.0-Beta"
+version = "#version#"
 authors = [
     {name = "Nicolas Dufresne", email = "duduf@rxlaboratory.org"},
 ]
