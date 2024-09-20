@@ -1,0 +1,39 @@
+{
+    "title": "Ramses Python API",
+    "hosts": [
+        {
+            "name": "python",
+            "title": "Python"
+        }
+    ],
+    "os": [
+        {
+            "name": "win",
+            "title": "Windows"
+        },
+        {
+            "name": "mac",
+            "title": "MacOS"
+        },{
+            "name": "linux",
+            "title": "Linux"
+        }
+    ],
+    "assets": [
+        {
+            "nameRegEx": "",
+            "name": "Ramses Python API",
+            "description": "This is the Ramses API as a python module.",
+            "hosts": [ {"name": "python", "title": "Python"} ],
+            "os": [ {"name": "win", "title": "Windows"}, {"name": "mac", "title": "MacOS"}, { "name": "linux", "title": "Linux" } ],
+            "urls": [
+                {"title": "Documentation", "url": "https://ramses.rxlab.guide/dev/add-ons-reference/"}
+            ]
+        }
+    ],
+    "userGuide": "https://ramses.rxlab.guide/dev/",
+    "apiReference": "https://ramses.rxlab.guide/dev/add-ons-reference/",
+    "website": "https://rxlaboratory.org/tools/ramses/",
+    "description": "The Renewed Asset Management System (Ramses) Python API",
+    "tutorials": ""
+}

@@ -129,3 +129,6 @@ dmypy.json
 
 # idea
 .idea/
+
+# build
+build/*
